@@ -1,11 +1,12 @@
-# KSV-Software
+# KSV Software
 
 ## Team Members
 Kaitlin Haley
 
+Sam Torris
+
 Vince Nowell
 
-Sam Torris
 
 
 ## Project
