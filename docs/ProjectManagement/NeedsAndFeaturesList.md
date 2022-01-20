@@ -25,4 +25,7 @@
 8. Make sure votes are unique
 9. Share vote with others link or code
 10. Different kinds of votes (ranked voting as an option)
+11. Quickly send out invites to vote
+12. Deadlines for votes
+13. Delayed vote, make people wait a amount of time so they can think???
 ```
