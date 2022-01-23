@@ -18,18 +18,10 @@
 
 
 ## Design and Modeling
-Our first goal is to create a **data model** that will support the initial requirements.
 
-1. Identify all entities;  for each entity, label its attributes; include concrete types
-2. Identify relationships between entities.  Write them out in English descriptions.
-3. Draw these entities and relationships in an _informal_ Entity-Relation Diagram.
-4. If you have questions about something, return to elicitation and analysis before returning here.
+<br/>
+<img src="VotingAppClassDiagarm.drawio.svg">
 
 ## Analysis of the Design
-The next step is to determine how well this design meets the requirements _and_ fits into the existing system.
-
-1. Does it support all requirements/features/behaviors?
-    * For each requirement, go through the steps to fulfill it.  Can it be done?  Correctly?  Easily?
-2. Does it meet all non-functional requirements?
-    * May need to look up specifications of systems, components, etc. to evaluate this.
-
+* The data model allows for votes to be viewed after being created and voted on. It allows to a user to get the data from the created vote model, and gather the sumbitted votes to allow for evaluation and get the stats of the vote. it will also allow for later parsing of the data into csv format for download.
+* For the given moment we believe that the data model does meet all requirements for the feature, it is the case that changes to the data model will be made as we further along in the development process and we discover more item that are needs to meet these requirements.
