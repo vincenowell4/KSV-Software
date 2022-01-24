@@ -10,4 +10,4 @@ Vince Nowell
 
 
 ## Project
-Still to be decided
+Voting application
