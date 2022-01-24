@@ -33,7 +33,7 @@ Every year in her advertising 101 class she has students present their advertisi
  
 She wants a product that would be simple and easy for her students to use on their phones or laptops so that they are able to vote after each presentation. She would like it if she was able to set up all these votes for each presentation before class starts as well so she doesn't waste student presenters' time.
  
-<img src="DrConnors_pic.jpg" alt="Dr.Connors" style="height: 500px; width:600px;"/>
+<img src="DrConnors_pic.jpg" alt="Dr.Connors" style="height: 500px;"/>
 
 <br/>
 
@@ -47,7 +47,7 @@ He would like an application that would work on a tablet or smartphone (the two 
  
 Another feature Edward would like is the ability to have a delayed vote, so that the actual voting time could take place sometime after a meeting. This would give Edward some time to weigh the arguments for and against decisions, which would probably lead to a more thoughtful and meaningful decision on his and everyone else's part.
  
-<img src="EdwardWilkersonPersona.jpg" alt="Edward_Wilkerson"/>
+<img src="EdwardWilkersonPersona.jpg" alt="Edward_Wilkerson" style="height: 500px;"/>
 
 <br/>
 
@@ -59,4 +59,4 @@ Recently she has been hosting parties at her house, and orders or makes food for
  
 She also would like to have a few features built into the app as well. Many of the people using the app do not have great vision and she would like some way for them to listen to the options on the
  
-<img src="RuthGarciaPersona.jpg" alt="Ruth_Garcia"/>
+<img src="RuthGarciaPersona.JPG" alt="Ruth_Garcia" style="height: 500px;"/>
