@@ -3,11 +3,11 @@
 
 ## Title
 
-*As a user I want to view a page where I am able to create a vote that is simple and easy to use.*
+*As a user I want to create a simple vote so that I can discover how this process will work.*
 
 ## Description
 
-This user story is about the intial creation of the vote page. The page should be straight forward and easy for a user to understand the steps needed to take in order to create their vote. This page will just display the placeholder for the types of voting we will offer when creating a vote as well as a description box for the vote if the user would like to enter one. After clicking submit it will bring the user to a confirmation page. 
+This user story is about helping the user understand the process of creating a vote in a simple and easy way. The page should be straight forward and easy for a user to understand the steps needed to take in order to create their vote. This page will just display the placeholder for the types of voting we will offer when creating a vote as well as a description box for the vote if the user would like to enter one. After clicking submit the user would like to see confirmation page so that they know their vote description was entered correctly. This way, the user can then look over their vote description and decide if they would like to go back and change it or hit the return button to bring them back to the home page. 
 
 ### Details:
 
@@ -83,7 +83,7 @@ Create blank project
 ## Owner
 
 ## Git Feature Branch
-f_vote_creation_page
+f_va17_vote_creation_page
 
 ## Modeling and Other Documents
 See first page and third page of CreateVoteUI mockup in team repo under UIMockups

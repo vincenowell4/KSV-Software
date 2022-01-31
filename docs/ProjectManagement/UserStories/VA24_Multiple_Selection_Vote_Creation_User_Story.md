@@ -3,11 +3,11 @@
 
 ## Title
 
-*As a user I want to easily create a multiple selection vote where I enter what I want my choices to be.*
+*As a user I want to initiate a multiple selection vote so that I can see what my options will look like.*
 
 ## Description
 
-This user story is about the creation of the multiple selection vote. The user will be able to now click the multiple selection vote option (with a description) on the first page. There will now be a second page added where the user will first have to enter in all of their voting options before being able to see the confirmation page. The confirmation page will show their description, the type of vote they have chosen (being a multiple selection vote), and the voting options they have entered.  
+This user story is about the user understanding the process of creating a simple multiple selection vote. The user would like to be able to enter in their options for the multiple selection choice and be able to add or delete options as well. After this they want to be able to confirm all of the details of their vote. On the confirmation page they would like to clearly see that they have chosen a multiple selection vote with the choices they had previously entered and their voting description. They also would like to be able to go back and change options if they realize they would like to change something, and be able to also go back to change the type of vote as well in case they realize that's not the type of vote they wanted.  
 
 ### Details:
 1. Add "Multiple Selection" (make sure alphabetized still) vote to the bullet list of voting types on create page with a description that states "Voters will get to choose between the multiple options you enter on the next page (anywhere from 2-10 voting options will be allowed)" 
@@ -88,7 +88,7 @@ Vote Creation Page
 ## Owner
 
 ## Git Feature Branch
-f_multiple_selection_vote_creation
+f_va24_multiple_selection_vote_creation
 
 ## Modeling and Other Documents
 See 1, 2, 3 pages of CreateVoteUI mockup in team repo under UIMockups
