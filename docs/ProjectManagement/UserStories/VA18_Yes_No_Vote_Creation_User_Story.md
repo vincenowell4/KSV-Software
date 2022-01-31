@@ -3,11 +3,11 @@
 
 ## Title
 
-*As a user I want to create a simple yes/no vote.*
+*As a user I want to initiate a simple yes/no vote so that I can see what the process of a yes/no vote will look like.*
 
 ## Description
 
-This user story is about the creation of the yes/no vote. The user will be able to now click the yes/no vote option (with a description) on the first page. The confirmation page will show their description, as well as the type of vote they have chosen (being a yes/no vote).  
+This user story is about the user understanding the process in the creation of the yes/no vote. The user would like to see that the yes/no vote is a quick and simple process. The user wants to now be able to click a yes/no option when creating their vote and then be brought to a confirmation page where they can look over everything. They want this confirmation page to be clear that the type of vote they have chosen is a yes/no vote, where they can still see their description. They would like to have the option to go back and change their description if needed. After looking over the details of their yes/no vote and they have confirmed everything they want to be brought back to the home screen. 
 
 ### Details:
 1. Add "Yes/No" vote to the bullet list of voting types on create page with a description that states "Voters will get to choose between two simple options: yes or no."
@@ -45,7 +45,7 @@ Vote Creation Page
 ## Owner
 
 ## Git Feature Branch
-f_yes_no_vote_creation
+f_va18_yes_no_vote_creation
 
 ## Modeling and Other Documents
 See first and third pages of CreateVoteUI mockup in team repo under UIMockups
