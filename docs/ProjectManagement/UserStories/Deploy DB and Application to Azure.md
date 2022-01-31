@@ -1,5 +1,5 @@
 # Deploy DB and Application to Azure
-<hr>
+
 
 ## Title
 
@@ -29,7 +29,7 @@ Create blank project
 
 
 ## Effort Points
-1 to 2
+2
 
 
 ## Owner
@@ -45,13 +45,9 @@ Not applicable
 
 
 ## Tasks
-### Deploying the database
 
 NOTE: This process is documented in "How to Deploy Databases and Web Apps to the Cloud Using Azure.rtf"
 1. Create SQL Server Instance
 2. Create application database in Azure
 3. Deploy web application to Azure
 4. Set up Identity authorization db on Azure
-
-
-###
