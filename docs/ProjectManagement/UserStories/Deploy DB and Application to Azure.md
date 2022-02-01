@@ -29,8 +29,7 @@ Create blank project
 
 
 ## Effort Points
-1 to 2
-
+4
 
 ## Owner
 Vince Nowell
