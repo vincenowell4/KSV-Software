@@ -16,8 +16,8 @@
     * jQuery 3.6.0
  
 5. How will you name your Git branches? Choose a strategy. Unfortunately it looks like the “Create Branch” feature in Jira is only available for Bitbucket repositories or GitHub repos with an Enterprise Account.
-    * Features: f_branch_name
-    * Bugs: b_branch_name
+    * Features: f_va#_branch_name
+    * Bugs: b_va#_branch_name   
  
 6. How will you write your database scripts, table names, PK and FK names? Because of some tools I'll give you later, I'm making this decision for you. See the example I'll put in the module. It'll be required that everyone follow this example to the letter!
 <img src="sql_syntax_pic.png" alt="sql syntax" style="height: 500px width: 500px;"/>
