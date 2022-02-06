@@ -1,8 +1,14 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using VotingApp.Data;
 var builder = WebApplication.CreateBuilder(args);
-
+var connectionString = builder.Configuration.GetConnectionString("VotingAppIdentity");
+builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionString));builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<VotingAppIdentityContext>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -17,11 +23,16 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    app.MapRazorPages();
 
 app.Run();
