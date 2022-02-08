@@ -30,12 +30,11 @@ using (var scope = app.Services.CreateScope())
     {
         // Get the IConfiguration service that allows us to query user-secrets and 
         // the configuration on Azure
-        var config = app.Services.GetRequiredService<IConfiguration>();
         // Set password with the Secret Manager tool, or store in Azure app configuration
         // dotnet user-secrets set SeedUserPW <pw>
-
-        var testUserPw = config["SeedUserPW"];
-        var adminPw = config["SeedAdminPW"];
+        var testUserPw = builder.Configuration["SeedUserPW"];
+        var adminPw = builder.Configuration["SeedAdminPW"];
+       
 
         SeedUsers.Initialize(services, SeedData.UserSeedData, testUserPw).Wait();
         SeedUsers.InitializeAdmin(services, "admin@example.com", "admin", adminPw, "The", "Admin").Wait();
