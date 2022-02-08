@@ -1,0 +1,30 @@
+﻿@model VotingApp.Models.CreatedVote
+@{
+    ViewData["Title"] = "Create Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Create A New Vote</h1>
+    <hr />
+</div>
+
+<div class="text-center">
+    <div class="row">
+        <form asp-action="Index" method="post">
+            <div class="form-row mb-2">
+                <label asp-for="VoteDiscription">Please enter your vote description in the box below (required):</label>
+                <textarea asp-for="VoteDiscription" class="form-control" type="text" rows="5"></textarea>
+                <span asp-validation-for="VoteDiscription" class="text-danger"></span>
+            </div>
+            <div class="form-row mb-2">
+                <label for="votingOptions">Please choose which type of vote you would like to create</label>
+                <select class="form-control" id="votingOptions">
+                    <option>Voting types will be here in this drop down</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
