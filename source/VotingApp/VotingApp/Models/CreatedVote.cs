@@ -21,8 +21,10 @@ namespace VotingApp.Models
         [Column("UserID")]
         public int? UserId { get; set; }
         [Required(ErrorMessage = "Please enter a vote description before entering submit")]
-        [StringLength(250)]
+        [StringLength(1000)]
         public string VoteDiscription { get; set; } = null!;
+        [StringLength(500)]
+        public string VoteType { get; set; } = null!;
         public bool Anonymous { get; set; }
 
         [ForeignKey(nameof(UserId))]
