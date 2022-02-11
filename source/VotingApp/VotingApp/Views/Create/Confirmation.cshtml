@@ -1,4 +1,4 @@
-﻿@model VotingApp.ViewModel.CreateVM
+﻿@model VotingApp.ViewModel.ConfirmationVM
 @{
     ViewData["Title"] = "Confirmation Page";
 }
@@ -13,6 +13,7 @@
 
 <div class="text-center">
     <h1 class="display-4">Vote Creation Confirmation</h1>
+    <h3>@Model.ChosenVoteDescriptionHeader</h3>
     <hr />
 </div>
 
@@ -28,6 +29,19 @@
                     </div>
                 </div>
             </form>
+        </div>
+        <div class="row mb-2 justify-content-center">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Voting Options:</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach(var option in Model.VotingOptions)
+                        {
+                            <li class="list-group-item">@option</li>
+                        }
+                </ul>
+             </div>
         </div>
         <div class ="form-group" >
             <form asp-action="Confirmation" method="post">

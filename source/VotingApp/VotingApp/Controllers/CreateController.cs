@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using VotingApp.DAL.Abstract;
@@ -11,23 +12,31 @@ namespace VotingApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ICreatedVoteRepository _createdVoteRepository;
+        private readonly IVoteTypeRepository _voteTypeRepository;
 
-        public CreateController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo)
+        public CreateController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo, IVoteTypeRepository voteTypeRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
+           _voteTypeRepository = voteTypeRepository;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
+            var selectListVoteType = new SelectList(
+                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.Type}", Value = a.Id }),
+                "Value", "Text");
+            ViewData["VoteTypeId"] = selectListVoteType;
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteDiscription")]CreatedVote createdVote)
         {
+            ModelState.Remove("VoteType");
             if (ModelState.IsValid)
             {
                 try
@@ -58,8 +67,11 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Confirmation(CreatedVote createdVote)
         {
-            var vm = new CreateVM(); 
+            var vm = new ConfirmationVM(); 
             vm.VoteDescription = _createdVoteRepository.GetVoteDescription(createdVote.Id);
+            vm.VoteType = _voteTypeRepository.GetVoteType(createdVote.VoteTypeId);
+            vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
+            vm.VotingOptions = _voteTypeRepository.GetVoteOptions(vm.VoteType);
             return View(vm);
         }
 

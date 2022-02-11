@@ -17,10 +17,20 @@
                 <span asp-validation-for="VoteDiscription" class="text-danger"></span>
             </div>
             <div class="form-row mb-2">
-                <label for="votingOptions">Please choose which type of vote you would like to create</label>
-                <select class="form-control" id="votingOptions">
-                    <option>Voting types will be here in this drop down</option>
-                </select>
+                <label asp-for="VoteTypeId" class="control-label">Please choose which type of vote you would like to create</label>
+                <select asp-for="VoteTypeId" class="form-control" asp-items="ViewBag.VoteTypeId"></select>
+                <span asp-validation-for="VoteTypeId" class="text-danger"></span>
+            </div>
+            <div class="row mb-2 justify-content-center">
+                <h4><u>Voting Type Descriptions:</u></h4>
+                <div class="col-4">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Yes/No Vote:</h5>
+                            <p class="card-text">Voters Will get to choose between two simple options: yes or no.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Submit</button>

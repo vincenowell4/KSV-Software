@@ -535,3 +535,12 @@ E:\CapstoneGithub\KSV-Software-1\source\VotingApp\VotingApp\obj\Debug\net6.0\Vot
 E:\CapstoneGithub\KSV-Software-1\source\VotingApp\VotingApp\obj\Debug\net6.0\ref\VotingApp.dll
 E:\CapstoneGithub\KSV-Software-1\source\VotingApp\VotingApp\obj\Debug\net6.0\VotingApp.pdb
 E:\CapstoneGithub\KSV-Software-1\source\VotingApp\VotingApp\obj\Debug\net6.0\VotingApp.genruntimeconfig.cache
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.UI.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.Extensions.FileProviders.Embedded.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.Extensions.Identity.Core.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\bin\Debug\net6.0\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\kaitl\OneDrive\Desktop\KSV-Software-1\source\VotingApp\VotingApp\obj\Debug\net6.0\VotingApp.MvcApplicationPartsAssemblyInfo.cs
