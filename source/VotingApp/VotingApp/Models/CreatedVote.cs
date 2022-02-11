@@ -20,16 +20,17 @@ namespace VotingApp.Models
         public int Id { get; set; }
         [Column("UserID")]
         public int? UserId { get; set; }
-        [Required(ErrorMessage = "Please enter a vote description before entering submit")]
         [StringLength(1000)]
         public string VoteDiscription { get; set; } = null!;
-        [StringLength(500)]
-        public string VoteType { get; set; } = null!;
         public bool Anonymous { get; set; }
+        public int VoteTypeId { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty("CreatedVotes")]
         public virtual User? User { get; set; }
+        [ForeignKey(nameof(VoteTypeId))]
+        [InverseProperty("CreatedVotes")]
+        public virtual VoteType VoteType { get; set; } = null!;
         [InverseProperty(nameof(Option.CreatedVote))]
         public virtual ICollection<Option> Options { get; set; }
         [InverseProperty(nameof(SubmittedVote.CreatedVote))]
