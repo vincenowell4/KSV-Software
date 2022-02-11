@@ -1,8 +1,9 @@
 CREATE TABLE [CreatedVote] 
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
-[UserID] int,
-[VoteDiscription] nvarchar(250) NOT NULL,
+[UserID] int, 
+[VoteDiscription] nvarchar(1000) NOT NULL,
+[VoteType] nvarchar(500) NOT NULL,
 [Anonymous] BIT NOT NULL
 );
 

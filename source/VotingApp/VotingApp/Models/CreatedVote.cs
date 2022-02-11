@@ -20,8 +20,10 @@ namespace VotingApp.Models
         public int Id { get; set; }
         [Column("UserID")]
         public int? UserId { get; set; }
-        [StringLength(250)]
+        [StringLength(1000)]
         public string VoteDiscription { get; set; } = null!;
+        [StringLength(500)]
+        public string VoteType { get; set; } = null!;
         public bool Anonymous { get; set; }
 
         [ForeignKey(nameof(UserId))]
