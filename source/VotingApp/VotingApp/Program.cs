@@ -1,3 +1,6 @@
+using VotingApp.DAL.Abstract;
+using VotingApp.DAL.Concrete;
+using VotingApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
@@ -6,14 +9,22 @@ using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("VotingAppIdentity");
-builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionString));
+var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
+builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionStringIdentity));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
+
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
+builder.Services.AddDbContext<VotingAppDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<DbContext, VotingAppDbContext>();
+builder.Services.AddScoped<ICreatedVoteRepository, CreatedVoteRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

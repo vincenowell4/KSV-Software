@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "4409d640-15ed-4922-9210-8327fdb241a2": {
+      "ProjectGuid": "4409d640-15ed-4922-9210-8327fdb241a2",
+      "DisplayName": "VotingApp",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
