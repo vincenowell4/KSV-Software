@@ -1,8 +1,22 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px; height: 80vh; background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/Images/bannerImage2.jpg); background-size: cover; left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    position: relative;
+    right: 50%;
+    width: 100vw;">
+    <div class="container text-white">
+<h1 class="display-4 pt-5">Welcome to Opiniony!</h1>
+        <p class="lead">Opiniony is an app that allows you to create a publish a vote for others to give their opinions on.</p>
+        <hr class="mt-lg-5" style="border-top: 3px solid white; color: white; background-color: white;">
+        <div class="row" style="padding-top: 5%";>
+            <div class="col text-center">
+                <h3 class="h3">Create A Vote:</h3>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index"><button class="btn btn-light btn-lg" type="button">Create</button></a>
+            </div>
+        </div>
+    </div>
 </div>
