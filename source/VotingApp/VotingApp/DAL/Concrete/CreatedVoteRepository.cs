@@ -50,10 +50,11 @@ namespace VotingApp.DAL.Concrete
         }
         public string GetVoteDescription(int id)
         {
-            if (id == 0)
-            {
-                throw new ArgumentException();
-            }
+            //var item = _context.CreatedVotes.Find(id);
+            //if (item == null)
+            //{
+            //    return null;
+            //}
 
             var voteDescription = _context.CreatedVotes.Where(a => a.Id == id).Select(ab => ab.VoteDiscription).FirstOrDefault();
             if (voteDescription == null)
