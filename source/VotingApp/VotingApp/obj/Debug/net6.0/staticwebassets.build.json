@@ -1,10 +1,6 @@
 {
   "Version": 1,
-<<<<<<< HEAD
-  "Hash": "yasvOhgc5lZ9b3yX//PmtqB3hMwTEMskxGkd5KSYKuY=",
-=======
   "Hash": "3sQw0N1EiBq3nfZLZL1fclzzYbzN7vOxEDGZ2gQhi6Q=",
->>>>>>> dev
   "Source": "VotingApp",
   "BasePath": "_content/VotingApp",
   "Mode": "Default",
@@ -1109,12 +1105,6 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
-<<<<<<< HEAD
-      "Identity": "E:\\CapstoneGithub\\KSV-Software-1\\source\\VotingApp\\VotingApp\\wwwroot\\js\\site.js",
-      "SourceId": "VotingApp",
-      "SourceType": "Discovered",
-      "ContentRoot": "E:\\CapstoneGithub\\KSV-Software-1\\source\\VotingApp\\VotingApp\\wwwroot\\",
-=======
       "Identity": "E:\\CapstoneGithub\\KSV-Software-1\\source\\VotingApp\\VotingApp\\wwwroot\\Images\\bannerImage.jpg",
       "SourceId": "VotingApp",
       "SourceType": "Discovered",
@@ -1170,7 +1160,6 @@
       "SourceId": "VotingApp",
       "SourceType": "Discovered",
       "ContentRoot": "E:\\CapstoneGithub\\KSV-Software-1\\source\\VotingApp\\VotingApp\\wwwroot\\",
->>>>>>> dev
       "BasePath": "_content/VotingApp",
       "RelativePath": "js/site.js",
       "AssetKind": "All",
