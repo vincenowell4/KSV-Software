@@ -26,22 +26,14 @@ namespace VotingApp.DAL.Concrete
 
         public string GetVoteType(int voteTypeId)
         {
-            if (voteTypeId == 0)
-            {
-                throw new ArgumentException();
-            }
-
-            var votes = _context.VoteTypes.Where(a => a.Id == voteTypeId).ToList();
+            var votes = _context.VoteTypes.Where(a => a.Id == voteTypeId).SingleOrDefault();
             if (votes == null)
             {
                 return null;
             }
 
-            string voteType = null;
-            foreach (var vote in votes)
-            {
-                voteType = vote.Type;
-            }
+            string voteType = votes.Type;
+            
            
             return voteType;
         }
@@ -58,6 +50,7 @@ namespace VotingApp.DAL.Concrete
         public List<string> GetVoteOptions(string voteType)
         {
             List<string> voteOptions = new List<string>();
+            
             if (voteType == "Yes/No Vote")
             {
                 voteOptions.Add("Yes");

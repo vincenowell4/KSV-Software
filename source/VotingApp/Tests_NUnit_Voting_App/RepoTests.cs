@@ -32,12 +32,13 @@ namespace Tests_NUnit_Voting_App
         {
             _voteTypes = new List<VoteType>()
             {
-                new VoteType { Id = 1, VoteTypeDescription = "yes/no" }
+                new VoteType { Id = 1,Type ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
+                new VoteType { Id = 2,Type =null ,VoteTypeDescription = "null discription" }
             };
             _createdVotes = new List<CreatedVote>()
             {
                 new CreatedVote { Id = 1, VoteType = _voteTypes[0], Anonymous = false, UserId = null, VoteDiscription="This is the description"},
-                new CreatedVote { Id = 2, VoteType = _voteTypes[0], Anonymous = false, UserId = null, VoteDiscription=null}
+                new CreatedVote { Id = 2, VoteType = _voteTypes[0], Anonymous = true, UserId = null, VoteDiscription=null}
             };
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
@@ -54,6 +55,14 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
             var result = repo.GetVoteDescription(1);
             Assert.AreEqual(result, "This is the description");
+        }
+
+        [Test]
+        public void Test_CreatedVoteRepo_GetVote_Should_Return_vote()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.GetById(1);
+            Assert.AreEqual(result, _createdVotes[0]);
         }
 
         [Test]
@@ -75,8 +84,92 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreatedVoteRepo_SetAnonymous_Should_Set_To_True()
         {
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
-            var result = repo.SetAnonymous();
+            var result = repo.SetAnonymous(1);
+            
+            Assert.AreEqual(result, true);
+        }
+
+        [Test]
+        public void Test_CreatedVoteRepo_SetAnonymous_Should_return_false()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.SetAnonymous(2);
+
+            Assert.AreEqual(result, false);
+        }
+        [Test]
+        public void Test_CreatedVoteRepo_SetAnonymous_for_invalid_id_Should_return_false()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.SetAnonymous(3);
+
+            Assert.AreEqual(result, false);
+        }
+        [Test]
+        public void Test_CreatedVoteRepo_AddOrUpdate_throws_exception_if_Null()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            Assert.Throws<ArgumentNullException>(() => repo.AddOrUpdate(null));
+            
+        }
+
+        [Test]
+        public void Test_VoteTypeRepo_VoteTypes_Should_return_list_of_types()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.VoteTypes();
+            Assert.AreEqual(result, _voteTypes.ToList());
+
+        }
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteType_Should_return_votetype()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetVoteType(1);
+            Assert.AreEqual(result, _voteTypes[0].Type);
+
+        }
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteType_Should_return_null()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetVoteType(2);
+            Assert.AreEqual(result, _voteTypes[1].Type);
+
+        }
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteType_invalid_id_Should_return_null()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetVoteType(3);
             Assert.AreEqual(result, null);
+
+        }
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteOptions_should_return_options()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetVoteOptions(_voteTypes[0].Type);
+            Assert.IsTrue(result[0] == "Yes" && result[1] == "No");
+
+        }
+
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteHeader_should_return_header()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetChosenVoteHeader(_voteTypes[0].Type);
+            Assert.IsTrue(result == "You have chosen to create a yes/no vote");
+
+        }
+
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteHeader_should_return_null()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetChosenVoteHeader("test");
+            Assert.IsTrue(result == null);
+
         }
     }
 }

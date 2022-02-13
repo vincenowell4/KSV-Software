@@ -31,22 +31,21 @@ namespace VotingApp.DAL.Concrete
 
         public Boolean SetAnonymous(int id)
         {
-            if (id == 0)
-            {
-                throw new ArgumentException();
-            }
+            var createdVote = _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
 
-            var createdVote = _context.CreatedVotes.Where(a => a.Id == id).ToList();
-
-            foreach (var ab in createdVote)
+            if (createdVote != null && createdVote.Anonymous == false)
             {
-                if (ab.UserId == null)
-                {
-                    return true;
-                }
+                createdVote.Anonymous = true;
+                AddOrUpdate(createdVote);
+                return true;
             }
 
             return false;
+        }
+
+        public CreatedVote GetById(int id)
+        {
+            return _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
         }
         public string GetVoteDescription(int id)
         {
