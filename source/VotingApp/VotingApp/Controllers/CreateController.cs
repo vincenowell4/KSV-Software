@@ -34,15 +34,46 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteDiscription")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteDiscription,Anonymous")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
+            
             if (ModelState.IsValid)
             {
                 try
                 {
                     _createdVoteRepository.AddOrUpdate(createdVote);
-                    createdVote.Anonymous = _createdVoteRepository.SetAnonymous(createdVote.Id);
+                    _createdVoteRepository.AddOrUpdate(createdVote);
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    ViewBag.Message = "A concurrency error occured while trying to create the expedition. Please try again";
+                    return View(createdVote);
+                }
+                catch (DbUpdateException e)
+                {
+                    ViewBag.Message = "An unknown database error occured while trying to create the item. Please try again";
+                    return View(createdVote);
+                }
+                return RedirectToAction("Confirmation", createdVote);
+            }
+            else
+            {
+                ViewBag.Message = "An unknown datbase error occured while trying to create the item. Please try again.";
+                return View(createdVote);
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteDiscription,Anonymous")] CreatedVote createdVote)
+        {
+            ModelState.Remove("VoteType");
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _createdVoteRepository.AddOrUpdate(createdVote);
                     _createdVoteRepository.AddOrUpdate(createdVote);
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -72,6 +103,7 @@ namespace VotingApp.Controllers
             vm.VoteType = _voteTypeRepository.GetVoteType(createdVote.VoteTypeId);
             vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
             vm.VotingOptions = _voteTypeRepository.GetVoteOptions(vm.VoteType);
+            vm.ID = createdVote.Id;
             return View(vm);
         }
 
@@ -83,9 +115,14 @@ namespace VotingApp.Controllers
         }
 
         //[HttpGet]
-        public IActionResult BackToIndexPage()
+        public IActionResult BackToIndexPage(int ID)
         {
-            return RedirectToAction("Index");
+            var result = _createdVoteRepository.GetById(ID);
+            var selectListVoteType = new SelectList(
+                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.Type}", Value = a.Id }),
+                "Value", "Text");
+            ViewData["VoteTypeId"] = selectListVoteType;
+            return View("Index",result);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
