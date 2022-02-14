@@ -7,9 +7,15 @@ using VotingApp.Data;
 using VotingApp.Utilities;
 using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
+using EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+emailConfig.UserName = builder.Configuration["EmailUserName"];
+emailConfig.Password = builder.Configuration["EmailPassword"];
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionStringIdentity));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
@@ -58,6 +64,9 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred seeding the DB.");
     }
 }
+
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
