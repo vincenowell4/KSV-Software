@@ -36,7 +36,6 @@ va-14
 ## Effort Points
 4
 ## Owner
-Kaitlin 
 
 ## Git Feature Branch
 f_va60_confirm_account_by_email
