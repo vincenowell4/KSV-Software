@@ -1,19 +1,38 @@
+using VotingApp.DAL.Abstract;
+using VotingApp.DAL.Concrete;
+using VotingApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using VotingApp.Utilities;
 using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
+using EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("VotingAppIdentity");
-builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionString));
+var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+emailConfig.UserName = builder.Configuration["EmailUserName"];
+emailConfig.Password = builder.Configuration["EmailPassword"];
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionStringIdentity));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
+
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
+builder.Services.AddDbContext<VotingAppDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<DbContext, VotingAppDbContext>();
+builder.Services.AddScoped<ICreatedVoteRepository, CreatedVoteRepository>();
+builder.Services.AddScoped<IVoteTypeRepository, VoteTypeRepository>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,12 +49,11 @@ using (var scope = app.Services.CreateScope())
     {
         // Get the IConfiguration service that allows us to query user-secrets and 
         // the configuration on Azure
-        var config = app.Services.GetRequiredService<IConfiguration>();
         // Set password with the Secret Manager tool, or store in Azure app configuration
         // dotnet user-secrets set SeedUserPW <pw>
-
-        var testUserPw = config["SeedUserPW"];
-        var adminPw = config["SeedAdminPW"];
+        var testUserPw = builder.Configuration["SeedUserPW"];
+        var adminPw = builder.Configuration["SeedAdminPW"];
+       
 
         SeedUsers.Initialize(services, SeedData.UserSeedData, testUserPw).Wait();
         SeedUsers.InitializeAdmin(services, "admin@example.com", "admin", adminPw, "The", "Admin").Wait();
@@ -46,6 +64,9 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred seeding the DB.");
     }
 }
+
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

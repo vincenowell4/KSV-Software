@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VotingApp", "VotingApp\VotingApp.csproj", "{4409D640-15ED-4922-9210-8327FDB241A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingApp", "VotingApp\VotingApp.csproj", "{4409D640-15ED-4922-9210-8327FDB241A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests_NUnit_Voting_App", "Tests_NUnit_Voting_App\Tests_NUnit_Voting_App.csproj", "{3EEA0DB7-E4C5-4FD3-BD89-3AE8C0F88A9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailService", "EmailService\EmailService.csproj", "{93568577-EBE4-4B0A-ACB6-82C800AD4F97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{4409D640-15ED-4922-9210-8327FDB241A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4409D640-15ED-4922-9210-8327FDB241A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4409D640-15ED-4922-9210-8327FDB241A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EEA0DB7-E4C5-4FD3-BD89-3AE8C0F88A9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EEA0DB7-E4C5-4FD3-BD89-3AE8C0F88A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EEA0DB7-E4C5-4FD3-BD89-3AE8C0F88A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EEA0DB7-E4C5-4FD3-BD89-3AE8C0F88A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93568577-EBE4-4B0A-ACB6-82C800AD4F97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93568577-EBE4-4B0A-ACB6-82C800AD4F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93568577-EBE4-4B0A-ACB6-82C800AD4F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93568577-EBE4-4B0A-ACB6-82C800AD4F97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

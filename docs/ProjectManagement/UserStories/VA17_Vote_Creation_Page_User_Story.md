@@ -89,10 +89,13 @@ f_va17_vote_creation_page
 See first page and third page of CreateVoteUI mockup in team repo under UIMockups
 
 ## Tasks
-1. Write repository method to get all types of votes and sort them alphabetically 
-2. Test after each method 
-3. Once each test is passed, create controller for creation page with needed action methods 
-4. Add navbar item for Create A Vote
-5. Create view page for create 
-6. Design create page matching format, styled nicely 
-6. Test interface to make sure it's working correctly 
+1. Create local db and connect to project 
+2. Add Create controller 
+3. Create CreatedVote repo and ICreatedVote repo 
+4. Write methods that will be needed in repo 
+5. Test repo methods as you add them 
+6. Add methods in controller that will be needed to navigate to confirmation page and from confirmation page back to create page to change vote description 
+7. Create the view for Create page 
+8. Add Create a vote to navbar 
+9. Create the view for the Confirmation page 
+10. Test interface to make sure it's working correctly 
