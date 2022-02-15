@@ -51,5 +51,12 @@ f_va18_yes_no_vote_creation
 See first and third pages of CreateVoteUI mockup in team repo under UIMockups
 
 ## Tasks
-1. ...
-2. ...
+1. Rewrite seed, up, and down scripts to include Vote Type table and change vote description field to be longer as well
+2. Create IVoteTypeRepository and VoteTypeRepository (adding into program file)
+3. Write any new methods needed in vote type repo and created vote repo 
+4. Test any new methods in either repos 
+5. Add fields in view models that are needed 
+6. Refactor action methods in create vote controller (model binding, vm things etc)
+7. Add html needed now on Create/Index page 
+8. Add html needed now on Create/Confirmation page too 
+9. Test user interface and make sure working properly 
