@@ -34,7 +34,7 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteDiscription,Anonymous")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,Anonymous")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
             
@@ -47,25 +47,25 @@ namespace VotingApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    ViewBag.Message = "A concurrency error occured while trying to create the expedition. Please try again";
+                    ViewBag.Message = "A concurrency error occurred while trying to create the expedition. Please try again";
                     return View(createdVote);
                 }
                 catch (DbUpdateException e)
                 {
-                    ViewBag.Message = "An unknown database error occured while trying to create the item. Please try again";
+                    ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again";
                     return View(createdVote);
                 }
                 return RedirectToAction("Confirmation", createdVote);
             }
             else
             {
-                ViewBag.Message = "An unknown datbase error occured while trying to create the item. Please try again.";
+                ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
                 return View(createdVote);
             }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteDiscription,Anonymous")] CreatedVote createdVote)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous")] CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
 
@@ -78,19 +78,19 @@ namespace VotingApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    ViewBag.Message = "A concurrency error occured while trying to create the expedition. Please try again";
+                    ViewBag.Message = "A concurrency error occurred while trying to create the expedition. Please try again";
                     return View(createdVote);
                 }
                 catch (DbUpdateException e)
                 {
-                    ViewBag.Message = "An unknown database error occured while trying to create the item. Please try again";
+                    ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again";
                     return View(createdVote);
                 }
                 return RedirectToAction("Confirmation", createdVote);
             }
             else
             {
-                ViewBag.Message = "An unknown datbase error occured while trying to create the item. Please try again.";
+                ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
                 return View(createdVote);
             }
         }
@@ -98,7 +98,8 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Confirmation(CreatedVote createdVote)
         {
-            var vm = new ConfirmationVM(); 
+            var vm = new ConfirmationVM();
+            vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);
             vm.VoteDescription = _createdVoteRepository.GetVoteDescription(createdVote.Id);
             vm.VoteType = _voteTypeRepository.GetVoteType(createdVote.VoteTypeId);
             vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
