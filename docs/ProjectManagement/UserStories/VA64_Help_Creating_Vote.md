@@ -72,4 +72,15 @@ f_va64_help_creating_vote
 ## Modeling and Other Documents
 
 ## Tasks
-1. ...
+1. Add VoteTitle field to Up script on CreatedVote table
+2. Run down, up, seed scripts on db and then scaffold 
+3. Add in title field everywhere (on tests, viewmodel, controller, and view)
+4. Add in repository method for getting title name
+5. Test getting title method and add in title field to mock 
+6. Change buttons to say Review and Submit (and any other text that says anything about those buttons)
+7. Add small info icons with text for Title, Description, and Anonymous field on create page so the user has more info 
+8. Add tool tips to icons so when user hovers over info icon they get more info about these fields 
+9. Add Help to nav bar
+10. Add HelpController to return view 
+11. Create Help folder with index page under Views
+12. On help page write up examples for a yes/no vote and a multiple selection vote 
