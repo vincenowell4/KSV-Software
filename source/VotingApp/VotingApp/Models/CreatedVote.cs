@@ -20,7 +20,10 @@ namespace VotingApp.Models
         public int Id { get; set; }
         [Column("UserID")]
         public int? UserId { get; set; }
-        [Required(ErrorMessage = "Please enter a vote description before entering submit.")]
+        [Required(ErrorMessage = "Please enter a vote title")]
+        [StringLength(350)]
+        public string VoteTitle { get; set; } = null!;
+        [Required(ErrorMessage = "Please enter a vote description")]
         [StringLength(1000)]
         public string VoteDiscription { get; set; } = null!;
         public bool Anonymous { get; set; }
