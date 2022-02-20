@@ -8,7 +8,8 @@ namespace VotingApp.DAL.Abstract
     {
         public CreatedVote GetById(int id);
         public CreatedVote AddOrUpdate(CreatedVote createdVote);
-        public Boolean SetAnonymous(int id); 
+        public Boolean SetAnonymous(int id);
+        public string GetVoteTitle(int id);
         public string GetVoteDescription(int id);
     }
 }
