@@ -2,6 +2,7 @@ CREATE TABLE [CreatedVote]
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
 [UserID] int, 
+[VoteTitle] nvarchar(350) NOT NULL,
 [VoteDiscription] nvarchar(1000) NOT NULL,
 [Anonymous] BIT NOT NULL,
 [VoteTypeId] int NOT NULL
