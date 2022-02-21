@@ -3,59 +3,67 @@
     ViewData["Title"] = "Confirmation Page";
 }
 
-<div class="row">
-    <div class="col-md-12 text-left">
-        <form asp-action="BackToIndexPage">
-            <button type="submit" class="btn btn-primary" value="@Model.ID" name="ID">Edit</button>
-        </form>
-    </div>
-</div>
+<div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
+    height: 90vh; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage4.jpg); 
+    background-size: cover; left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    position: relative;
+    right: 50%;
+    width: 100vw;"> 
+    <div class="text-center text-white">
+        <h1 class="display-4">Vote Creation Confirmation</h1>
+        <h3>@Model.ChosenVoteDescriptionHeader</h3>
+        <hr class="mb-4"/>
 
-<div class="text-center">
-    <h1 class="display-4">Vote Creation Confirmation</h1>
-    <h3>@Model.ChosenVoteDescriptionHeader</h3>
-    <hr class="mb-5"/>
-</div>
 
-<div class="text-center">
-	<div class="col justify-content-center">
-		<form asp-action="Confirmation" method="get">
-			<div class="row mb-5 justify-content-center">
-				<h3>Vote Title:</h3>
-				<h6>(If you would like to change your title press the edit button)</h6>
-				<div class="card">
-					<div class="card-body">
-						<p class="card-text">@Model.VoteTitle</p>
+		<div class="text-center text-white">
+			<div class="text-center col-md-8 mx-auto">
+				<form asp-action="Confirmation" method="get">
+					<div class="row mb-3 justify-content-center">
+						<h3>Vote Title:</h3>
+						<h6>(If you would like to change your title press the edit button)</h6>
+						<div class="card col-md-6 mx-auto">
+							<div class="card-body">
+								<p class="card-text text-black">@Model.VoteTitle</p>
+							</div>
+						</div>
+					</div>
+					<div class="row mb-4 justify-content-center">
+						<h3>Vote Description:</h3>
+						<h6>(If you would like to change your description press the edit button)</h6>
+						<div class="card col-md-6 mx-auto">
+							<div class="card-body">
+								<p class="card-text text-black">@Model.VoteDescription</p>
+							</div>
+						</div>
+					</div>
+				</form>
+				<div class="row mb-4 justify-content-center">
+					<div class="card" style="width: 18rem;">
+						<div class="card-body">
+							<h5 class="card-title text-black-50">Voting Options:</h5>
+						</div>
+						<ul class="list-group list-group-flush">
+							@foreach (var option in Model.VotingOptions)
+							{
+								<li class="list-group-item">@option</li>
+							}
+						</ul>
 					</div>
 				</div>
-			</div>
-			<div class="row mb-5 justify-content-center">
-				<h3>Vote Description:</h3>
-				<h6>(If you would like to change your description press the edit button)</h6>
-				<div class="card">
-					<div class="card-body">
-						<p class="card-text">@Model.VoteDescription</p>
+				   <div class="col justify-content-center btn-group">
+						<form asp-action="BackToIndexPage">
+							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" value="@Model.ID" name="ID">Edit</button>
+						</form>
+						&nbsp;&nbsp;
+						<form asp-action="Confirmation" method="post">
+							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary">Submit</button>
+						</form>
 					</div>
-				</div>
 			</div>
-		</form>
-		<div class="row mb-5 justify-content-center">
-			<div class="card" style="width: 18rem;">
-				<div class="card-body">
-					<h5 class="card-title">Voting Options:</h5>
-				</div>
-				<ul class="list-group list-group-flush">
-					@foreach (var option in Model.VotingOptions)
-					{
-						<li class="list-group-item">@option</li>
-					}
-				</ul>
-			</div>
-		</div>
-		<div class="form-group">
-			<form asp-action="Confirmation" method="post">
-				<button type="submit" class="btn btn-primary">Submit</button>
-			</form>
 		</div>
 	</div>
 </div>
