@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewData["Title"] = "Access Page";
+}
+
+<div class="text-center mt-3">
+    <h1 class="display-4">Access a Vote</h1>
+    <hr class="mb-5"/>
+</div>
+<form asp-action="Access" method="get" class="col-lg-6 offset-lg-3 ">
+    <div class="row justify-content-center text-center">
+        <label>Enter the access code for the vote:</label>
+        <input class="form-control" type="number" name="code"/>
+        <span class="input-group-btn">
+            <button type="submit" class="btn">Submit</button>
+        </span>
+    </div>
+</form>

@@ -49,6 +49,8 @@ namespace VotingApp.DAL.Concrete
 
         public List<string> GetVoteOptions(string voteType)
         {
+            
+            
             List<string> voteOptions = new List<string>();
             
             if (voteType == "Yes/No Vote")
