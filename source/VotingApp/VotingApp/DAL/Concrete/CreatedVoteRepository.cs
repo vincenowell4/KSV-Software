@@ -43,6 +43,8 @@ namespace VotingApp.DAL.Concrete
             return false;
         }
 
+        
+
         public CreatedVote GetById(int id)
         {
             return _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
