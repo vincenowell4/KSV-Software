@@ -4,18 +4,18 @@ CREATE TABLE [CreatedVote]
 [UserID] int, 
 [VoteTitle] nvarchar(350) NOT NULL,
 [VoteDiscription] nvarchar(1000) NOT NULL,
-[Anonymous] BIT NOT NULL,
+[AnonymousVote] BIT NOT NULL,
 [VoteTypeId] int NOT NULL
 );
 
 CREATE TABLE [VoteType]
 (
     [ID] int PRIMARY KEY IDENTITY(1, 1),
-    [Type] nvarchar(500) NOT NULL, 
+    [VotingType] nvarchar(500) NOT NULL, 
     [VoteTypeDescription] nvarchar(500) NOT NULL
 );
 
-CREATE TABLE [Options] 
+CREATE TABLE [VoteOptions] 
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
 [CreatedVoteID] int NOT NULL,
@@ -31,19 +31,19 @@ CREATE TABLE [SubmittedVote]
 [Validated] BIT NOT NULL
 );
 
-CREATE TABLE [User] 
+CREATE TABLE [VotingUser] 
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
-[Name] nvarchar(250) NOT NULL
+[UserName] nvarchar(250) NOT NULL
 );
 
-ALTER TABLE [Options] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
+ALTER TABLE [VoteOptions] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [SubmittedVote] ADD CONSTRAINT [Fk_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [SubmittedVote] ADD CONSTRAINT [Fk_Submitted_Vote_User_ID]
- FOREIGN KEY ([UserID]) REFERENCES [User] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ FOREIGN KEY ([UserID]) REFERENCES [VotingUser] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_Created_Vote_User_ID]
- FOREIGN KEY ([UserID]) REFERENCES [User] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ FOREIGN KEY ([UserID]) REFERENCES [VotingUser] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_Vote_Type_ID]
  FOREIGN KEY ([VoteTypeId]) REFERENCES [VoteType] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;

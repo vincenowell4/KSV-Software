@@ -25,7 +25,7 @@ namespace VotingApp.Controllers
         public IActionResult Index()
         {
             var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.Type}", Value = a.Id }),
+                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
                 "Value", "Text");
             ViewData["VoteTypeId"] = selectListVoteType;
 
@@ -120,7 +120,7 @@ namespace VotingApp.Controllers
         {
             var result = _createdVoteRepository.GetById(ID);
             var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.Type}", Value = a.Id }),
+                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
                 "Value", "Text");
             ViewData["VoteTypeId"] = selectListVoteType;
             return View("Index",result);

@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VotingApp.Models
 {
-    [Table("User")]
-    public partial class User
+    [Table("VotingUser")]
+    public partial class VotingUser
     {
-        public User()
+        public VotingUser()
         {
             CreatedVotes = new HashSet<CreatedVote>();
             SubmittedVotes = new HashSet<SubmittedVote>();
@@ -19,7 +19,7 @@ namespace VotingApp.Models
         [Column("ID")]
         public int Id { get; set; }
         [StringLength(250)]
-        public string Name { get; set; } = null!;
+        public string UserName { get; set; } = null!;
 
         [InverseProperty(nameof(CreatedVote.User))]
         public virtual ICollection<CreatedVote> CreatedVotes { get; set; }

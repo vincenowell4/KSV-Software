@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VotingApp.Models
 {
-    public partial class Option
+    public partial class VoteOption
     {
         [Key]
         [Column("ID")]
@@ -17,7 +17,7 @@ namespace VotingApp.Models
         public string VoteOptionString { get; set; } = null!;
 
         [ForeignKey(nameof(CreatedVoteId))]
-        [InverseProperty("Options")]
+        [InverseProperty("VoteOptions")]
         public virtual CreatedVote CreatedVote { get; set; } = null!;
     }
 }
