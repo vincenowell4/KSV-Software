@@ -5,7 +5,8 @@ CREATE TABLE [CreatedVote]
 [VoteTitle] nvarchar(350) NOT NULL,
 [VoteDiscription] nvarchar(1000) NOT NULL,
 [AnonymousVote] BIT NOT NULL,
-[VoteTypeId] int NOT NULL
+[VoteTypeId] int NOT NULL,
+[VoteAccessCode] NVARCHAR (100) NOT NULL
 );
 
 CREATE TABLE [VoteType]

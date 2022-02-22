@@ -26,6 +26,8 @@ namespace VotingApp.Models
         public string VoteDiscription { get; set; } = null!;
         public bool AnonymousVote { get; set; }
         public int VoteTypeId { get; set; }
+        [StringLength(100)]
+        public string VoteAccessCode { get; set; } = null!;
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
