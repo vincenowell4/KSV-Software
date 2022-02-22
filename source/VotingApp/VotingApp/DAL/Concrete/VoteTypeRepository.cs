@@ -32,7 +32,7 @@ namespace VotingApp.DAL.Concrete
                 return null;
             }
 
-            string voteType = votes.Type;
+            string voteType = votes.VotingType;
             
            
             return voteType;

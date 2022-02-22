@@ -32,13 +32,13 @@ namespace Tests_NUnit_Voting_App
         {
             _voteTypes = new List<VoteType>()
             {
-                new VoteType { Id = 1,Type ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
-                new VoteType { Id = 2,Type =null ,VoteTypeDescription = "null discription" }
+                new VoteType { Id = 1,VotingType ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
+                new VoteType { Id = 2,VotingType =null ,VoteTypeDescription = "null discription" }
             };
             _createdVotes = new List<CreatedVote>()
             {
-                new CreatedVote { Id = 1, VoteType = _voteTypes[0], Anonymous = false, UserId = null, VoteTitle = "Title", VoteDiscription="This is the description"},
-                new CreatedVote { Id = 2, VoteType = _voteTypes[0], Anonymous = true, UserId = null, VoteTitle = null, VoteDiscription=null}
+                new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = null, VoteTitle = "Title", VoteDiscription="This is the description"},
+                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = null, VoteTitle = null, VoteDiscription=null}
             };
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
@@ -149,7 +149,7 @@ namespace Tests_NUnit_Voting_App
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
             var result = repo.GetVoteType(1);
-            Assert.AreEqual(result, _voteTypes[0].Type);
+            Assert.AreEqual(result, _voteTypes[0].VotingType);
 
         }
         [Test]
@@ -157,7 +157,7 @@ namespace Tests_NUnit_Voting_App
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
             var result = repo.GetVoteType(2);
-            Assert.AreEqual(result, _voteTypes[1].Type);
+            Assert.AreEqual(result, _voteTypes[1].VotingType);
 
         }
         [Test]
@@ -172,7 +172,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_VoteTypeRepo_GetVoteOptions_should_return_options()
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
-            var result = repo.GetVoteOptions(_voteTypes[0].Type);
+            var result = repo.GetVoteOptions(_voteTypes[0].VotingType);
             Assert.IsTrue(result[0] == "Yes" && result[1] == "No");
 
         }
@@ -181,7 +181,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_VoteTypeRepo_GetVoteHeader_should_return_header()
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
-            var result = repo.GetChosenVoteHeader(_voteTypes[0].Type);
+            var result = repo.GetChosenVoteHeader(_voteTypes[0].VotingType);
             Assert.IsTrue(result == "You have chosen to create a yes/no vote");
 
         }
