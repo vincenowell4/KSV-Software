@@ -37,8 +37,8 @@ namespace Tests_NUnit_Voting_App
             };
             _createdVotes = new List<CreatedVote>()
             {
-                new CreatedVote { Id = 1, VoteType = _voteTypes[0], Anonymous = false, UserId = null, VoteDiscription="This is the description"},
-                new CreatedVote { Id = 2, VoteType = _voteTypes[0], Anonymous = true, UserId = null, VoteDiscription=null}
+                new CreatedVote { Id = 1, VoteType = _voteTypes[0], Anonymous = false, UserId = null, VoteTitle = "Title", VoteDiscription="This is the description"},
+                new CreatedVote { Id = 2, VoteType = _voteTypes[0], Anonymous = true, UserId = null, VoteTitle = null, VoteDiscription=null}
             };
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
@@ -47,6 +47,29 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VoteType>()).Returns(_voteTypesSet.Object);
             _mockContext.Setup(ctx => ctx.CreatedVotes).Returns(_createdVoteSet.Object);
             _mockContext.Setup(ctx => ctx.Set<CreatedVote>()).Returns(_createdVoteSet.Object);
+        }
+
+        [Test]
+        public void Test_CreatedVoteRepo_GetVoteTitle_Should_Return_Title()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.GetVoteTitle(1);
+            Assert.AreEqual(result, "Title");
+        }
+
+        [Test]
+        public void Test_CreatedVoteRepo_GetVoteTitle_Should_Return_Null()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.GetVoteTitle(2);
+            Assert.AreEqual(result, null);
+        }
+        [Test]
+        public void Test_CreatedVoteRepo_GetVoteTitle_Should_Throw_Exception()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.GetVoteTitle(3);
+            Assert.AreEqual(result, null);
         }
 
         [Test]

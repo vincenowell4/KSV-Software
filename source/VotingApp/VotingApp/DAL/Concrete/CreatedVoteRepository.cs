@@ -43,9 +43,27 @@ namespace VotingApp.DAL.Concrete
             return false;
         }
 
+        
+
         public CreatedVote GetById(int id)
         {
             return _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
+        }
+
+        public string GetVoteTitle(int id)
+        {
+            //var item = _context.CreatedVotes.Find(id);
+            //if (item == null)
+            //{
+            //    return null;
+            //}
+
+            var voteTitle = _context.CreatedVotes.Where(a => a.Id == id).Select(ab => ab.VoteTitle).FirstOrDefault();
+            if (voteTitle == null)
+            {
+                return null;
+            }
+            return voteTitle;
         }
         public string GetVoteDescription(int id)
         {
