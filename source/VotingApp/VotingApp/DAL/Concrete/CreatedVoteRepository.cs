@@ -33,9 +33,9 @@ namespace VotingApp.DAL.Concrete
         {
             var createdVote = _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
 
-            if (createdVote != null && createdVote.Anonymous == false)
+            if (createdVote != null && createdVote.AnonymousVote == false)
             {
-                createdVote.Anonymous = true;
+                createdVote.AnonymousVote = true;
                 AddOrUpdate(createdVote);
                 return true;
             }

@@ -23,7 +23,7 @@ namespace VotingApp.Models
         [InverseProperty("SubmittedVotes")]
         public virtual CreatedVote CreatedVote { get; set; } = null!;
         [ForeignKey(nameof(UserId))]
-        [InverseProperty("SubmittedVotes")]
-        public virtual User? User { get; set; }
+        [InverseProperty(nameof(VotingUser.SubmittedVotes))]
+        public virtual VotingUser? User { get; set; }
     }
 }

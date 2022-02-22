@@ -46,7 +46,7 @@ namespace VotingApp.Controllers
         public IActionResult CastVote(string choice)
         {
             
-            return View("SubmitVote", model);
+            return View("SubmitVote", choice);
         }
 
     }

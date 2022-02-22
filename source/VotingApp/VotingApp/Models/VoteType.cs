@@ -18,7 +18,7 @@ namespace VotingApp.Models
         [Column("ID")]
         public int Id { get; set; }
         [StringLength(500)]
-        public string Type { get; set; } = null!;
+        public string VotingType { get; set; } = null!;
         [StringLength(500)]
         public string VoteTypeDescription { get; set; } = null!;
 
