@@ -13,12 +13,14 @@ namespace VotingApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ICreatedVoteRepository _createdVoteRepository;
         private readonly IVoteTypeRepository _voteTypeRepository;
+        private readonly VoteCreationService _voteCreationService;
 
-        public CreateController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo, IVoteTypeRepository voteTypeRepository)
+        public CreateController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo, IVoteTypeRepository voteTypeRepository, VoteCreationService voteCreationService)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
            _voteTypeRepository = voteTypeRepository;
+            _voteCreationService = voteCreationService;
         }
 
         [HttpGet]
@@ -37,13 +39,15 @@ namespace VotingApp.Controllers
         public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,Anonymous")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
+            ModelState.Remove("VoteAccessCode");
             
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _createdVoteRepository.AddOrUpdate(createdVote);
-                    _createdVoteRepository.AddOrUpdate(createdVote);
+
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
+                        _createdVoteRepository.AddOrUpdate(createdVote);
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
