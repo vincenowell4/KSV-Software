@@ -11,5 +11,7 @@ namespace VotingApp.DAL.Abstract
         public Boolean SetAnonymous(int id);
         public string GetVoteTitle(int id);
         public string GetVoteDescription(int id);
+        public CreatedVote GetVoteByAccessCode(string code);
+        public IList<CreatedVote> GetAll();
     }
 }

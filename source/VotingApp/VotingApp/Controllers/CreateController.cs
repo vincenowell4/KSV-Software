@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 using VotingApp.ViewModel;
@@ -13,12 +14,23 @@ namespace VotingApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ICreatedVoteRepository _createdVoteRepository;
         private readonly IVoteTypeRepository _voteTypeRepository;
+        private readonly VoteCreationService _voteCreationService;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IVotingUserRepositiory _votingUserRepository;
 
-        public CreateController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo, IVoteTypeRepository voteTypeRepository)
+        public CreateController(ILogger<HomeController> logger, 
+            ICreatedVoteRepository createdVoteRepo, 
+            IVoteTypeRepository voteTypeRepository, 
+            VoteCreationService voteCreationService, 
+            UserManager<IdentityUser> userManager,
+            IVotingUserRepositiory votingUserRepositiory)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
            _voteTypeRepository = voteTypeRepository;
+            _voteCreationService = voteCreationService;
+            _userManager = userManager;
+            _votingUserRepository = votingUserRepositiory;
         }
 
         [HttpGet]
@@ -37,12 +49,22 @@ namespace VotingApp.Controllers
         public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,Anonymous")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
+            ModelState.Remove("VoteAccessCode");
             
+            if (User.Identity.IsAuthenticated != false)
+            {
+                createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+            }
             if (ModelState.IsValid)
             {
+                if (createdVote.VoteTypeId == 1)
+                {   
+                    createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
+                }
                 try
                 {
-                    _createdVoteRepository.AddOrUpdate(createdVote);
+
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
                     _createdVoteRepository.AddOrUpdate(createdVote);
                 }
                 catch (DbUpdateConcurrencyException e)
@@ -55,7 +77,11 @@ namespace VotingApp.Controllers
                     ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again";
                     return View(createdVote);
                 }
+
+                
+                    
                 return RedirectToAction("Confirmation", createdVote);
+
             }
             else
             {

@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using VotingApp.DAL.Abstract;
+using VotingApp.Models;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -29,6 +31,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly IVotingUserRepositiory _votingUserRepository;
         private readonly EmailService.IEmailSender _emailSender;
 
         public RegisterModel(
@@ -36,7 +39,8 @@ namespace VotingApp.Areas.Identity.Pages.Account
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            EmailService.IEmailSender emailSender)
+            EmailService.IEmailSender emailSender,
+            IVotingUserRepositiory votingUserRepositiory)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +48,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _votingUserRepository = votingUserRepositiory;
         }
 
         /// <summary>
@@ -141,6 +146,8 @@ namespace VotingApp.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
                     var message = new Message( new string[] { Input.Email.ToString() }, "Opiniony Confirmation", "Thank you for registering");
                     _emailSender.SendEmail(message);
+                    var newUser = new VotingUser { NetUserId=userId, UserName = user.UserName };
+                    _votingUserRepository.AddOrUpdate(newUser);
                     //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         //$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

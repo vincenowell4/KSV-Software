@@ -35,6 +35,7 @@ CREATE TABLE [SubmittedVote]
 CREATE TABLE [VotingUser] 
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
+[NetUserID] NVARCHAR(450) NOT NULL,
 [UserName] nvarchar(250) NOT NULL
 );
 
