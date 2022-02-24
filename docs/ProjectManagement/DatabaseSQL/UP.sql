@@ -1,7 +1,7 @@
 CREATE TABLE [CreatedVote] 
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
-[UserID] int, 
+[UserID] NVARCHAR(100), 
 [VoteTitle] nvarchar(350) NOT NULL,
 [VoteDiscription] nvarchar(1000) NOT NULL,
 [AnonymousVote] BIT NOT NULL,
@@ -28,13 +28,13 @@ CREATE TABLE [SubmittedVote]
 [ID] int PRIMARY KEY IDENTITY(1, 1),
 [CreatedVoteID] int NOT NULL,
 [VoteChoice] int NOT NULL,
-[UserID] int,
+[UserID] NVARCHAR(100),
 [Validated] BIT NOT NULL
 );
 
 CREATE TABLE [VotingUser] 
 (
-[ID] int PRIMARY KEY IDENTITY(1, 1),
+[ID] NVARCHAR(100) PRIMARY KEY,
 [UserName] nvarchar(250) NOT NULL
 );
 

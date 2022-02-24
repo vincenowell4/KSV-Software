@@ -16,7 +16,8 @@ namespace VotingApp.Models
         public int CreatedVoteId { get; set; }
         public int VoteChoice { get; set; }
         [Column("UserID")]
-        public int? UserId { get; set; }
+        [StringLength(100)]
+        public string? UserId { get; set; }
         public bool Validated { get; set; }
 
         [ForeignKey(nameof(CreatedVoteId))]
