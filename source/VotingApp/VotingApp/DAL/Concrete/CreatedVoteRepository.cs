@@ -43,7 +43,11 @@ namespace VotingApp.DAL.Concrete
             return false;
         }
 
-        
+        public CreatedVote GetVoteByAccessCode(string code)
+        {
+            var vote = _context.CreatedVotes.Where(a => a.VoteAccessCode == code).Include(a => a.VoteType).Include(a=>a.VoteOptions).FirstOrDefault();
+            return vote;
+        }
 
         public CreatedVote GetById(int id)
         {
@@ -79,6 +83,11 @@ namespace VotingApp.DAL.Concrete
                 return null; 
             }
             return voteDescription; 
+        }
+
+        public IList<CreatedVote> GetAll()
+        {
+            return _context.CreatedVotes.Include(a=>a.VoteType).ToList();
         }
     }
 }

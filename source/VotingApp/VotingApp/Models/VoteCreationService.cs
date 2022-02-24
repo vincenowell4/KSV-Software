@@ -15,7 +15,12 @@
             do
             {
                 code = Guid.NewGuid().ToString();
-                code = code.Take(6).;
+                var list = code.Take(6);
+                code = "";
+                foreach (var i in list)
+                {
+                    code += i.ToString();
+                }
                 found = _context.CreatedVotes.Where(a => a.VoteAccessCode == code).FirstOrDefault();
             }
             while (found != null);

@@ -19,7 +19,8 @@ namespace VotingApp.Models
         [Column("ID")]
         public int Id { get; set; }
         [Column("UserID")]
-        public int? UserId { get; set; }
+        [StringLength(100)]
+        public string? UserId { get; set; }
         [StringLength(350)]
         public string VoteTitle { get; set; } = null!;
         [StringLength(1000)]
