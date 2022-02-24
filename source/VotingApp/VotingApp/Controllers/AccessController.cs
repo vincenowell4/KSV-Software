@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using VotingApp.DAL.Abstract;
 using Microsoft.AspNetCore.Identity;
 using VotingApp.ViewModel;
+using VotingApp.Models;
 
 namespace VotingApp.Controllers
 {
@@ -12,13 +13,20 @@ namespace VotingApp.Controllers
         private readonly ICreatedVoteRepository _createdVoteRepository;
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IVotingUserRepositiory _votingUserRepository;
 
-        public AccessController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo, IVoteTypeRepository voteTypeRepository, UserManager<IdentityUser> userManager)
+        public AccessController(ILogger<HomeController> logger, 
+            ICreatedVoteRepository createdVoteRepo, 
+            IVoteTypeRepository voteTypeRepository,
+            UserManager<IdentityUser> userManager,
+            IVotingUserRepositiory votingUserRepositiory)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
             _voteTypeRepository = voteTypeRepository;
             _userManager = userManager;
+            _votingUserRepository = votingUserRepositiory;
+
         }
 
         [HttpGet]
@@ -45,10 +53,22 @@ namespace VotingApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult CastVote(string choice)
+        public IActionResult CastVote(int voteID, int choice)
         {
-            var userId = _userManager.GetUserId(User);
-            return View("SubmitVote", choice);
+            var vote = _createdVoteRepository.GetById(voteID);
+            var user = new VotingUser();
+            if(User.Identity.IsAuthenticated)
+            {
+                user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+            }
+            else
+            {
+                user = null;
+            }
+            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice};
+            vote.SubmittedVotes.Add(subvote);
+            _createdVoteRepository.AddOrUpdate(vote);
+            return View("SubmitVote",new SubmitVoteVM { vote = vote});
         }
 
     }

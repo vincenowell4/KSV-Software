@@ -131,6 +131,7 @@ namespace VotingApp.Controllers
             vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
             vm.VotingOptions = _voteTypeRepository.GetVoteOptions(vm.VoteType);
             vm.ID = createdVote.Id;
+            vm.VoteAccessCode = createdVote.VoteAccessCode;
             return View(vm);
         }
 

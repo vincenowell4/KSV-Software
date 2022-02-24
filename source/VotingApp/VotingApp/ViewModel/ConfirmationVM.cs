@@ -10,5 +10,6 @@ namespace VotingApp.ViewModel
         public string ChosenVoteDescriptionHeader { get; set; }
         public List<string> VotingOptions { get; set; }
         public int ID { get; set; }
+        public string VoteAccessCode { get; set; }
     }
 }
