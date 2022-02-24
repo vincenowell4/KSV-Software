@@ -146,8 +146,8 @@ namespace VotingApp.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
                     var message = new Message( new string[] { Input.Email.ToString() }, "Opiniony Confirmation", "Thank you for registering");
                     _emailSender.SendEmail(message);
-                    var newUser = new VotingUser { Id = userId, UserName = user.UserName };
-                    //_votingUserRepository.AddOrUpdate(newUser);
+                    var newUser = new VotingUser { NetUserId=userId, UserName = user.UserName };
+                    _votingUserRepository.AddOrUpdate(newUser);
                     //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         //$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 

@@ -32,5 +32,11 @@ namespace VotingApp.DAL.Concrete
             _context.SaveChanges();
             
         }
+        public VotingUser GetUserByAspId(string id)
+        {
+            return _context.VotingUsers.Where(a => a.NetUserId == id).FirstOrDefault();
+        }
+
+       
     }
 }

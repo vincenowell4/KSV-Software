@@ -17,8 +17,10 @@ namespace VotingApp.Models
 
         [Key]
         [Column("ID")]
-        [StringLength(100)]
-        public string Id { get; set; } = null!;
+        public int Id { get; set; }
+        [Column("NetUserID")]
+        [StringLength(450)]
+        public string NetUserId { get; set; } = null!;
         [StringLength(250)]
         public string UserName { get; set; } = null!;
 

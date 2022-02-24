@@ -16,14 +16,21 @@ namespace VotingApp.Controllers
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IVotingUserRepositiory _votingUserRepository;
 
-        public CreateController(ILogger<HomeController> logger, ICreatedVoteRepository createdVoteRepo, IVoteTypeRepository voteTypeRepository, VoteCreationService voteCreationService, UserManager<IdentityUser> userManager)
+        public CreateController(ILogger<HomeController> logger, 
+            ICreatedVoteRepository createdVoteRepo, 
+            IVoteTypeRepository voteTypeRepository, 
+            VoteCreationService voteCreationService, 
+            UserManager<IdentityUser> userManager,
+            IVotingUserRepositiory votingUserRepositiory)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
            _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _userManager = userManager;
+            _votingUserRepository = votingUserRepositiory;
         }
 
         [HttpGet]
@@ -46,7 +53,7 @@ namespace VotingApp.Controllers
             
             if (User.Identity.IsAuthenticated != false)
             {
-                //createdVote.UserId = _userManager.GetUserId(User);
+                createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
             }
             if (ModelState.IsValid)
             {

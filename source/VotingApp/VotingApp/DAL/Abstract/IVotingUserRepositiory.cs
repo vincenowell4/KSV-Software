@@ -6,6 +6,7 @@ namespace VotingApp.DAL.Abstract
     {
         public void RemoveUser(VotingUser votingUser);
         public VotingUser AddOrUpdate(VotingUser votingUser);
-        
+
+        public VotingUser GetUserByAspId(string id);
     }
 }
