@@ -38,6 +38,8 @@ namespace VotingApp.DAL.Concrete
             return voteType;
         }
 
+        
+
         public string GetChosenVoteHeader(string voteType)
         {
             if (voteType == "Yes/No Vote")
@@ -58,6 +60,15 @@ namespace VotingApp.DAL.Concrete
                 voteOptions.Add("Yes");
                 voteOptions.Add("No");
             }
+            return voteOptions;
+        }
+
+        public List<VoteOption> CreateVoteOptions()
+        {
+            List<VoteOption> voteOptions = new List<VoteOption>();
+            voteOptions.Add(new VoteOption{VoteOptionString="Yes"});
+            voteOptions.Add(new VoteOption{ VoteOptionString = "No"});
+            
             return voteOptions;
         }
     }
