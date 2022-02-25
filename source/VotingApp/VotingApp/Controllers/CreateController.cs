@@ -59,11 +59,11 @@ namespace VotingApp.Controllers
             {
                 if (createdVote.VoteTypeId == 1)
                 {   
+                    
                     createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
                 }
                 try
                 {
-
                     createdVote.VoteAccessCode = _voteCreationService.generateCode();
                     _createdVoteRepository.AddOrUpdate(createdVote);
                 }
@@ -78,9 +78,15 @@ namespace VotingApp.Controllers
                     return View(createdVote);
                 }
 
-                
-                    
-                return RedirectToAction("Confirmation", createdVote);
+                if (createdVote.VoteTypeId == 1)
+                {
+                    return RedirectToAction("Confirmation", createdVote);
+                }
+                else
+                {
+                    createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                    return View("MultipleChoice", createdVote);
+                }
 
             }
             else
@@ -94,13 +100,28 @@ namespace VotingApp.Controllers
         public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous")] CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
-
+            ModelState.Remove("VoteAccessCode");
+            var currentVote = _createdVoteRepository.GetById(createdVote.Id); //this is for checking what the vote is in the db
+            if (User.Identity.IsAuthenticated != false)
+            {
+                createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+            }
             if (ModelState.IsValid)
             {
+                if (createdVote.VoteTypeId == 1)
+                {
+                    //remove previous options before adding in the new ones
+                    createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
+                }
+                if (currentVote.VoteTypeId == 1 && createdVote.VoteTypeId != 1) //going from yes/no to any other type of vote
+                {
+                    //remove all options
+                }
                 try
                 {
-                    _createdVoteRepository.AddOrUpdate(createdVote);
-                    _createdVoteRepository.AddOrUpdate(createdVote);
+
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
+                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
@@ -112,7 +133,17 @@ namespace VotingApp.Controllers
                     ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again";
                     return View(createdVote);
                 }
-                return RedirectToAction("Confirmation", createdVote);
+
+                if (createdVote.VoteTypeId == 1)
+                {
+                    return RedirectToAction("Confirmation", createdVote);
+                }
+                else
+                {
+                    createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                    return View("MultipleChoice", createdVote);
+                }
+
             }
             else
             {
@@ -122,14 +153,62 @@ namespace VotingApp.Controllers
         }
 
         [HttpGet]
+        public IActionResult MultipleChoice(CreatedVote createdVote)
+        {
+            var vote = _createdVoteRepository.GetById(createdVote.Id);
+            return View(vote);
+        }
+
+        [HttpGet]
+        public IActionResult AddMultipleChoiceOption(int id, string option)
+        {
+            //var vm = new MultipleChoiceVM();
+            //vm.createdVote = _createdVoteRepository.GetById(id);
+            //vm.votingOptions.VoteOptionString = option;
+            //_createdVoteRepository.AddOrUpdate(vm.createdVote); 
+            //return View(vm); 
+
+            var vote = _createdVoteRepository.GetById(id);
+            VoteOption voteOption = new VoteOption();
+            voteOption.VoteOptionString = option;
+            vote.VoteOptions.Add(voteOption);
+            _createdVoteRepository.AddOrUpdate(vote);
+            return RedirectToAction("MultipleChoice", vote);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddOption()
+        {
+            return RedirectToAction("MultipleChoice"); 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult MultipleChoiceToConfirmation(int id)
+        {
+            var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("Confirmation", createdVote);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveOption(int optionId)
+        {
+            //REMOVE FROM DATABASE BY ID
+            return RedirectToAction("MultipleChoice");
+        }
+
+        [HttpGet]
         public IActionResult Confirmation(CreatedVote createdVote)
         {
+            createdVote = _createdVoteRepository.GetById(createdVote.Id);
             var vm = new ConfirmationVM();
             vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);
             vm.VoteDescription = _createdVoteRepository.GetVoteDescription(createdVote.Id);
             vm.VoteType = _voteTypeRepository.GetVoteType(createdVote.VoteTypeId);
             vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
-            vm.VotingOptions = _voteTypeRepository.GetVoteOptions(vm.VoteType);
+            vm.VotingOptions = createdVote.VoteOptions.ToList();
             vm.ID = createdVote.Id;
             return View(vm);
         }

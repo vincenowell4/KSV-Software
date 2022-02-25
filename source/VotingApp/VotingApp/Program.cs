@@ -53,7 +53,7 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
   //  connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
-    options.UseSqlServer(connectionString.ToString()));
+    options.UseLazyLoadingProxies().UseSqlServer(connectionString.ToString()));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
