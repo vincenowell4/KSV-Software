@@ -68,7 +68,8 @@ namespace VotingApp.Controllers
             var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice};
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
-            return View("SubmitVote",new SubmitVoteVM { vote = vote});
+            var model = new SubmitConfirmationModel { submittedVote = subvote, createdVote = vote };
+            return View("SubmitConfirmation", model);
         }
 
     }
