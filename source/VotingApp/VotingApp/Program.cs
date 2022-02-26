@@ -61,6 +61,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<DbContext, VotingAppDbContext>();
 builder.Services.AddScoped<ICreatedVoteRepository, CreatedVoteRepository>();
 builder.Services.AddScoped<IVoteTypeRepository, VoteTypeRepository>();
+builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<IVotingUserRepositiory, VotingUserRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 

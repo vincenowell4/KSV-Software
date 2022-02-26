@@ -11,5 +11,7 @@ namespace VotingApp.DAL.Abstract
         public string GetChosenVoteHeader(string voteType);
         public List<string> GetVoteOptions(string voteType);
         public List<VoteOption> CreateVoteOptions();
+
+        public int CheckForChangeFromYesNoVoteType(int createdVoteId);
     }
 }

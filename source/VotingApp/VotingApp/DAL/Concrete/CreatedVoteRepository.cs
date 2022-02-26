@@ -56,12 +56,6 @@ namespace VotingApp.DAL.Concrete
 
         public string GetVoteTitle(int id)
         {
-            //var item = _context.CreatedVotes.Find(id);
-            //if (item == null)
-            //{
-            //    return null;
-            //}
-
             var voteTitle = _context.CreatedVotes.Where(a => a.Id == id).Select(ab => ab.VoteTitle).FirstOrDefault();
             if (voteTitle == null)
             {
@@ -71,12 +65,6 @@ namespace VotingApp.DAL.Concrete
         }
         public string GetVoteDescription(int id)
         {
-            //var item = _context.CreatedVotes.Find(id);
-            //if (item == null)
-            //{
-            //    return null;
-            //}
-
             var voteDescription = _context.CreatedVotes.Where(a => a.Id == id).Select(ab => ab.VoteDiscription).FirstOrDefault();
             if (voteDescription == null)
             {

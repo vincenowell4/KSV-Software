@@ -17,20 +17,23 @@ namespace VotingApp.Controllers
         private readonly VoteCreationService _voteCreationService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IVotingUserRepositiory _votingUserRepository;
+        private readonly IVoteOptionRepository _voteOptionRepository;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
             IVoteTypeRepository voteTypeRepository, 
             VoteCreationService voteCreationService, 
             UserManager<IdentityUser> userManager,
-            IVotingUserRepositiory votingUserRepositiory)
+            IVotingUserRepositiory votingUserRepositiory,
+            IVoteOptionRepository voteOptionRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
-           _voteTypeRepository = voteTypeRepository;
+            _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _userManager = userManager;
             _votingUserRepository = votingUserRepositiory;
+            _voteOptionRepository = voteOptionRepository;
         }
 
         [HttpGet]
@@ -69,7 +72,7 @@ namespace VotingApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    ViewBag.Message = "A concurrency error occurred while trying to create the expedition. Please try again";
+                    ViewBag.Message = "A concurrency error occurred while trying to create the vote. Please try again";
                     return View(createdVote);
                 }
                 catch (DbUpdateException e)
@@ -97,35 +100,25 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous")] CreatedVote createdVote)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
         {
+            //var foundId = _voteTypeRepository.CheckForChangeFromYesNoVoteType(oldVoteTypeId); //wont need this if this works 
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
-            var currentVote = _createdVoteRepository.GetById(createdVote.Id); //this is for checking what the vote is in the db
             if (User.Identity.IsAuthenticated != false)
             {
                 createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
             }
             if (ModelState.IsValid)
             {
-                if (createdVote.VoteTypeId == 1)
-                {
-                    //remove previous options before adding in the new ones
-                    createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
-                }
-                if (currentVote.VoteTypeId == 1 && createdVote.VoteTypeId != 1) //going from yes/no to any other type of vote
-                {
-                    //remove all options
-                }
                 try
                 {
-
                     createdVote.VoteAccessCode = _voteCreationService.generateCode();
                     createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
-                    ViewBag.Message = "A concurrency error occurred while trying to create the expedition. Please try again";
+                    ViewBag.Message = "A concurrency error occurred while trying to create the vote. Please try again";
                     return View(createdVote);
                 }
                 catch (DbUpdateException e)
@@ -134,13 +127,29 @@ namespace VotingApp.Controllers
                     return View(createdVote);
                 }
 
+                createdVote = _createdVoteRepository.GetById(createdVote.Id); //this is for checking what the vote is in the db
+                if (createdVote.VoteTypeId == 1) //going from anything to yes/no
+                {
+                    //remove previous options before adding in the new ones
+                    _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
+                    createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
+                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote); 
+                }
+                
+                if (createdVote.VoteTypeId != 1 && oldVoteTypeId == 1) //going from yes/no to any other type of vote 
+                {
+                    //remove all options
+                    _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
+                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+                }
+
                 if (createdVote.VoteTypeId == 1)
                 {
                     return RedirectToAction("Confirmation", createdVote);
                 }
                 else
                 {
-                    createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                    createdVote = _createdVoteRepository.GetById(createdVote.Id); 
                     return View("MultipleChoice", createdVote);
                 }
 
@@ -162,12 +171,6 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult AddMultipleChoiceOption(int id, string option)
         {
-            //var vm = new MultipleChoiceVM();
-            //vm.createdVote = _createdVoteRepository.GetById(id);
-            //vm.votingOptions.VoteOptionString = option;
-            //_createdVoteRepository.AddOrUpdate(vm.createdVote); 
-            //return View(vm); 
-
             var vote = _createdVoteRepository.GetById(id);
             VoteOption voteOption = new VoteOption();
             voteOption.VoteOptionString = option;
@@ -193,10 +196,11 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RemoveOption(int optionId)
+        public IActionResult RemoveOption(int optionId, int voteId)
         {
-            //REMOVE FROM DATABASE BY ID
-            return RedirectToAction("MultipleChoice");
+            _voteOptionRepository.RemoveOptionById(optionId);
+            var vote = _createdVoteRepository.GetById(voteId);
+            return RedirectToAction("MultipleChoice", vote);
         }
 
         [HttpGet]
@@ -211,6 +215,7 @@ namespace VotingApp.Controllers
             vm.VotingOptions = createdVote.VoteOptions.ToList();
             vm.ID = createdVote.Id;
             vm.VoteAccessCode = createdVote.VoteAccessCode;
+            vm.VoteTypeId = createdVote.VoteTypeId;
             return View(vm);
         }
 

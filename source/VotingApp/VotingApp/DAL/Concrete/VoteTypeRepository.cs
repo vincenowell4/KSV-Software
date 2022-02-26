@@ -71,5 +71,15 @@ namespace VotingApp.DAL.Concrete
             
             return voteOptions;
         }
+
+        public int CheckForChangeFromYesNoVoteType(int createdVoteId)
+        {
+            var vote = _context.CreatedVotes.Where(a => a.Id == createdVoteId).FirstOrDefault();
+            return vote.VoteTypeId;
+
+
+            //vote repo that gets just id of just vote type by the created vote id 
+            //feed created vote.id and return a value. if created vote. votetype id not equal one from repo then clear out vote options 
+        }
     }
 }

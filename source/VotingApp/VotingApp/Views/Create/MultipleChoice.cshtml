@@ -3,77 +3,90 @@
 	ViewData["Title"] = "Multiple Choice Page";
 }
 
-<div class="text-center">
-	<h1><u>Multiple Choice Vote</u></h1>
-	<h3>Please enter multiple selection options below: </h3>
-</div>
+<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px;
+	                                                     height: 90vh; 
+	                                                     background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage3b.jpg); 
+	                                                     background-size: cover; 
+	                                                     left: 50%;
+	                                                     margin-left: -50vw;
+	                                                     margin-right: -50vw;
+	                                                     max-width: 100vw;
+	                                                     position: relative;
+	                                                     right: 50%;
+	                                                     width: 100vw;">
 
-<div class="text-center mt-3">
-	<div class="row mb-2 justify-content-center">
-		<div class="col-sm justify-content-center">
-			<div class="card justify-content-center">
-				<div class="card-body justify-content-center">
-					<h5 class="card-title text-black">Your current voting options: <span data-toggle="tooltip" data-placement="bottom" title="Here are your current voting options you have submitted. To add more hit the add button. If you would like to delete one then hit the delete button next to the option you wish to delete.">&#8505;</span></h5>
-					<p class="card-text text-black">
-						@if (@Model.VoteOptions.Any())
-						{
-							<ul>
-								@foreach (var option in Model.VoteOptions)
-								{
-									<li>
-										<div class="row">
-										
-											<form asp-action="RemoveOption">
-												@option.VoteOptionString
-												<button type="submit" style="width: 100px !important" class="btn btn-danger btn-sm" value="@option.Id">Delete</button>
-											</form>
-										</div>
-									</li>
-								}
-							</ul>
-						}
-					</p>
+	<div class="text-center text-white">
+		<h1 class="display-4">Multiple Choice Vote</h1>
+		<hr class="mb-4"/>
+		<h3>Please enter voting options below: </h3>
+	</div>
+
+	<div class="text-center mt-3">
+		<div class="row mb-2 justify-content-center">
+			<div class="col-md-8 mx-auto justify-content-center"> @*COL HERE col-sm*@
+				<div class="card justify-content-center">
+					<div class="card-body justify-content-center">
+						<h5 class="card-title text-black">Your current voting options: <span data-toggle="tooltip" data-placement="bottom" title="Here are your current voting options you have submitted. To add more hit the add button. If you would like to delete one then hit the delete button next to the option you wish to delete.">&#8505;</span></h5>
+						<p class="card-text text-black">
+							@if (@Model.VoteOptions.Any())
+							{
+								<ul class="list-group list-group-flush">
+									@foreach (var option in Model.VoteOptions)
+									{
+										<li class="list-group-item">
+												<form asp-action="RemoveOption">
+													@option.VoteOptionString
+													<button type="submit" name="optionId" class="btn btn-danger btn-sm" name="optionId" value="@option.Id">Delete</button>
+													<input name="voteId" value="@Model.Id" hidden></input>
+												</form>
+										</li>
+									}
+								</ul>
+							}
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row mb-2">
-		<div class="text-center col-md-8 mx-auto">
-			<form asp-action="AddMultipleChoiceOption" method="get">
-				<input name="id" type="number" value="@Model.Id" hidden></input>
-			<div class="form-row mb-4 text-center">
-				<label >Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options. To add more hit the add button.">&#8505;</span></label>
-				<textarea name="option" class="form-control" type="text" rows="1" required></textarea>
+		<div class="row mb-2">
+			<div class="text-center col-md-8 mx-auto">
+				<form asp-action="AddMultipleChoiceOption" method="get">
+					<input name="id" type="number" value="@Model.Id" hidden></input>
+					<div class="form-row mb-4 text-center">
+						<label class="text-center text-white">Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options. To add more hit the add button.">&#8505;</span></label>
+						<textarea name="option" class="form-control" type="text" rows="1" required></textarea>
+					</div>
+					<div class="row mb-2">
+						<div class="col justify-content-center">
+							@if (Model.VoteOptions.Count() > 9)
+							{
+								<button style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary disabled">Add</button>
+							}
+							else
+							{
+								<button type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary">Add</button>
+							}
+						</div>
+					</div>
+				</form>
 			</div>
-			<div class="row mb-2">
-				<div class="col justify-content-center">
-					<button type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary">Add</button>
-				</div>
-			</div>
-			</form>
 		</div>
-	</div>
-	<div class="row mb-2">
-		<div class="col justify-content-center btn-group">
-			<form asp-action="BackToIndexPage">
-				<button type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" @*value="@Model.ID"*@ name="ID">Edit</button>
-			</form>
-			&nbsp;&nbsp;
-			
-			<form asp-action="MultipleChoiceToConfirmation" method="post">
-			@if (@Model.VoteOptions.Count() >= 2)
-			{
-				<button name="id" type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" value="@Model.Id">Submit</button>
-			}
-			else {
-				<button style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary disabled">Submit</button>
-					      
-			}
-			</form>
-			
-
-			
-
+		<div class="row mb-2">
+			<div class="col justify-content-center btn-group">
+				<form asp-action="BackToIndexPage">
+					<button type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" value="@Model.Id" name="ID">Edit</button>
+				</form>
+				&nbsp;&nbsp;
+				<form asp-action="MultipleChoiceToConfirmation" method="post">
+					@if (@Model.VoteOptions.Count() >= 2)
+					{
+						<button name="id" type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" value="@Model.Id">Submit</button>
+					}
+					else {
+						<button style="width: 100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary disabled">Submit</button>
+					}
+				</form>
+			</div>
 		</div>
 	</div>
 </div>
