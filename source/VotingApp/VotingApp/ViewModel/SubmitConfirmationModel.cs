@@ -3,7 +3,9 @@ namespace VotingApp.ViewModel
 {
     public class SubmitConfirmationModel
     {
-        public SubmittedVote submittedVote { get; set; }
+        public int OptionId { get; set; }
+        public int CreateId { get; set; }
         public CreatedVote createdVote { get; set; }
+        public VoteOption votingOption { get; set; }
     }
 }

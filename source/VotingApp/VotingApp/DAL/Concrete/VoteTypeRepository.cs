@@ -63,7 +63,7 @@ namespace VotingApp.DAL.Concrete
             return voteOptions;
         }
 
-        public List<VoteOption> CreateVoteOptions()
+        public List<VoteOption> CreateYesNoVoteOptions()
         {
             List<VoteOption> voteOptions = new List<VoteOption>();
             voteOptions.Add(new VoteOption{VoteOptionString="Yes"});

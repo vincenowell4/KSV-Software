@@ -53,7 +53,7 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
   //  connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
-    options.UseSqlServer(connectionString.ToString()));
+    options.UseLazyLoadingProxies().UseSqlServer(connectionString.ToString()));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -62,6 +62,7 @@ builder.Services.AddScoped<DbContext, VotingAppDbContext>();
 builder.Services.AddScoped<ICreatedVoteRepository, CreatedVoteRepository>();
 builder.Services.AddScoped<IVoteTypeRepository, VoteTypeRepository>();
 builder.Services.AddScoped<IVotingUserRepositiory, VotingUserRepository>();
+builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 
 

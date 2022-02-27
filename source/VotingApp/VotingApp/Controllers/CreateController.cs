@@ -60,7 +60,7 @@ namespace VotingApp.Controllers
             {
                 if (createdVote.VoteTypeId == 1)
                 {   
-                    createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
+                    createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
                 }
                 try
                 {
