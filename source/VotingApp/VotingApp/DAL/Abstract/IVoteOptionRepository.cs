@@ -7,7 +7,7 @@ namespace VotingApp.DAL.Abstract
     public interface IVoteOptionRepository
     {
         public bool RemoveOptionById(int id);
-        public void RemoveAllOptions(List<VoteOption> voteOptions);
+        public bool RemoveAllOptions(List<VoteOption> voteOptions);
 
         public VoteOption GetById(int id);
         public IList<VoteOption> GetAllByVoteID(int id);

@@ -85,23 +85,23 @@ namespace Tests_NUnit_Voting_App
             Assert.IsTrue(check);
         }
 
-        //[Test]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void Test_VoteOptionRepo_RemoveOptionById_ShouldReturnNulException()
-        //{
-        //    IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
-        //    repo.RemoveOptionById(0);
-        //}
+        [Test]
+        public void Test_VoteOptionRepo_RemoveAllOptions_ShouldRemoveAllOptions()
+        {
+            IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
+            var check = repo.RemoveAllOptions(_voteOption);
+            Assert.IsTrue(check);
+        }
 
-        //[Test]
-        //public void Test_VoteOptionRepo_RemoveAllOptions_ShouldRemoveAllOptions()
-        //{
-        //    IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
-        //    repo.RemoveAllOptions(_voteOption);
-        //    var check = _voteOption.Count();
-        //    Assert.IsTrue(check == 0);
+        [Test]
+        public void Test_VoteOptionRepo_RemoveAllOptions_ShouldThrowNullException()
+        {
+            IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
+            List<VoteOption> voteOptions = null;
+            Assert.Throws<ArgumentNullException>(() => repo.RemoveAllOptions(voteOptions)); 
 
-        //}
+        }
+
         [Test]
         public void Test_VoteOptionsRepo_GetByID_should_return_option()
         {
@@ -260,6 +260,14 @@ namespace Tests_NUnit_Voting_App
         }
 
         [Test]
+        public void Test_VoteTypeRepo_CheckForChangeFromYesNoVoteType_ShouldReturnCorrectVoteTypeId()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.CheckForChangeFromYesNoVoteType(1);
+            Assert.IsTrue(result == 0);
+        }
+
+        [Test]
         public void Test_VoteTypeRepo_VoteTypes_Should_return_list_of_types()
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
@@ -301,12 +309,20 @@ namespace Tests_NUnit_Voting_App
         }
 
         [Test]
-        public void Test_VoteTypeRepo_GetVoteHeader_should_return_header()
+        public void Test_VoteTypeRepo_GetVoteHeader_should_return_yes_no_header()
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
             var result = repo.GetChosenVoteHeader(_voteTypes[0].VotingType);
             Assert.IsTrue(result == "You have chosen to create a yes/no vote");
+        }
 
+
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteHeader_should_return_mult_choice_header()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetChosenVoteHeader(_voteTypes[2].VotingType);
+            Assert.IsTrue(result == "You have chosen to create a multiple choice vote");
         }
 
         [Test]

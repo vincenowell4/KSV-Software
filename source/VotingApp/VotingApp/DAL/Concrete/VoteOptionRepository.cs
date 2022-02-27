@@ -16,18 +16,13 @@ namespace VotingApp.DAL.Concrete
 
         public bool RemoveOptionById(int id)
         {
-            if (id == 0)
-            {
-                throw new ArgumentException();
-            }
-
             var remove = _context.VoteOptions.Where(a => a.Id == id).FirstOrDefault();
             _context.Remove(remove);
             _context.SaveChanges();
             return true;
         }
 
-        public void RemoveAllOptions(List<VoteOption> voteOptions)
+        public bool RemoveAllOptions(List<VoteOption> voteOptions)
         {
             if (voteOptions == null)
             {
@@ -41,6 +36,7 @@ namespace VotingApp.DAL.Concrete
 
             //get a list of options and do a foreach loop where you remove that option each time 
             _context.SaveChanges();
+            return true;
         }
 
         public VoteOption GetById(int id)
