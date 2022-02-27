@@ -50,6 +50,7 @@ namespace VotingApp.Controllers
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
+
             
             if (User.Identity.IsAuthenticated != false)
             {
@@ -59,7 +60,7 @@ namespace VotingApp.Controllers
             {
                 if (createdVote.VoteTypeId == 1)
                 {   
-                    createdVote.VoteOptions = _voteTypeRepository.CreateVoteOptions();
+                    createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
                 }
                 try
                 {
@@ -142,7 +143,7 @@ namespace VotingApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //[HttpGet]
+        //[HttpGet] 
         public IActionResult BackToIndexPage(int ID)
         {
             var result = _createdVoteRepository.GetById(ID);
