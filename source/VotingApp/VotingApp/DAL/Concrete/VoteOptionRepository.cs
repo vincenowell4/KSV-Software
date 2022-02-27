@@ -11,7 +11,7 @@ namespace VotingApp.DAL.Concrete
         {
             _context = ctx;
         }
-        public void RemoveOptionById(int id)
+        public bool RemoveOptionById(int id)
         {
             if (id == 0)
             {
@@ -20,7 +20,8 @@ namespace VotingApp.DAL.Concrete
 
             var remove = _context.VoteOptions.Where(a => a.Id == id).FirstOrDefault();
             _context.Remove(remove);
-            _context.SaveChanges(); 
+            _context.SaveChanges();
+            return true;
         }
 
         public void RemoveAllOptions(List<VoteOption> voteOptions)

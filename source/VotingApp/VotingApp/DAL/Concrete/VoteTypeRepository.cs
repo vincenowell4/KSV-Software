@@ -46,6 +46,10 @@ namespace VotingApp.DAL.Concrete
             {
                 return "You have chosen to create a yes/no vote"; 
             }
+            if (voteType == "Multiple Choice Vote")
+            {
+                return "You have chosen to create a multiple choice vote";
+            }
             return null;
         }
 

@@ -215,7 +215,6 @@ namespace VotingApp.Controllers
             vm.VotingOptions = createdVote.VoteOptions.ToList();
             vm.ID = createdVote.Id;
             vm.VoteAccessCode = createdVote.VoteAccessCode;
-            vm.VoteTypeId = createdVote.VoteTypeId;
             return View(vm);
         }
 
