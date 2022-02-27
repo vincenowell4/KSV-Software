@@ -1,4 +1,6 @@
-﻿using VotingApp.DAL.Abstract;
+using System;
+using System.Collections.Generic;
+using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 
 namespace VotingApp.DAL.Concrete
@@ -11,6 +13,7 @@ namespace VotingApp.DAL.Concrete
         {
             _context = ctx;
         }
+
         public bool RemoveOptionById(int id)
         {
             if (id == 0)
@@ -35,8 +38,19 @@ namespace VotingApp.DAL.Concrete
             {
                 _context.Remove(option);
             }
+
             //get a list of options and do a foreach loop where you remove that option each time 
             _context.SaveChanges();
+        }
+
+        public VoteOption GetById(int id)
+        {
+            return _context.VoteOptions.Where(a => a.Id == id).FirstOrDefault();
+        }
+
+        public IList<VoteOption> GetAllByVoteID(int id)
+        {
+            return _context.VoteOptions.Where(a => a.CreatedVoteId == id).ToList();
         }
     }
 }

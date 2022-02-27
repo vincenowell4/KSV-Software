@@ -14,18 +14,21 @@ namespace VotingApp.Controllers
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IVotingUserRepositiory _votingUserRepository;
+        private readonly IVoteOptionRepository _voteOptionRepository;
 
         public AccessController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
             IVoteTypeRepository voteTypeRepository,
             UserManager<IdentityUser> userManager,
-            IVotingUserRepositiory votingUserRepositiory)
+            IVotingUserRepositiory votingUserRepositiory,
+            IVoteOptionRepository voteOptionRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
             _voteTypeRepository = voteTypeRepository;
             _userManager = userManager;
             _votingUserRepository = votingUserRepositiory;
+            _voteOptionRepository = voteOptionRepository;
 
         }
 
@@ -47,6 +50,7 @@ namespace VotingApp.Controllers
             }
             else
             {
+                ViewBag.ErrorMessage = "Invalid Access Code";
                 return View("Index");
             }
             
@@ -55,9 +59,17 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult CastVote(int voteID, int choice)
         {
+            
             var vote = _createdVoteRepository.GetById(voteID);
             var user = new VotingUser();
-            if(User.Identity.IsAuthenticated)
+            if (choice == 0 || choice == null)
+            {
+                SubmitVoteVM modelVM = new SubmitVoteVM();
+                modelVM.vote = vote;
+                ViewBag.ErrorMessage = "Please make a selection.";
+                return View("SubmitVote", modelVM);
+            }
+            if (User.Identity.IsAuthenticated)
             {
                 user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
             }
@@ -68,7 +80,15 @@ namespace VotingApp.Controllers
             var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice};
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
-            return View("SubmitVote",new SubmitVoteVM { vote = vote});
+            var model = new SubmitConfirmationModel {OptionId=subvote.VoteChoice, CreateId=vote.Id};
+            return RedirectToAction("SubmitConfirmation", model);
+        }
+
+        public IActionResult SubmitConfirmation(SubmitConfirmationModel model)
+        {
+            model.votingOption = _voteOptionRepository.GetById(model.OptionId);
+            model.createdVote = _createdVoteRepository.GetById(model.CreateId);
+            return View(model);
         }
 
     }
