@@ -11,8 +11,8 @@ namespace VotingApp.Models
     {
         public CreatedVote()
         {
-            Options = new HashSet<Option>();
             SubmittedVotes = new HashSet<SubmittedVote>();
+            VoteOptions = new HashSet<VoteOption>();
         }
 
         [Key]
@@ -20,24 +20,24 @@ namespace VotingApp.Models
         public int Id { get; set; }
         [Column("UserID")]
         public int? UserId { get; set; }
-        [Required(ErrorMessage = "Please enter a vote title")]
         [StringLength(350)]
         public string VoteTitle { get; set; } = null!;
-        [Required(ErrorMessage = "Please enter a vote description")]
         [StringLength(1000)]
         public string VoteDiscription { get; set; } = null!;
-        public bool Anonymous { get; set; }
+        public bool AnonymousVote { get; set; }
         public int VoteTypeId { get; set; }
+        [StringLength(100)]
+        public string VoteAccessCode { get; set; } = null!;
 
         [ForeignKey(nameof(UserId))]
-        [InverseProperty("CreatedVotes")]
-        public virtual User? User { get; set; }
+        [InverseProperty(nameof(VotingUser.CreatedVotes))]
+        public virtual VotingUser? User { get; set; }
         [ForeignKey(nameof(VoteTypeId))]
         [InverseProperty("CreatedVotes")]
         public virtual VoteType VoteType { get; set; } = null!;
-        [InverseProperty(nameof(Option.CreatedVote))]
-        public virtual ICollection<Option> Options { get; set; }
         [InverseProperty(nameof(SubmittedVote.CreatedVote))]
         public virtual ICollection<SubmittedVote> SubmittedVotes { get; set; }
+        [InverseProperty(nameof(VoteOption.CreatedVote))]
+        public virtual ICollection<VoteOption> VoteOptions { get; set; }
     }
 }

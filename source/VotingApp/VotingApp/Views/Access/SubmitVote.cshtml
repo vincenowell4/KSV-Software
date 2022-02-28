@@ -3,31 +3,39 @@
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@{
-}
-<div class="text-center mt-3">
-    <h1 class="display-4">Cast Vote</h1>
-    <hr class="mb-5"/>
-    <h4>Description:</h4>
-    <p>@Model.vote.VoteDiscription</p>
-</div>
-
-<form asp-action="CastVote" method="get" class="col-lg-6 offset-lg-3 ">
-    <div class="row justify-content-center text-center">
-        <h4>Vote Options:</h4>
-        @foreach (var a in Model.options)
-        {
-            <div class="row justify-content-center text-center">
-                <div class="form-chec justify-content-center text-center" >
-                    <input class="form-check-input" type="radio" value="@a" name="choice" id="flexRadioDefault1">
-                    <label class="form-check-label" for="flexRadioDefault1" >
-                        @a
-                    </label>
-                </div>
-            </div>
-        }
-        <span class="input-group-btn">
-            <button type="submit" class="mt-2 btn btn-primary">Submit</button>
-        </span>
+<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px; height: 90vh; background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage2.jpg); background-size: cover; left: 50%; margin-left: -50vw; margin-right: -50vw; max-width: 100vw; position: relative; right: 50%; width: 100vw;">
+    <div class="text-center pt-3 text-white">
+        <h1 class="display-4">Cast Vote</h1>
+        <hr class="mb-5"/>
+        <h3 class="text-white">Title:</h3>
+        <p class="text-white">@Model.vote.VoteTitle</p>
+        <h4 class="text-white">Description:</h4>
+        <p class="text-white">@Model.vote.VoteDiscription</p>
     </div>
-</form>
+    <form asp-action="CastVote" method="get" class="col-lg-6 offset-lg-3 ">
+        <input name="voteID" value="@Model.vote.Id" type="number" hidden/>
+        <div class="row justify-content-center text-center">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger">
+                    <p>@ViewBag.ErrorMessage</p>
+                </div>
+            }
+            <h4 class="text-white">Vote Options:</h4>
+            @foreach (var a in Model.vote.VoteOptions)
+            {
+                <div class="row justify-content-center text-center">
+                    <div class="form-chec justify-content-center text-center">
+                        <input class="form-check-input" type="radio" value="@a.Id" name="choice" id="flexRadioDefault1">
+                        <label class="form-check-label text-white" for="flexRadioDefault1">
+                            @a.VoteOptionString
+                        </label>
+                    </div>
+                </div>
+            }
+            <span class="input-group-btn">
+                <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+            </span>
+        </div>
+    </form>
+</div>

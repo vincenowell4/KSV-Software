@@ -32,17 +32,23 @@ namespace VotingApp.DAL.Concrete
                 return null;
             }
 
-            string voteType = votes.Type;
+            string voteType = votes.VotingType;
             
            
             return voteType;
         }
+
+        
 
         public string GetChosenVoteHeader(string voteType)
         {
             if (voteType == "Yes/No Vote")
             {
                 return "You have chosen to create a yes/no vote"; 
+            }
+            if (voteType == "Multiple Choice Vote")
+            {
+                return "You have chosen to create a multiple choice vote";
             }
             return null;
         }
@@ -59,6 +65,25 @@ namespace VotingApp.DAL.Concrete
                 voteOptions.Add("No");
             }
             return voteOptions;
+        }
+
+        public List<VoteOption> CreateYesNoVoteOptions()
+        {
+            List<VoteOption> voteOptions = new List<VoteOption>();
+            voteOptions.Add(new VoteOption{VoteOptionString="Yes"});
+            voteOptions.Add(new VoteOption{ VoteOptionString = "No"});
+            
+            return voteOptions;
+        }
+
+        public int CheckForChangeFromYesNoVoteType(int createdVoteId)
+        {
+            var vote = _context.CreatedVotes.Where(a => a.Id == createdVoteId).FirstOrDefault();
+            return vote.VoteTypeId;
+
+
+            //vote repo that gets just id of just vote type by the created vote id 
+            //feed created vote.id and return a value. if created vote. votetype id not equal one from repo then clear out vote options 
         }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using VotingApp.Utilities;
-using VotingApp.Data;
+//using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
 using EmailService;
 using Microsoft.Data.SqlClient;
@@ -13,7 +13,7 @@ using Microsoft.Data.SqlClient;
 var builder = WebApplication.CreateBuilder(args);
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
-//var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
+var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
 
 // WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE, USE THIS
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
@@ -23,9 +23,9 @@ var builder = WebApplication.CreateBuilder(args);
 //var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentityAzure");
 
 
-var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
-if (connectionStringIdentity.Password.Length == 0)
-    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
+//if (connectionStringIdentity.Password.Length == 0)
+  //  connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 emailConfig.UserName = builder.Configuration["EmailUserName"];
@@ -39,7 +39,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // Add services to the container.
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
-//var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
+var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
 
 // WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE, USE THIS
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
@@ -48,12 +48,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // JUST BEFORE DEPLOYING THE APP TO AZURE, COMMENT OUT THE ABOVE LINES AND UNCOMMENT THIS LINE  - THIS WILL USE APPSETTINGS ON AZURE
 //var connectionString = builder.Configuration.GetConnectionString("VotingAppConnectionAzure");
 
-var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
-if (connectionString.Password.Length == 0)
-    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
+//if (connectionString.Password.Length == 0)
+  //  connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
-    options.UseSqlServer(connectionString.ToString()));
+    options.UseLazyLoadingProxies().UseSqlServer(connectionString.ToString()));
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -61,6 +61,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<DbContext, VotingAppDbContext>();
 builder.Services.AddScoped<ICreatedVoteRepository, CreatedVoteRepository>();
 builder.Services.AddScoped<IVoteTypeRepository, VoteTypeRepository>();
+builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
+builder.Services.AddScoped<IVotingUserRepositiory, VotingUserRepository>();
+builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
+builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 
 
 var app = builder.Build();
