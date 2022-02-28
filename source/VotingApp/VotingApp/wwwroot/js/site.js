@@ -8,7 +8,6 @@ function FillValues(voteId) {
 }
 
 function SaveEditedVote() {
-    //save the edited values
     let voteData = { voteData: "{ 'voteId': " + $('#created-vote-id').val() + ", 'voteTitle': '" + $('#vote-title').val() + "', 'voteDesc': '" + $('#vote-description').val() + "'}" };
 
     $.ajax({
@@ -47,10 +46,9 @@ function populateVoteResultsDiv(data) {
     var jsonStr = JSON.stringify(data);
     const obj = JSON.parse(jsonStr);
 
-    if (obj.voteTitle != null && obj.voteTitle.length > 0 && obj.voteDiscription != null && obj.voteDiscription.length > 0) {
-        voteTitle = obj.voteTitle;
-        $("#Title-" + obj.id).html(obj.voteTitle);
-        $("#Desc-" + obj.id).html(obj.voteDiscription);
+    if (obj.title != null && obj.title.length > 0 && obj.desc != null && obj.desc.length > 0) {
+        $("#Title-" + obj.id).html(obj.title);
+        $("#Desc-" + obj.id).html(obj.desc);
     }
     else {
         console.log("ERROR repository data is null");

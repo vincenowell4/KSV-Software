@@ -104,7 +104,6 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
         {
-            //var foundId = _voteTypeRepository.CheckForChangeFromYesNoVoteType(oldVoteTypeId); //wont need this if this works 
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             if (User.Identity.IsAuthenticated != false)
@@ -255,10 +254,18 @@ namespace VotingApp.Controllers
                 voteToEdit.VoteTitle= (string)tmp.voteTitle;
                 voteToEdit.VoteDiscription = (string)tmp.voteDesc;
 
-                voteToEdit = _createdVoteRepository.AddOrUpdate(voteToEdit);
+                var voteData2 = new
+                {
+                    Id = voteId,
+                    Title = voteToEdit.VoteTitle,
+                    Desc = voteToEdit.VoteDiscription
+                };
+                JsonResult voteInfo2 = Json(voteData2);
 
-                JsonResult editedVote = Json(voteToEdit);
-                return Json(voteToEdit); 
+                CreatedVote voteToEdit2 = _createdVoteRepository.AddOrUpdate(voteToEdit);
+
+                return voteInfo2;
+
             }
             return View();
         }
