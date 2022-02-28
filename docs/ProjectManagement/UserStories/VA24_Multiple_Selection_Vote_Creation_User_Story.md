@@ -94,5 +94,6 @@ f_va24_multiple_selection_vote_creation
 See 1, 2, 3 pages of CreateVoteUI mockup in team repo under UIMockups
 
 ## Tasks
-1. ...
-2. ...
+1. Add multiple selection description to card on create a vote page 
+2. Add multiple selection page to view 
+3. Create action methods for multiple selection page and refactor any other actions methods if needed 

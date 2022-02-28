@@ -15,12 +15,13 @@ namespace Tests_NUnit_Voting_App
         private Mock<VotingAppDbContext> _mockContext;
         private Mock<DbSet<CreatedVote>> _createdVoteSet;
         private Mock<DbSet<VoteType>> _voteTypesSet;
+        private Mock<DbSet<VoteOption>> _voteOptionSet;
         private List<CreatedVote> _createdVotes;
         private List<VoteType> _voteTypes;
-        private Mock<DbSet<VotingUser>> _votingUsersSet;
-        private Mock<DbSet<VoteOption>> _voteOptionSet;
-        private List<VotingUser> _votingUsers;
         private List<VoteOption> _voteOption;
+        private Mock<DbSet<VotingUser>> _votingUsersSet;
+        private List<VotingUser> _votingUsers;
+        
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
         {
@@ -37,37 +38,70 @@ namespace Tests_NUnit_Voting_App
             _voteTypes = new List<VoteType>()
             {
                 new VoteType { Id = 1,VotingType ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
-                new VoteType { Id = 2,VotingType =null ,VoteTypeDescription = "null discription" }
+                new VoteType { Id = 2,VotingType =null ,VoteTypeDescription = "null discription" },
+                new VoteType { Id = 3,VotingType ="Multiple Choice Vote" ,VoteTypeDescription = "multiple choice description"}
             };
             _createdVotes = new List<CreatedVote>()
             {
-                new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = null, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode="abc123"},
-                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = null, VoteTitle = null, VoteDiscription=null, VoteAccessCode="123abc"}
+                new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = null, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
+                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = null, VoteTitle = null, VoteDiscription=null},
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = null, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
             };
+            _voteOption = new List<VoteOption>()
+            {
+                new VoteOption {CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 1, VoteOptionString = "option 1"},
+                new VoteOption {CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 2, VoteOptionString = "option 2"},
+                new VoteOption {CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 3, VoteOptionString = "option 3"}
+            };
+            
             _votingUsers = new List<VotingUser>()
             {
                 new VotingUser { Id = 1, NetUserId = "ABC123CBA31", UserName = "name@mail.com" },
                 new VotingUser { Id = 2, NetUserId = "123456", UserName = "name2@mail.com" }
             };
-            _voteOption = new List<VoteOption>()
-            {
-                new VoteOption { Id = 1, VoteOptionString="Option1", CreatedVoteId = 1},
-                new VoteOption { Id = 1, VoteOptionString="Option1", CreatedVoteId = 1}
-            };
+           
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
+
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteType>()).Returns(_voteTypesSet.Object);
             _mockContext.Setup(ctx => ctx.CreatedVotes).Returns(_createdVoteSet.Object);
             _mockContext.Setup(ctx => ctx.Set<CreatedVote>()).Returns(_createdVoteSet.Object);
-            _mockContext.Setup(ctx => ctx.VotingUsers).Returns(_votingUsersSet.Object);
-            _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.VoteOptions).Returns(_voteOptionSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteOption>()).Returns(_voteOptionSet.Object);
+            _mockContext.Setup(ctx => ctx.VotingUsers).Returns(_votingUsersSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
         }
+
+        [Test]
+        public void Test_VoteOptionRepo_RemoveOptionById_ShouldRemoveOption()
+        {
+            IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
+
+            var check = repo.RemoveOptionById(1);
+            Assert.IsTrue(check);
+        }
+
+        [Test]
+        public void Test_VoteOptionRepo_RemoveAllOptions_ShouldRemoveAllOptions()
+        {
+            IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
+            var check = repo.RemoveAllOptions(_voteOption);
+            Assert.IsTrue(check);
+        }
+
+        [Test]
+        public void Test_VoteOptionRepo_RemoveAllOptions_ShouldThrowNullException()
+        {
+            IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
+            List<VoteOption> voteOptions = null;
+            Assert.Throws<ArgumentNullException>(() => repo.RemoveAllOptions(voteOptions)); 
+
+        }
+
         [Test]
         public void Test_VoteOptionsRepo_GetByID_should_return_option()
         {
@@ -80,7 +114,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_VoteOptionsRepo_GetOptionsByVoteID_should_return_all_options()
         {
             IVoteOptionRepository repo = new VoteOptionRepository(_mockContext.Object);
-            var results = repo.GetAllByVoteID(_createdVotes[0].Id);
+            var results = repo.GetAllByVoteID(_createdVotes[2].Id);
             Assert.AreEqual(results, _voteOption);
         }
 
@@ -157,7 +191,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreatedVoteRepo_GetVoteTitle_Should_Throw_Exception()
         {
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
-            var result = repo.GetVoteTitle(3);
+            var result = repo.GetVoteTitle(10);
             Assert.AreEqual(result, null);
         }
 
@@ -188,7 +222,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreatedVoteRepo_GetVoteDescription_Should_Throw_Exception()
         {
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
-            var result = repo.GetVoteDescription(3);
+            var result = repo.GetVoteDescription(10);
             Assert.AreEqual(result, null);
         }
 
@@ -213,7 +247,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreatedVoteRepo_SetAnonymous_for_invalid_id_Should_return_false()
         {
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
-            var result = repo.SetAnonymous(3);
+            var result = repo.SetAnonymous(10);
 
             Assert.AreEqual(result, false);
         }
@@ -223,6 +257,14 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
             Assert.Throws<ArgumentNullException>(() => repo.AddOrUpdate(null));
             
+        }
+
+        [Test]
+        public void Test_VoteTypeRepo_CheckForChangeFromYesNoVoteType_ShouldReturnCorrectVoteTypeId()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.CheckForChangeFromYesNoVoteType(1);
+            Assert.IsTrue(result == 0);
         }
 
         [Test]
@@ -253,7 +295,7 @@ namespace Tests_NUnit_Voting_App
         public void Test_VoteTypeRepo_GetVoteType_invalid_id_Should_return_null()
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
-            var result = repo.GetVoteType(3);
+            var result = repo.GetVoteType(10);
             Assert.AreEqual(result, null);
 
         }
@@ -267,12 +309,20 @@ namespace Tests_NUnit_Voting_App
         }
 
         [Test]
-        public void Test_VoteTypeRepo_GetVoteHeader_should_return_header()
+        public void Test_VoteTypeRepo_GetVoteHeader_should_return_yes_no_header()
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
             var result = repo.GetChosenVoteHeader(_voteTypes[0].VotingType);
             Assert.IsTrue(result == "You have chosen to create a yes/no vote");
+        }
 
+
+        [Test]
+        public void Test_VoteTypeRepo_GetVoteHeader_should_return_mult_choice_header()
+        {
+            IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
+            var result = repo.GetChosenVoteHeader(_voteTypes[2].VotingType);
+            Assert.IsTrue(result == "You have chosen to create a multiple choice vote");
         }
 
         [Test]
