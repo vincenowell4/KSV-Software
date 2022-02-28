@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 using VotingApp.ViewModel;
+using Newtonsoft.Json;
 
 namespace VotingApp.Controllers
 {
@@ -103,7 +104,6 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
         {
-            //var foundId = _voteTypeRepository.CheckForChangeFromYesNoVoteType(oldVoteTypeId); //wont need this if this works 
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             if (User.Identity.IsAuthenticated != false)
@@ -217,6 +217,57 @@ namespace VotingApp.Controllers
             vm.ID = createdVote.Id;
             vm.VoteAccessCode = createdVote.VoteAccessCode;
             return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult CreatedVotesReview()
+        {
+            int userId = 0;
+
+            if (User.Identity.IsAuthenticated != false)
+            {
+                VotingUser vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+
+                userId = vUser.Id;
+
+                if (userId == 0)
+                    return View();
+
+                CreatedVotesVM createdVotesVM = new CreatedVotesVM(userId, _createdVoteRepository);
+                createdVotesVM.GetCreatedVotesListForUserId(userId);
+
+                return View(createdVotesVM);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreatedVotesReview(string voteData)
+        {
+            if (User.Identity.IsAuthenticated != false && voteData.Length > 0)
+            {
+                dynamic tmp = JsonConvert.DeserializeObject(voteData);
+                int voteId = (int)tmp.voteId;
+
+                CreatedVote voteToEdit = _createdVoteRepository.GetById(voteId);
+
+                voteToEdit.VoteTitle= (string)tmp.voteTitle;
+                voteToEdit.VoteDiscription = (string)tmp.voteDesc;
+
+                var voteData2 = new
+                {
+                    Id = voteId,
+                    Title = voteToEdit.VoteTitle,
+                    Desc = voteToEdit.VoteDiscription
+                };
+                JsonResult voteInfo2 = Json(voteData2);
+
+                CreatedVote voteToEdit2 = _createdVoteRepository.AddOrUpdate(voteToEdit);
+
+                return voteInfo2;
+
+            }
+            return View();
         }
 
         [HttpPost]

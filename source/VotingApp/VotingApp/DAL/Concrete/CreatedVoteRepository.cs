@@ -13,8 +13,8 @@ namespace VotingApp.DAL.Concrete
     public class CreatedVoteRepository : ICreatedVoteRepository
     {
         private VotingAppDbContext _context;
-        
-        public CreatedVoteRepository(VotingAppDbContext ctx) 
+
+        public CreatedVoteRepository(VotingAppDbContext ctx)
         {
             _context = ctx;
         }
@@ -45,7 +45,7 @@ namespace VotingApp.DAL.Concrete
 
         public CreatedVote GetVoteByAccessCode(string code)
         {
-            var vote = _context.CreatedVotes.Where(a => a.VoteAccessCode == code).Include(a => a.VoteType).Include(a=>a.VoteOptions).FirstOrDefault();
+            var vote = _context.CreatedVotes.Where(a => a.VoteAccessCode == code).Include(a => a.VoteType).Include(a => a.VoteOptions).FirstOrDefault();
             return vote;
         }
 
@@ -68,14 +68,20 @@ namespace VotingApp.DAL.Concrete
             var voteDescription = _context.CreatedVotes.Where(a => a.Id == id).Select(ab => ab.VoteDiscription).FirstOrDefault();
             if (voteDescription == null)
             {
-                return null; 
+                return null;
             }
-            return voteDescription; 
+            return voteDescription;
         }
 
         public IList<CreatedVote> GetAll()
         {
-            return _context.CreatedVotes.Include(a=>a.VoteType).ToList();
+            return _context.CreatedVotes.Include(a => a.VoteType).ToList();
+        }
+
+        public IList<CreatedVote> GetAllForUserId(int userId)
+        {
+            return _context.CreatedVotes.Include(a => a.VoteType).Where(v => v.UserId == userId).ToList();
         }
     }
 }
+
