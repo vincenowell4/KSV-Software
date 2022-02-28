@@ -13,5 +13,7 @@ namespace VotingApp.DAL.Abstract
         public string GetVoteDescription(int id);
         public CreatedVote GetVoteByAccessCode(string code);
         public IList<CreatedVote> GetAll();
+        public IList<CreatedVote> GetAllForUserId(int userId);
+
     }
 }

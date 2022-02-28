@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 using VotingApp.ViewModel;
+using Newtonsoft.Json;
 
 namespace VotingApp.Controllers
 {
@@ -133,6 +134,49 @@ namespace VotingApp.Controllers
             vm.ID = createdVote.Id;
             vm.VoteAccessCode = createdVote.VoteAccessCode;
             return View(vm);
+        }
+
+        [HttpGet]
+        public IActionResult CreatedVotesReview()
+        {
+            int userId = 0;
+
+            if (User.Identity.IsAuthenticated != false)
+            {
+                VotingUser vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+
+                userId = vUser.Id;
+
+                if (userId == 0)
+                    return View();
+
+                CreatedVotesVM createdVotesVM = new CreatedVotesVM(userId, _createdVoteRepository);
+                createdVotesVM.GetCreatedVotesListForUserId(userId);
+
+                return View(createdVotesVM);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreatedVotesReview(string voteData)
+        {
+            if (User.Identity.IsAuthenticated != false && voteData.Length > 0)
+            {
+                dynamic tmp = JsonConvert.DeserializeObject(voteData);
+                int voteId = (int)tmp.voteId;
+
+                CreatedVote voteToEdit = _createdVoteRepository.GetById(voteId);
+
+                voteToEdit.VoteTitle= (string)tmp.voteTitle;
+                voteToEdit.VoteDiscription = (string)tmp.voteDesc;
+
+                voteToEdit = _createdVoteRepository.AddOrUpdate(voteToEdit);
+
+                JsonResult editedVote = Json(voteToEdit);
+                return Json(voteToEdit); 
+            }
+            return View();
         }
 
         [HttpPost]
