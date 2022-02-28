@@ -3,7 +3,7 @@
 }
 <div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px; 
     height: 90vh; 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage2.jpg); 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage2.jpg); 
     background-size: cover; 
     left: 50%;
     margin-left: -50vw;
@@ -19,7 +19,11 @@
         <div class="row" style="padding-top: 5%";>
             <div class="col text-center">
                 <h3 class="h3">Create A Vote:</h3>
-                <a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index"><button class="btn btn-light btn-lg bg-success btn-outline-primary" type="button">Create</button></a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index"><button class="btn btn-light btn-lg bg-success btn-outline-primary" type="button">Create Vote</button></a>
+            </div>
+            <div class="col text-center">
+                <h3 class="h3">Submit A Vote:</h3>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Access" asp-action="Index"><button class="btn btn-light btn-lg bg-success btn-outline-primary" type="button">Cast A Vote</button></a>
             </div>
         </div>
     </div>
