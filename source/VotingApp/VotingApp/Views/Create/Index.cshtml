@@ -6,7 +6,7 @@
 
 <div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px;
     height: 90vh; 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage3b.jpg); 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage3b.jpg); 
     background-size: cover; 
     left: 50%;
     margin-left: -50vw;
@@ -28,7 +28,8 @@
             <form asp-action=@formValue method="post">
                 @if (Model != null)
                 {
-                    <input asp-for="Id" type="number" value="@Model.Id" hidden></input>
+	                <input asp-for="Id" type="number" value="@Model.Id" hidden></input>
+	                <input name="oldVoteTypeId" value="@Model.VoteTypeId" hidden></input>
                 }
                 <div class="form-row mb-4 text-center">
 					<label asp-for="VoteTitle">Please enter your vote title in the box below (required): <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the vote you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this vote title.">&#8505;</span></label>
@@ -64,6 +65,14 @@
 							<div class="card-body justify-content-center">
 								<h5 class="card-title text-black">Yes/No Vote:</h5>
 								<p class="card-text text-black">Voters will get to choose between two simple options: yes or no.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-3 justify-content-center">
+						<div class="card justify-content-center">
+							<div class="card-body justify-content-center">
+								<h5 class="card-title text-black">Multiple Choice Vote:</h5>
+								<p class="card-text text-black">Vote creators will get to enter their own multiple choice voting options (2-10 options). Voters will then get to choose one option from those created voting options.</p>
 							</div>
 						</div>
 					</div>

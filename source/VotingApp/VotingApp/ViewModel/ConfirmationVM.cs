@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using VotingApp.Models;
 
 namespace VotingApp.ViewModel
 {
@@ -8,8 +9,9 @@ namespace VotingApp.ViewModel
         public string VoteDescription { get; set; }
         public string VoteType { get; set; }
         public string ChosenVoteDescriptionHeader { get; set; }
-        public List<string> VotingOptions { get; set; }
+        public List<VoteOption> VotingOptions { get; set; }
         public int ID { get; set; }
         public string VoteAccessCode { get; set; }
+        
     }
 }

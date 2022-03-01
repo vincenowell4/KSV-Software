@@ -1,0 +1,39 @@
+﻿@model VotingApp.ViewModel.SubmitConfirmationModel
+@{
+    ViewData["Title"] = "Confirmation Page";
+}
+
+<div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
+    height: 90vh; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage4.jpg); 
+    background-size: cover; left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    position: relative;
+    right: 50%;
+    width: 100vw;"> 
+    
+    <div class="text-center text-white pt-5">
+        <h1 class="display-4 mb-5"><strong>Thank you for casting a vote!</strong></h1>
+        <h2>Vote Title:</h2>
+        <h3>@Model.createdVote.VoteTitle</h3>
+        <h2 class="mt-5">Vote Description:</h2>
+        <h3>@Model.createdVote.VoteDiscription</h3>
+        <h2 class="mt-5">Vote Options:</h2>
+        <ul>
+            @foreach (var option in Model.createdVote.VoteOptions)
+            {
+                <li>@option.VoteOptionString</li>
+            }
+        </ul>
+    </div>
+    <div class="text-center text-white mt-5">
+        <h2>Your Choice:</h2>
+        <h3 class="mb-5">@Model.votingOption.VoteOptionString</h3>
+        <form asp-controller="Home" asp-action="Index">
+            <button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary">Home</button>
+        </form>
+    </div>
+    
+</div>
