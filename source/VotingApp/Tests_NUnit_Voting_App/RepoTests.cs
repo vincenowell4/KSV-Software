@@ -43,9 +43,9 @@ namespace Tests_NUnit_Voting_App
             };
             _createdVotes = new List<CreatedVote>()
             {
-                new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = null, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
-                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = null, VoteTitle = null, VoteDiscription=null},
-                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = null, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
+                new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
+                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null},
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
             };
             _voteOption = new List<VoteOption>()
             {
@@ -161,6 +161,14 @@ namespace Tests_NUnit_Voting_App
         {
             ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
             var result = repo.GetAll();
+            Assert.AreEqual(_createdVotes, result);
+        }
+
+        [Test]
+        public void Test_CreatedVoteRepo_GetAllForUserId_should_return_all_createdVotes_for_user()
+        {
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            var result = repo.GetAllForUserId(1);
             Assert.AreEqual(_createdVotes, result);
         }
 

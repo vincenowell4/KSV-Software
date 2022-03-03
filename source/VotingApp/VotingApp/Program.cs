@@ -65,6 +65,7 @@ builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<IVotingUserRepositiory, VotingUserRepository>();
 builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
+builder.Services.AddScoped<CreationService, CreationService>();
 
 
 var app = builder.Build();
@@ -116,5 +117,9 @@ app.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                     app.MapRazorPages();
-
+app.MapControllerRoute(
+        name: "Access Vote Share Link",
+        pattern: "Access/{code?}",
+        defaults: new { controller = "Access", action = "Access" });
+    
 app.Run();

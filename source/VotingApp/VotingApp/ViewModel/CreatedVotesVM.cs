@@ -15,6 +15,7 @@ namespace VotingApp.ViewModel
         public int UserId { get; set; }
         public IList<CreatedVote> CreatedVotes { get; set; }
         private readonly ICreatedVoteRepository _cvRepository;
+        
 
         public CreatedVotesVM(int userId, ICreatedVoteRepository cvRepo)
         {
