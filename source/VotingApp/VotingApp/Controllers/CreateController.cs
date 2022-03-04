@@ -22,6 +22,7 @@ namespace VotingApp.Controllers
         private readonly IVotingUserRepositiory _votingUserRepository;
         private readonly IVoteOptionRepository _voteOptionRepository;
         private readonly CreationService _creationService;
+        private readonly ISubmittedVoteRepository _submittedVoteRepository;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -30,7 +31,8 @@ namespace VotingApp.Controllers
             UserManager<IdentityUser> userManager,
             IVotingUserRepositiory votingUserRepositiory,
             IVoteOptionRepository voteOptionRepository,
-            CreationService creationService)
+            CreationService creationService,
+            ISubmittedVoteRepository submittedVoteRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -40,6 +42,7 @@ namespace VotingApp.Controllers
             _votingUserRepository = votingUserRepositiory;
             _voteOptionRepository = voteOptionRepository;
             _creationService = creationService;
+            _submittedVoteRepository = submittedVoteRepository;
         }
 
         [HttpGet]
@@ -232,6 +235,27 @@ namespace VotingApp.Controllers
 
             }
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult VoteResultsButton(int id)
+        {
+            var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("VoteResults", createdVote);
+        }
+
+        [HttpGet]
+        public IActionResult VoteResults(CreatedVote createdVote)
+        {
+            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            var vm = new VoteResultsVM();
+            vm.VoteTitle = createdVote.VoteTitle;
+            vm.VoteDescription = createdVote.VoteDiscription;
+            vm.VoteId = createdVote.Id;
+            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+            vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+            return View(vm);
         }
 
         [HttpPost]

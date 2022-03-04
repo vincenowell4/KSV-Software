@@ -66,6 +66,7 @@ builder.Services.AddScoped<IVotingUserRepositiory, VotingUserRepository>();
 builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 builder.Services.AddScoped<CreationService, CreationService>();
+builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 
 
 var app = builder.Build();
