@@ -13,7 +13,7 @@ using Microsoft.Data.SqlClient;
 var builder = WebApplication.CreateBuilder(args);
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
-var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
+//var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
 
 // WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE, USE THIS
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
@@ -25,7 +25,19 @@ var connectionStringIdentity = builder.Configuration.GetConnectionString("Voting
 
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
 //if (connectionStringIdentity.Password.Length == 0)
-  //  connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//  connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+
+//*******************************************************************************************************************************************
+//IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
+//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityDemoAzure"));
+//if (connectionStringIdentity.Password.Length == 0)
+//    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//OTHERWISE USE THESE THREE LINES OF CODE
+var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
+if (connectionStringIdentity.Password.Length == 0)
+    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//*******************************************************************************************************************************************
+
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 emailConfig.UserName = builder.Configuration["EmailUserName"];
@@ -39,7 +51,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // Add services to the container.
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
-var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
+//var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
 
 // WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE, USE THIS
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
@@ -50,7 +62,19 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
 
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
 //if (connectionString.Password.Length == 0)
-  //  connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//  connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+
+//*******************************************************************************************************************************************
+//IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
+//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppDemoConnectionAzure"));
+//if (connectionString.Password.Length == 0)
+//    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//OTHERWISE USE THESE THREE LINES OF CODE
+var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
+if (connectionString.Password.Length == 0)
+    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//*******************************************************************************************************************************************
+
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
     options.UseLazyLoadingProxies().UseSqlServer(connectionString.ToString()));
