@@ -126,6 +126,12 @@ namespace VotingApp.Areas.Identity.Pages.Account
                     _logger.LogWarning("User account locked out.");
                     return RedirectToPage("./Lockout");
                 }
+                if (result.IsNotAllowed)
+                {
+                    _logger.LogWarning("Registration not confirmed.");
+                    ModelState.AddModelError(string.Empty, "Registration not confirmed.");
+                    return Page();
+                }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
