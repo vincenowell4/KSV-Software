@@ -92,14 +92,8 @@ builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 
-builder.Services.ConfigureApplicationCookie(o => {
-    o.ExpireTimeSpan = TimeSpan.FromSeconds(30);
-    o.SlidingExpiration = true;
-
-});
-
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
-       o.TokenLifespan = TimeSpan.FromSeconds(86400));
+       o.TokenLifespan = TimeSpan.FromSeconds(86400)); //email confirmation token will expire after exactly 24 hours
 
 var app = builder.Build();
 
