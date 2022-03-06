@@ -60,6 +60,14 @@ f_va80_vote_results
 
 ## Modeling and Other Documents
 
-
 ## Tasks
-1. ...
+1. Add vote results button next to each created vote on vote review page 
+2. Add outline of vote results page so that you can test button is working to redirect to that page 
+3. Add view model for vote results 
+4. Add action method(s) in create controller to redirect from view results page to vote results page with created vote that was clicked on
+5. Add SubmittedVoteRepository and ISubmittedVoteRepository 
+6. Add method(s) needed to get all submitted votes
+7. Test getting all submitted votes repo method(s)
+8. Add any needed tool tips 
+9. Add button on vote results page that brings user back to vote review page 
+10. Add action method to button to make it work

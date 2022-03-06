@@ -33,7 +33,8 @@
                         <th>Description</th>
                         <th>Voting Type</th>
                         <th>Access Code</th>
-                        <th>&nbsp;</th>
+	                    <th>&nbsp;</th>
+	                    <th>&nbsp</th>
                     </tr>
 
                     @{
@@ -45,8 +46,11 @@
                             <td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td><td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
                             <td >@createdVote.VoteType.VotingType</td><td>@createdVote.VoteAccessCode</td>
                             
-                            <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
-                            
+	                        <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
+	                       
+	                        <form asp-action="VoteResultsButton" method="post">
+		                        <td><button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button></td>
+	                        </form>
                         </tr>
                         {
                             i++;
