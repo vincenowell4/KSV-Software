@@ -92,6 +92,14 @@ builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 
+builder.Services.ConfigureApplicationCookie(o => {
+    o.ExpireTimeSpan = TimeSpan.FromSeconds(30);
+    o.SlidingExpiration = true;
+
+});
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
+       o.TokenLifespan = TimeSpan.FromSeconds(86400));
 
 var app = builder.Build();
 
