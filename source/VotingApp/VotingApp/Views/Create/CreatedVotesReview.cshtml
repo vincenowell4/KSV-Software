@@ -33,6 +33,7 @@
                         <th>Description</th>
                         <th>Voting Type</th>
                         <th>Access Code</th>
+                        <th>Access Link</th>
 	                    <th>&nbsp;</th>
 	                    <th>&nbsp</th>
                     </tr>
@@ -43,9 +44,11 @@
                     @foreach (CreatedVote createdVote in Model.CreatedVotes)
                     {
                         <tr class="text-white-50">
-                            <td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td><td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
-                            <td >@createdVote.VoteType.VotingType</td><td>@createdVote.VoteAccessCode</td>
-                            
+                            <td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
+                            <td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
+                            <td >@createdVote.VoteType.VotingType</td>
+                            <td>@createdVote.VoteAccessCode</td>
+                            <td>@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")</td>
 	                        <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
 	                       
 	                        <form asp-action="VoteResultsButton" method="post">
