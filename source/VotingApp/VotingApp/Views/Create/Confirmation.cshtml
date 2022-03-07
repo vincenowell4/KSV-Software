@@ -1,4 +1,5 @@
-﻿@model VotingApp.ViewModel.ConfirmationVM
+﻿
+@model VotingApp.ViewModel.ConfirmationVM
 @{
     ViewData["Title"] = "Confirmation Page";
 }
@@ -35,9 +36,9 @@
 						<h3>Share Vote:</h3>
 						<div class="card col-md-6 mx-auto">
                             <div class="card-body">
-                                <h3 class="text-black">Vote Title:</h3>
+                                <h3 class="text-black">Vote Access Code:</h3>
                                 <p class="card-text text-black">@Model.VoteAccessCode</p>
-                                <h3 class="text-black">Vote Link:</h3>
+                                <h3 class="text-black">Vote Access Link:</h3>
                                 <p class="card-text text-black">@Model.ShareURL</p>
                             </div>
 						</div>
@@ -60,7 +61,8 @@
 						<ul class="list-group list-group-flush">
 							@foreach (var option in Model.VotingOptions)
 							{
-								<li class="list-group-item">@option.VoteOptionString</li>
+							    <li class="list-group-item">@option.VoteOptionString</li>
+																					
 							}
 						</ul>
 					</div>

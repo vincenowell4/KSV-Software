@@ -51,7 +51,7 @@ namespace VotingApp.Models
         {
             try
             {
-                createdVote.VoteAccessCode = _voteCreationService.generateCode();
+                //createdVote.VoteAccessCode = _voteCreationService.generateCode();//shouldnt need to regenerate
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
             catch (Exception ex)
