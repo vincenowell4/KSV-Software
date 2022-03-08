@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
+using VotingApp.Data;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -144,8 +145,9 @@ namespace VotingApp.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-                    var message = new Message( new string[] { Input.Email.ToString() }, "Opiniony Confirmation",
-                        $"Please confirm your Opiniony account registration by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    var message = new Message( new string[] { Input.Email.ToString() }, AppStrings.EmailSubject,
+                        AppStrings.EmailMessage + $" <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    
                     _emailSender.SendEmail(message);
                     var newUser = new VotingUser { NetUserId=userId, UserName = user.UserName };
                     _votingUserRepository.AddOrUpdate(newUser);

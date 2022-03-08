@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using VotingApp.Data;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -55,7 +56,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return NotFound($"Unable to load user with email '{email}'.");
+                return NotFound(AppStrings.EmailLoadUserError + $" '{email}'.");
             }
 
             Email = email;
