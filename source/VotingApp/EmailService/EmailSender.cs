@@ -1,10 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MimeKit.Utils;
 
 namespace EmailService
 {
@@ -28,7 +24,13 @@ namespace EmailService
             emailMessage.From.Add(new MailboxAddress(_emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
+
+            var builder = new BodyBuilder();
+            var image = builder.LinkedResources.Add("wwwroot\\Images\\OpinionyLogoSmall.png");
+            image.ContentId = MimeUtils.GenerateMessageId();
+            builder.HtmlBody = String.Format(@"<img src=""cid:{0}""><br/><br/><p>", image.ContentId) + "<p>" + message.Content + "<p/>";
+
+            emailMessage.Body = builder.ToMessageBody();
 
             return emailMessage;
         }
