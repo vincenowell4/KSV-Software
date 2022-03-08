@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using VotingApp.Data;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -71,7 +72,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+                ModelState.AddModelError(string.Empty, AppStrings.EmailSentMessage);
                 return Page();
             }
 
@@ -83,11 +84,11 @@ namespace VotingApp.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
-            var message = new Message(new string[] { Input.Email.ToString() }, "Opiniony Confirmation",
-                $"Please confirm your Opiniony account registration by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            var message = new Message(new string[] { Input.Email.ToString() }, AppStrings.EmailSubject,
+                AppStrings.EmailMessage + $" <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
             _emailSender.SendEmail(message);
 
-            ModelState.AddModelError(string.Empty, "Verification email sent to " + Input.Email.ToString() + ". Please check your email.");
+            ModelState.AddModelError(string.Empty, AppStrings.EmailSentMessage);
             return Page();
         }
     }

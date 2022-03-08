@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using VotingApp.Data;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -49,12 +50,12 @@ namespace VotingApp.Areas.Identity.Pages.Account
 
             if(result.Succeeded)
             {
-                StatusMessage = "Thank you for confirming your email.";
+                StatusMessage = AppStrings.EmailConfirmationSuccessful;
                 UserEmail = "";
             }
             else
             {
-                StatusMessage = "There was an error confirming your email. To resend the email, please click";
+                StatusMessage = AppStrings.EmailConfirmationError;
                 UserEmail = user.Email;
             }
             return Page();
