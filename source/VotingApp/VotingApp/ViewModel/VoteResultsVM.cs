@@ -10,5 +10,9 @@ namespace VotingApp.ViewModel
         public IList<VoteOption> VoteOptions { get; set; }
 
         public Dictionary<VoteOption, int> TotalVotesForEachOption { get; set; }
+        public bool AnonymousVote { get; set; }
+
+        public Dictionary<VoteOption, SubmittedVote> VotesForLoggedInUsers { get; set; }
+        public Dictionary<VoteOption, int> VotesForUsersNotLoggedIn { get; set; }
     } 
 }

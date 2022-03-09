@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 
@@ -12,15 +13,48 @@ namespace VotingApp.DAL.Concrete
         {
             _context = ctx;
         }
-        //public List<SubmittedVote> GetAllSubmittedVotes(int id)
-        //{
-        //    var submittedVotes = _context.SubmittedVotes.Where(a => a.CreatedVoteId == id).ToList();
-        //    if (submittedVotes == null)
-        //    {
-        //        throw new NullReferenceException(); 
-        //    }
-        //    return submittedVotes;
-        //}
+
+        public Dictionary<VoteOption, SubmittedVote> GetAllSubmittedVotesWithLoggedInUsers(int id, IList<VoteOption> options)
+        {
+            var submittedVotes = _context.SubmittedVotes.Where(a => a.CreatedVoteId == id && a.User != null).ToList();
+
+            Dictionary<VoteOption, SubmittedVote> votesWithUsers = new Dictionary<VoteOption, SubmittedVote>();
+
+            foreach (var vote in submittedVotes)
+            {
+                foreach (var option in options)
+                {
+                    if (vote.VoteChoice == option.Id)
+                    {
+                        votesWithUsers.Add(option, vote);
+                    }
+                }
+            }
+
+            return votesWithUsers;
+        }
+
+        public Dictionary<VoteOption, int> GetAllSubmittedVotesForUsersNotLoggedIn(int id, IList<VoteOption> options)
+        {
+            var submittedVotes = _context.SubmittedVotes.Where(a => a.User == null && a.CreatedVoteId == id).ToList();
+            var grouped = submittedVotes.GroupBy(a => a.VoteChoice);
+            Dictionary<VoteOption, int> votesWithOutUsers = new Dictionary<VoteOption, int>();
+
+            foreach (var vote in grouped)
+            {
+                foreach (var option in options)
+                {
+                    if (vote.Key == option.Id)
+                    {
+                        votesWithOutUsers.Add(option, vote.Count());
+                    }
+                }
+            }
+
+            var sortedDict = votesWithOutUsers.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+            return sortedDict;
+        }
 
         public Dictionary<VoteOption, int> TotalVotesForEachOption(int id, IList<VoteOption> options)
         {
@@ -30,6 +64,7 @@ namespace VotingApp.DAL.Concrete
             }
 
             var submittedVotes = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
+
 
             Dictionary<VoteOption, int> votesWithTotal = new Dictionary<VoteOption, int>();
             foreach (var option in options)

@@ -58,7 +58,7 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,Anonymous")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -92,7 +92,7 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -180,6 +180,7 @@ namespace VotingApp.Controllers
             vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
             vm.VotingOptions = createdVote.VoteOptions.ToList();
             vm.ID = createdVote.Id;
+            vm.AnonymousVote = createdVote.AnonymousVote;
             vm.VoteAccessCode = createdVote.VoteAccessCode;
             vm.ShareURL =
                 $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
@@ -252,9 +253,12 @@ namespace VotingApp.Controllers
             var vm = new VoteResultsVM();
             vm.VoteTitle = createdVote.VoteTitle;
             vm.VoteDescription = createdVote.VoteDiscription;
+            vm.AnonymousVote = createdVote.AnonymousVote;
             vm.VoteId = createdVote.Id;
             vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
             vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+            vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
+            vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
             return View(vm);
         }
 

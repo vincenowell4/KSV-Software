@@ -161,5 +161,13 @@ namespace Tests_NUnit_Voting_App
             _voteOption = null;
             Assert.Throws<NullReferenceException>(() => repo.TotalVotesForEachOption(_createdVotes[2].Id, _voteOption));
         }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_TotalVotesForOptionWithUserLoggedIn_ShouldReturn1()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.GetAllSubmittedVotesWithLoggedInUsers(_createdVotes[2].Id, _voteOption);
+        }
     }
 }

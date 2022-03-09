@@ -23,23 +23,67 @@
 		<div class="text-center text-white mb-3">
 			<h5>Vote Title: @Model.VoteTitle</h5>
 			<h5>Vote Description: @Model.VoteDescription</h5>
+			@if (Model.AnonymousVote)
+			{
+				<h5>This vote is anonymous</h5>
+			}
+			else
+			{
+				<h5>This vote is not anonymous</h5>
+			}
 		</div>
-		<div class="text-center text-white">
-			<div class="text-center col-md-8 mx-auto">
-
-				<table class="table table-borderless rounded bg-dark text-white table-striped">
-					<tr class="bg-secondary">
-						<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote.">&#8505;</span></th>
-						<th>Total Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
-					</tr>
-					@foreach (var vote in Model.TotalVotesForEachOption)
-					{
-						<tr class="text-white-50">
-							<td>@vote.Key.VoteOptionString</td>
-							<td>@vote.Value</td>
+		<div class="container text-center text-white">
+			<div class="text-center col-md mx-auto">
+				<div class="row">
+					<table class="table table-borderless rounded bg-dark text-white table-striped">
+						<tr class="bg-secondary">
+							<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote.">&#8505;</span></th>
+							<th>Total Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
 						</tr>
-					}
-				</table>
+						@foreach (var vote in Model.TotalVotesForEachOption)
+						{
+							<tr class="text-white-50">
+								<td>@vote.Key.VoteOptionString</td>
+								<td>@vote.Value</td>
+							</tr>
+						}
+					</table>
+				</div>
+				@if (!Model.AnonymousVote)
+				{
+					<div class="row mt-2">
+						<h6 mb-2>Individual votes for user's who were logged in:</h6>
+						<table class="table table-borderless rounded bg-dark text-white table-striped">
+							<tr class="bg-secondary">
+								<th>Vote Choice<span data-toggle="tooltip" data-placement="bottom" title="Here is the vote choice chosen by this user.">&#8505;</span></th>
+								<th>Voter's Email <span data-toggle="tooltip" data-placement="bottom" title="Here is the user's email who cast this vote.">&#8505;</span></th>
+							</tr>
+							@foreach (var vote in Model.VotesForLoggedInUsers)
+							{
+								<tr class="text-white-50">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value.User.UserName</td>
+								</tr>
+							}
+						</table>
+					</div>
+					<div class="row mt-2">
+						<h6 mb-2>Votes for user's who were not logged in:</h6>
+						<table class="table table-borderless rounded bg-dark text-white table-striped">
+							<tr class="bg-secondary">
+								<th>Vote Choice<span data-toggle="tooltip" data-placement="bottom" title="Here is the vote choice chosen by users not logged in.">&#8505;</span></th>
+								<th>Total Votes<span data-toggle="tooltip" data-placement="bottom" title="Here is the total votes for this option by user's not logged in.">&#8505;</span></th>
+							</tr>
+							@foreach (var vote in Model.VotesForUsersNotLoggedIn)
+							{
+								<tr class="text-white-50">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
+						</table>
+					</div>
+				 }
 			</div>
 		</div>
 	}
