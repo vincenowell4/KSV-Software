@@ -7,5 +7,7 @@ namespace VotingApp.ViewModel
         public CreatedVote vote { get; set; }
         public List<VoteOption> options { get; set; }
 
+        public SubmittedVote submittedVote { get; set; }
+
     }
 }

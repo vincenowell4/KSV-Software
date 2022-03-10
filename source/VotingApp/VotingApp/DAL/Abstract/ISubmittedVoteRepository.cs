@@ -7,5 +7,8 @@ namespace VotingApp.DAL.Abstract
     public interface ISubmittedVoteRepository
     {
         public Dictionary<VoteOption, int> TotalVotesForEachOption(int id, IList<VoteOption> options);
+
+        public SubmittedVote GetByUserIdAndVoteId(int userId, int voteId);
+
     }
 }

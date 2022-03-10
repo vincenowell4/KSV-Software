@@ -52,5 +52,10 @@ namespace VotingApp.DAL.Concrete
 
             return sortedDict;
         }
+
+        public SubmittedVote GetByUserIdAndVoteId(int userId, int voteId)
+        {
+            return _context.SubmittedVotes.Where(s => s.UserId == userId && s.CreatedVoteId == voteId).FirstOrDefault();
+        }
     }
 }
