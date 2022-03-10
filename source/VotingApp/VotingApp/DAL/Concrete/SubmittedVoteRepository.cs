@@ -87,5 +87,32 @@ namespace VotingApp.DAL.Concrete
 
             return sortedDict;
         }
+
+        public int GetTotalSubmittedVotes(int id)
+        {
+            return _context.SubmittedVotes.Where(a => a.CreatedVoteId == id).ToList().Count();
+        }
+
+        public Dictionary<VoteOption, int> GetWinner(Dictionary<VoteOption, int> submittedVotes)
+        {
+            if (submittedVotes == null)
+            {
+                throw new ArgumentNullException(nameof(submittedVotes));
+            }
+
+            var max = submittedVotes.Max(a => a.Value);
+
+            Dictionary<VoteOption, int> winners = new Dictionary<VoteOption, int>();
+
+            foreach (var vote in submittedVotes)
+            {
+                if (vote.Value == max)
+                {
+                    winners.Add(vote.Key, vote.Value);
+                }
+            }
+
+            return winners;
+        }
     }
 }

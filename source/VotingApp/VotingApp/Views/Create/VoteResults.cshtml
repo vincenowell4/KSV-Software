@@ -5,7 +5,7 @@
 
 <div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
 	                                                                height: 90vh; 
-	                                                                background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage6.jpg); 
+	                                                                background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(/Images/bannerImage6.jpg); 
 	                                                                background-size: cover; left: 50%;
 	                                                                margin-left: -50vw;
 	                                                                margin-right: -50vw;
@@ -37,16 +37,47 @@
 				<div class="row">
 					<table class="table table-borderless rounded bg-dark text-white table-striped">
 						<tr class="bg-secondary">
-							<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote.">&#8505;</span></th>
-							<th>Total Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
+							<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote.The winning vote row is highlighted in red. If there is a tie the winning votes will be highlighted yellow.">&#8505;</span></th>
+							<th>Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
 						</tr>
 						@foreach (var vote in Model.TotalVotesForEachOption)
 						{
-							<tr class="text-white-50">
-								<td>@vote.Key.VoteOptionString</td>
-								<td>@vote.Value</td>
-							</tr>
+							var winnerCheck = false;
+							foreach (var winner in Model.Winners)
+							{
+								if (winner.Key.Id == vote.Key.Id)
+								{
+									winnerCheck = true;
+								}
+							}
+							if (winnerCheck && Model.Winners.Count == 1)
+							{
+								<tr class="table-danger">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
+							else if (winnerCheck && Model.Winners.Count > 1 )
+							{
+								<tr class="table-warning">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
+							else
+							{
+								<tr class="text-white-50">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
 						}
+						<tfoot>
+						<tr class="table-info">
+							<td>Total Votes: <span data-toggle="tooltip" data-placement="bottom" title="Here are the overall total votes for your created vote.">&#8505;</span></td>
+							<td>@Model.TotalVotesCount</td>
+						</tr>
+						</tfoot>
 					</table>
 				</div>
 				@if (!Model.AnonymousVote)

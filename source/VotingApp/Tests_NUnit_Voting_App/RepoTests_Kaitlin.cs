@@ -66,7 +66,7 @@ namespace Tests_NUnit_Voting_App
             {
                 new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 1, VoteChoice = 1},
                 new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 2, VoteChoice = 2},
-                new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 3, VoteChoice = 2}
+                new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 3, VoteChoice = 2, User = _votingUsers[1]}
             };
 
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
@@ -164,10 +164,82 @@ namespace Tests_NUnit_Voting_App
 
         [Test]
         //VA81
-        public void SubmittedVoteRepo_TotalVotesForOptionWithUserLoggedIn_ShouldReturn1()
+        public void SubmittedVoteRepo_GetAllSubmittedVotesWithLoggedInUsers_ShouldReturn1()
         {
             ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
             var check = repo.GetAllSubmittedVotesWithLoggedInUsers(_createdVotes[2].Id, _voteOption);
+            Assert.IsTrue(check.Count() == 1);
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetAllSubmittedVotesWithLoggedInUsers_ShouldGetCorrectVoteOptionString()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.GetAllSubmittedVotesWithLoggedInUsers(_createdVotes[2].Id, _voteOption);
+            var item = check.ElementAt(0);
+
+            Assert.AreEqual(item.Key.VoteOptionString, "option 2");
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetAllSubmittedVotesForUsersNotLoggedIn_ShouldGetCorrectVoteOptionString()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.GetAllSubmittedVotesForUsersNotLoggedIn(_createdVotes[2].Id, _voteOption);
+            var item = check.ElementAt(0);
+            var item2 = check.ElementAt(1);
+
+            Assert.AreEqual(item.Key.VoteOptionString, "option 1");
+            Assert.AreEqual(item2.Key.VoteOptionString, "option 2");
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetAllSubmittedVotesForUsersNotLoggedIn_ShouldReturn2()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.GetAllSubmittedVotesForUsersNotLoggedIn(_createdVotes[2].Id, _voteOption);
+            Assert.IsTrue(check.Count() == 2);
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetTotalSubmittedVotes_ShouldReturn3()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.GetTotalSubmittedVotes(_createdVotes[2].Id);
+            Assert.AreEqual(check, 3);
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetWinner_ShouldReturn1WinnerTotal()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var submittedVotes = repo.TotalVotesForEachOption(_createdVotes[2].Id, _voteOption);
+            var check = repo.GetWinner(submittedVotes);
+            Assert.AreEqual(check.Count, 1);
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetWinner_ShouldReturn1CorrectWinnerVoteOptionString()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var submittedVotes = repo.TotalVotesForEachOption(_createdVotes[2].Id, _voteOption);
+            var check = repo.GetWinner(submittedVotes);
+            Assert.AreEqual(check.ElementAt(0).Key.VoteOptionString, "option 2");
+        }
+
+        [Test]
+        //VA81
+        public void SubmittedVoteRepo_GetWinner_ShouldThrowNullException()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            Dictionary<VoteOption, int>? submittedVotes = null;
+            Assert.Throws<ArgumentNullException>(() => repo.GetWinner(submittedVotes));
         }
     }
 }

@@ -14,5 +14,8 @@ namespace VotingApp.ViewModel
 
         public Dictionary<VoteOption, SubmittedVote> VotesForLoggedInUsers { get; set; }
         public Dictionary<VoteOption, int> VotesForUsersNotLoggedIn { get; set; }
+        public int TotalVotesCount { get; set; }
+
+        public Dictionary<VoteOption, int> Winners { get; set; }
     } 
 }
