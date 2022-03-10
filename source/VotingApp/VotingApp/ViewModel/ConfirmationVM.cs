@@ -13,6 +13,8 @@ namespace VotingApp.ViewModel
         public int ID { get; set; }
         public string VoteAccessCode { get; set; }
         public string ShareURL { get; set; }
+
+        public DateTime VoteCloseDateTime { get; set; }
         
     }
 }

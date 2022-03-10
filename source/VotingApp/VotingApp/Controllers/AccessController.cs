@@ -45,7 +45,8 @@ namespace VotingApp.Controllers
         {
             SubmitVoteVM model = new SubmitVoteVM();
             model.vote = _createdVoteRepository.GetVoteByAccessCode(code);
-            if (model.vote != null)
+            
+            if (model.vote != null && model.vote.VoteCloseDateTime >= DateTime.Now)
             {
                 if (User.Identity.IsAuthenticated) //if user is logged in, check to see if they've already submitted a vote
                 {
@@ -60,6 +61,11 @@ namespace VotingApp.Controllers
                     }
                 }
                 return View("SubmitVote", model);
+            }
+            else if (model.vote != null && model.vote.VoteCloseDateTime < DateTime.Now)
+            {
+                ViewBag.ErrorMessage = $"The Voting Window Has Closed\nVoting Closed on {model.vote.VoteCloseDateTime.Value.Month}/{model.vote.VoteCloseDateTime.Value.Day}/{model.vote.VoteCloseDateTime.Value.Year} at {model.vote.VoteCloseDateTime.Value.TimeOfDay}";
+                return View("Index");
             }
             else
             {

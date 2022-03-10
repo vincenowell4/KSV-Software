@@ -13,7 +13,7 @@ using Microsoft.Data.SqlClient;
 var builder = WebApplication.CreateBuilder(args);
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
-//var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
+var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
 
 //*******************************************************************************************************************************************
 //IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
@@ -21,9 +21,9 @@ var builder = WebApplication.CreateBuilder(args);
 //if (connectionStringIdentity.Password.Length == 0)
 //    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
 //OTHERWISE USE THESE THREE LINES OF CODE WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE
-var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
-if (connectionStringIdentity.Password.Length == 0)
-    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
+//if (connectionStringIdentity.Password.Length == 0)
+//    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
 //*******************************************************************************************************************************************
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
@@ -36,7 +36,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
-//var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
+var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
 
 //*******************************************************************************************************************************************
 //IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
@@ -44,9 +44,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 //if (connectionString.Password.Length == 0)
 //    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 //OTHERWISE USE THESE THREE LINES OF CODE WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE
-var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
-if (connectionString.Password.Length == 0)
-    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
+//if (connectionString.Password.Length == 0)
+//    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 //*******************************************************************************************************************************************
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
