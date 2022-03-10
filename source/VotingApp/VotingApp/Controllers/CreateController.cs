@@ -58,7 +58,7 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteCloseDateTime")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -92,7 +92,7 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -184,6 +184,7 @@ namespace VotingApp.Controllers
             vm.VoteAccessCode = createdVote.VoteAccessCode;
             vm.ShareURL =
                 $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
+            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? DateTime.Now;
             return View(vm);
         }
 

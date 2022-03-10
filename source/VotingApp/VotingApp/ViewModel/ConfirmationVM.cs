@@ -14,6 +14,8 @@ namespace VotingApp.ViewModel
         public string VoteAccessCode { get; set; }
         public string ShareURL { get; set; }
         public bool AnonymousVote { get; set; }
-        
+
+        public DateTime VoteCloseDateTime { get; set; }
+
     }
 }

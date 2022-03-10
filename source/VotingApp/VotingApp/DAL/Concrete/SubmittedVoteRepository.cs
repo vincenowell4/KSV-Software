@@ -114,5 +114,10 @@ namespace VotingApp.DAL.Concrete
 
             return winners;
         }
+
+        public SubmittedVote GetByUserIdAndVoteId(int userId, int voteId)
+        {
+            return _context.SubmittedVotes.Where(s => s.UserId == userId && s.CreatedVoteId == voteId).FirstOrDefault();
+        }
     }
 }

@@ -34,6 +34,10 @@ namespace VotingApp.Models
                 createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
             }
 
+            if (createdVote.VoteCloseDateTime == null)
+            {
+                createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+            }
             try
             {
                 createdVote.VoteAccessCode = _voteCreationService.generateCode();

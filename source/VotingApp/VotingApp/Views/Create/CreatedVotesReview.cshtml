@@ -35,6 +35,7 @@
 	                    <th>Anonymous</th>
                         <th>Access Code</th>
                         <th>Access Link</th>
+                        <th>Vote Close Date/Time</th>
 	                    <th>&nbsp;</th>
 	                    <th>&nbsp</th>
                     </tr>
@@ -51,6 +52,7 @@
 	                        <td>@createdVote.AnonymousVote</td>
                             <td>@createdVote.VoteAccessCode</td>
                             <td>@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")</td>
+                            <td>@if(createdVote.VoteCloseDateTime != null){@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}</td>
 	                        <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
 	                       
 	                        <form asp-action="VoteResultsButton" method="post">
