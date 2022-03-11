@@ -55,4 +55,22 @@ f_va81_how_users_voted_when_not_anonymous
 
 
 ## Tasks
-1. ...
+1. When anonymous box is checked on create a vote page set to anonymous or not 
+2. Add anonymous field to confirmation vm and set in create controller 
+3. Add anonymous to table on vote review page 
+4. Add anonymous field to vote results vm and set in create controller
+5. Display if created vote was anonymous or not at the top of vote results page 
+6. Make method for getting list of votes for users that were logged in (submitted vote repo) and add to vote results vm and create controller 
+7. Make method for getting totals of each vote for users that were not logged in (submitted vote repo) and add to vote results vm and create controller 
+8. Test these repo methods added
+9. Create table in vote results html page for users that were logged in and total for users that were not logged in 
+10. Add in any needed tool tips 
+11. Add total votes to table on vote results page 
+12. Add field in vm that holds total submitted votes
+13. Create repo method for getting total votes 
+14. Test total votes method 
+15. Add in repo method to get winner (or if there is a tie)
+16. Add field in view model for winner
+17. Add in create controller 
+18. Test that winner repo method 
+19. Add winner to html page 
