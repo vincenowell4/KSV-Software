@@ -8,7 +8,10 @@ function FillValues(voteId) {
 }
 
 function SaveEditedVote() {
-    let voteData = { voteData: "{ 'voteId': " + $('#created-vote-id').val() + ", 'voteTitle': '" + $('#vote-title').val() + "', 'voteDesc': '" + $('#vote-description').val() + "'}" };
+    //escape any apostrophes (turn ' into \\' ) in the title and description, so there won't be an issue on the server side with JSON conversion
+    let voteTitle = $('#vote-title').val().replace(/'/g, "\\\'");
+    let voteDesc = $('#vote-description').val().replace(/'/g, "\\\'");
+    let voteData = { voteData: "{ 'voteId': " + $('#created-vote-id').val() + ", 'voteTitle': '" + voteTitle + "', 'voteDesc': '" + voteDesc + "'}" };
 
     $.ajax({
         type: "POST",

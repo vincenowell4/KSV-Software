@@ -28,6 +28,10 @@ namespace VotingApp.Models
         public int VoteTypeId { get; set; }
         [StringLength(100)]
         public string VoteAccessCode { get; set; } = null!;
+        [Column(TypeName = "datetime")]
+        public DateTime? VoteOpenDateTime { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? VoteCloseDateTime { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
