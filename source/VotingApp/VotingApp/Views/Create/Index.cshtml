@@ -29,7 +29,9 @@
                 @if (Model != null)
                 {
 	                <input asp-for="Id" type="number" value="@Model.Id" hidden></input>
-	                <input name="oldVoteTypeId" value="@Model.VoteTypeId" hidden></input>
+                    <input name="oldVoteTypeId" value="@Model.VoteTypeId" hidden></input>
+                    <input asp-for="Id" type="text" value="@Model.VoteAccessCode" hidden></input>
+                    <input asp-for="VoteAccessCode" value="@Model.VoteAccessCode" hidden></input>
                 }
                 <div class="form-row mb-4 text-center">
 					<label asp-for="VoteTitle">Please enter your vote title in the box below (required): <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the vote you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this vote title.">&#8505;</span></label>
