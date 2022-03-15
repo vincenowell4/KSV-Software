@@ -1,5 +1,4 @@
 # VA-86
-<hr>
 
 ## Title
 
@@ -75,7 +74,12 @@ VA-86-create-delayed-vote
 
 ## Modeling and Other Documents
 
-Create A Vote mockup: [Create A Vote Page](CreateVoteMockup.png "Mockup of the Create A Vote page with delayed vote fields")
+Create A Vote mockups: 
+
+![Start Immediate Vote Mockup](https://github.com/vincenowell4/KSV-Software/blob/dev/docs/ProjectManagement/UserStories/VA86-StartVoteImmediatelyMockup.png)
+
+![Start Future Vote Mockup](https://github.com/vincenowell4/KSV-Software/blob/dev/docs/ProjectManagement/UserStories/VA86-StartVoteFutureMockup.png)
+
 
 ## Tasks
 1. Create new datetime field in CreatedVote table: VoteStartDateTime
