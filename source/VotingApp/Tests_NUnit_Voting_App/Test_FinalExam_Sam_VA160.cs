@@ -226,6 +226,19 @@ namespace Tests_NUnit_Voting_App
             //Assert that returned item is null
 
         }
+        //VA160
+        [Test]
+        public void Test_SubmittedVoteRepo_EditCastVote_VotingWindowClosed_should_return_undited_submitted_vote()
+        {
+            //Arrange
+            ISubmittedVoteRepository submittedVoteRepository = new SubmittedVoteRepository(_mockContext.Object);
+
+            //Act
+            SubmittedVote editedVote = submittedVoteRepository.EditCastVote(1, 2);
+
+            //Assert that returned vote is the same id and is unedited
+
+        }
 
 
     }
