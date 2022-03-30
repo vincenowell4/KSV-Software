@@ -15,13 +15,15 @@ namespace VotingApp.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IVotingUserRepositiory _votingUserRepository;
         private readonly IVoteOptionRepository _voteOptionRepository;
+        private readonly ISubmittedVoteRepository _subVoteRepository;
 
         public AccessController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
             IVoteTypeRepository voteTypeRepository,
             UserManager<IdentityUser> userManager,
             IVotingUserRepositiory votingUserRepositiory,
-            IVoteOptionRepository voteOptionRepository)
+            IVoteOptionRepository voteOptionRepository,
+            ISubmittedVoteRepository subVoteRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -29,13 +31,12 @@ namespace VotingApp.Controllers
             _userManager = userManager;
             _votingUserRepository = votingUserRepositiory;
             _voteOptionRepository = voteOptionRepository;
-
+            _subVoteRepository = subVoteRepository;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            
             return View();
         }
 
@@ -44,16 +45,33 @@ namespace VotingApp.Controllers
         {
             SubmitVoteVM model = new SubmitVoteVM();
             model.vote = _createdVoteRepository.GetVoteByAccessCode(code);
-            if (model.vote != null)
+            
+            if (model.vote != null && model.vote.VoteCloseDateTime >= DateTime.Now)
             {
+                if (User.Identity.IsAuthenticated) //if user is logged in, check to see if they've already submitted a vote
+                {
+                    VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                    if (user.Id != 0)
+                    {
+                        SubmittedVote subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
+                        if (subVote != null)
+                        {
+                            model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                        }
+                    }
+                }
                 return View("SubmitVote", model);
+            }
+            else if (model.vote != null && model.vote.VoteCloseDateTime < DateTime.Now)
+            {
+                ViewBag.ErrorMessage = $"The Voting Window Has Closed\nVoting Closed on {model.vote.VoteCloseDateTime.Value.Month}/{model.vote.VoteCloseDateTime.Value.Day}/{model.vote.VoteCloseDateTime.Value.Year} at {model.vote.VoteCloseDateTime.Value.TimeOfDay}";
+                return View("Index");
             }
             else
             {
                 ViewBag.ErrorMessage = "Invalid Access Code";
                 return View("Index");
             }
-            
         }
 
         [HttpGet]
@@ -90,6 +108,5 @@ namespace VotingApp.Controllers
             model.createdVote = _createdVoteRepository.GetById(model.CreateId);
             return View(model);
         }
-
     }
 }

@@ -6,7 +6,7 @@
 
 <div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
     height: 90vh; 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage6.jpg); 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(/Images/bannerImage6.jpg); 
     background-size: cover; left: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
@@ -23,17 +23,21 @@
 
     @if (Model != null)
     {
-        <div class="text-center text-white">    
-            <div class="text-center col-md-8 mx-auto">
+	    <div class="container text-center text-white" >
+		    <div class="text-center col-md mx-auto">
 
                 <table class="table table-borderless rounded bg-dark text-white table-striped">
                     <tr class="bg-secondary">
                         <th class="text-center">#</th>
                         <th>Title</th>
                         <th>Description</th>
-                        <th>Voting Type</th>
+	                    <th>Voting Type</th>
+	                    <th>Anonymous</th>
                         <th>Access Code</th>
-                        <th>&nbsp;</th>
+                        <th>Access Link</th>
+                        <th>Vote Close Date/Time</th>
+	                    <th>&nbsp;</th>
+	                    <th>&nbsp</th>
                     </tr>
 
                     @{
@@ -42,9 +46,18 @@
                     @foreach (CreatedVote createdVote in Model.CreatedVotes)
                     {
                         <tr class="text-white-50">
-                            <td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td><td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
-                            <td >@createdVote.VoteType.VotingType</td><td>@createdVote.VoteAccessCode</td>
-                            <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
+                            <td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
+                            <td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
+	                        <td >@createdVote.VoteType.VotingType</td>
+	                        <td>@createdVote.AnonymousVote</td>
+                            <td>@createdVote.VoteAccessCode</td>
+                            <td>@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")</td>
+                            <td>@if(createdVote.VoteCloseDateTime != null){@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}</td>
+	                        <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
+	                       
+	                        <form asp-action="VoteResultsButton" method="post">
+		                        <td><button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button></td>
+	                        </form>
                         </tr>
                         {
                             i++;

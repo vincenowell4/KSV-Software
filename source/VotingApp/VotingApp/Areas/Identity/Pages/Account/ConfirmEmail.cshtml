@@ -21,8 +21,15 @@
         <h1 class="display-4">@ViewData["Title"]</h1>
         <hr class="mt-lg-5" style="border-top: 3px solid white; color: white; background-color: white;">
 
-        <partial name="_StatusMessage" model="Model.StatusMessage" />
-
+        <p class="text-white">
+            @if(Model.UserEmail == "")
+            {
+                @Model.StatusMessage
+            } else
+            {
+                @Model.StatusMessage <a href='/Identity/Account/ResendEmailConfirmation/?email=@Model.UserEmail'>here</a> 
+            }
+        </p>
         <hr />
     </div>
 </div>

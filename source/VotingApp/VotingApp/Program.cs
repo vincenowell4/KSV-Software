@@ -4,28 +4,27 @@ using VotingApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
-using VotingApp.Utilities;
-//using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
 using EmailService;
 using Microsoft.Data.SqlClient;
+
+// Add services to the container.
 
 var builder = WebApplication.CreateBuilder(args);
 
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
 var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentity");
 
-// WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE, USE THIS
-//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
-//connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
-
-// JUST BEFORE DEPLOYING THE APP TO AZURE, COMMENT OUT THE ABOVE LINES AND UNCOMMENT THIS LINE  - THIS WILL USE APPSETTINGS ON AZURE
-//var connectionStringIdentity = builder.Configuration.GetConnectionString("VotingAppIdentityAzure");
-
-
+//*******************************************************************************************************************************************
+//IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
+//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityDemoAzure"));
+//if (connectionStringIdentity.Password.Length == 0)
+//    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//OTHERWISE USE THESE THREE LINES OF CODE WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
 //if (connectionStringIdentity.Password.Length == 0)
-  //  connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//*******************************************************************************************************************************************
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 emailConfig.UserName = builder.Configuration["EmailUserName"];
@@ -36,21 +35,19 @@ builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSql
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
 
-// Add services to the container.
-
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
 var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
 
-// WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE, USE THIS
-//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
-//connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
-
-// JUST BEFORE DEPLOYING THE APP TO AZURE, COMMENT OUT THE ABOVE LINES AND UNCOMMENT THIS LINE  - THIS WILL USE APPSETTINGS ON AZURE
-//var connectionString = builder.Configuration.GetConnectionString("VotingAppConnectionAzure");
-
+//*******************************************************************************************************************************************
+//IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
+//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppDemoConnectionAzure"));
+//if (connectionString.Password.Length == 0)
+//    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//OTHERWISE USE THESE THREE LINES OF CODE WHEN RUNNING LOCALLY AGAINST AN AZURE DATABASE
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
 //if (connectionString.Password.Length == 0)
-  //  connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//*******************************************************************************************************************************************
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
     options.UseLazyLoadingProxies().UseSqlServer(connectionString.ToString()));
@@ -65,7 +62,11 @@ builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<IVotingUserRepositiory, VotingUserRepository>();
 builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
+builder.Services.AddScoped<CreationService, CreationService>();
+builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 
+builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
+       o.TokenLifespan = TimeSpan.FromSeconds(06400)); //email confirmation token will expire after exactly 24 hours (86400 seconds)
 
 var app = builder.Build();
 
@@ -99,8 +100,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -116,5 +115,9 @@ app.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                     app.MapRazorPages();
-
+app.MapControllerRoute(
+        name: "Access Vote Share Link",
+        pattern: "Access/{code?}",
+        defaults: new { controller = "Access", action = "Access" });
+    
 app.Run();

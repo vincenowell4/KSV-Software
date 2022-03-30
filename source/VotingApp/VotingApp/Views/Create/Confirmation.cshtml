@@ -1,4 +1,5 @@
-﻿@model VotingApp.ViewModel.ConfirmationVM
+﻿
+@model VotingApp.ViewModel.ConfirmationVM
 @{
     ViewData["Title"] = "Confirmation Page";
 }
@@ -21,47 +22,61 @@
 
 		<div class="text-center text-white">
 			<div class="text-center col-md-8 mx-auto">
-				<form asp-action="Confirmation" method="get">
-					<div class="row mb-3 justify-content-center">
-						<h3>Vote Title:</h3>
-						<h6>(If you would like to change your title press the edit button)</h6>
-						<div class="card col-md-6 mx-auto">
-							<div class="card-body">
-								<p class="card-text text-black">@Model.VoteTitle</p>
-							</div>
-						</div>
-					</div>
-					<div class="row mb-4 justify-content-center">
-						<h3>Vote Access Code:</h3>
-						<div class="card col-md-6 mx-auto">
-							<div class="card-body">
-								<p class="card-text text-black">@Model.VoteAccessCode</p>
-							</div>
-						</div>
-					</div>
-					<div class="row mb-4 justify-content-center">
-						<h3>Vote Description:</h3>
-						<h6>(If you would like to change your description press the edit button)</h6>
-						<div class="card col-md-6 mx-auto">
-							<div class="card-body">
-								<p class="card-text text-black">@Model.VoteDescription</p>
-							</div>
-						</div>
-					</div>
-				</form>
-				<div class="row mb-4 justify-content-center">
-					<div class="card" style="width: 18rem;">
-						<div class="card-body">
-							<h5 class="card-title text-black-50">Voting Options:</h5>
-						</div>
-						<ul class="list-group list-group-flush">
-							@foreach (var option in Model.VotingOptions)
-							{
-								<li class="list-group-item">@option.VoteOptionString</li>
-							}
-						</ul>
-					</div>
-				</div>
+                <form asp-action="Confirmation" method="get">
+                    <div class="row mb-3 justify-content-center">
+                        <h3>Vote Title:</h3>
+                        <h6>(If you would like to change your title press the edit button)</h6>
+                        <div class="card col-md-6 mx-auto">
+                            <div class="card-body">
+                                <p class="card-text text-black">@Model.VoteTitle</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4 justify-content-center">
+                        <h3>Share Vote:</h3>
+                        <div class="card col-md-6 mx-auto">
+                            <div class="card-body">
+                                <h3 class="text-black">Vote Access Code:</h3>
+                                <p class="card-text text-black">@Model.VoteAccessCode</p>
+                                <h3 class="text-black">Vote Access Link:</h3>
+                                <p class="card-text text-black">@Model.ShareURL</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4 justify-content-center">
+                        <h3>Vote Description:</h3>
+                        <h6>(If you would like to change your description press the edit button)</h6>
+                        <div class="card col-md-6 mx-auto">
+                            <div class="card-body">
+                                <p class="card-text text-black">@Model.VoteDescription</p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="row mb-4 justify-content-center">
+                    <h3>Voting Closes At:</h3>
+                    <div class="card col-md-6 mx-auto">
+                        <div class="card-body">
+                            <p class="card-text text-black">@Html.Raw($"{Model.VoteCloseDateTime.Month}/{Model.VoteCloseDateTime.Day}/{Model.VoteCloseDateTime.Year} { Model.VoteCloseDateTime.TimeOfDay.ToString("hh\\:mm")}")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4 justify-content-center">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title text-black-50">Voting Options:</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var option in Model.VotingOptions)
+                            {
+                                <li class="list-group-item">@option.VoteOptionString</li>
+																					
+                            }
+                        </ul>
+                    </div>
+                </div>
+                
+                
 				   <div class="col justify-content-center btn-group">
 						<form asp-action="BackToIndexPage">
 							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" value="@Model.ID" name="ID">Edit</button>

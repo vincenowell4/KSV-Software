@@ -8,5 +8,10 @@ namespace VotingApp.Views.Create
         public void OnGet()
         {
         }
+
+        public TimeSpan RemainingTime(DateTime closetime)
+        {
+            return closetime - DateTime.Now;
+        }
     }
 }

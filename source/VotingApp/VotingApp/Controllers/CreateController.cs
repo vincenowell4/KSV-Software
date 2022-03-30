@@ -7,6 +7,8 @@ using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 using VotingApp.ViewModel;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace VotingApp.Controllers
 {
@@ -19,6 +21,8 @@ namespace VotingApp.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IVotingUserRepositiory _votingUserRepository;
         private readonly IVoteOptionRepository _voteOptionRepository;
+        private readonly CreationService _creationService;
+        private readonly ISubmittedVoteRepository _submittedVoteRepository;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -26,7 +30,9 @@ namespace VotingApp.Controllers
             VoteCreationService voteCreationService, 
             UserManager<IdentityUser> userManager,
             IVotingUserRepositiory votingUserRepositiory,
-            IVoteOptionRepository voteOptionRepository)
+            IVoteOptionRepository voteOptionRepository,
+            CreationService creationService,
+            ISubmittedVoteRepository submittedVoteRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -35,6 +41,8 @@ namespace VotingApp.Controllers
             _userManager = userManager;
             _votingUserRepository = votingUserRepositiory;
             _voteOptionRepository = voteOptionRepository;
+            _creationService = creationService;
+            _submittedVoteRepository = submittedVoteRepository;
         }
 
         [HttpGet]
@@ -50,39 +58,22 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,Anonymous")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteCloseDateTime")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
-
-            
             if (User.Identity.IsAuthenticated != false)
             {
                 createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
             }
             if (ModelState.IsValid)
-            {
-                if (createdVote.VoteTypeId == 1)
-                {   
-
-                    createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
-                }
-                try
+            { 
+                var result = _creationService.Create(ref createdVote);
+                if (result != "")
                 {
-                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
-                    _createdVoteRepository.AddOrUpdate(createdVote);
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    ViewBag.Message = "A concurrency error occurred while trying to create the vote. Please try again";
+                    ViewBag.Message = result;
                     return View(createdVote);
                 }
-                catch (DbUpdateException e)
-                {
-                    ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again";
-                    return View(createdVote);
-                }
-
                 if (createdVote.VoteTypeId == 1)
                 {
                     return RedirectToAction("Confirmation", createdVote);
@@ -92,7 +83,6 @@ namespace VotingApp.Controllers
                     createdVote = _createdVoteRepository.GetById(createdVote.Id);
                     return View("MultipleChoice", createdVote);
                 }
-
             }
             else
             {
@@ -102,7 +92,7 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,Anonymous,VoteOption")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime,VoteAccessCode")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -112,38 +102,13 @@ namespace VotingApp.Controllers
             }
             if (ModelState.IsValid)
             {
-                try
-                {
-                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
-                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    ViewBag.Message = "A concurrency error occurred while trying to create the vote. Please try again";
-                    return View(createdVote);
-                }
-                catch (DbUpdateException e)
-                {
-                    ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again";
-                    return View(createdVote);
-                }
-
-                createdVote = _createdVoteRepository.GetById(createdVote.Id); //this is for checking what the vote is in the db
-                if (createdVote.VoteTypeId == 1) //going from anything to yes/no
-                {
-                    //remove previous options before adding in the new ones
-                    _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
-                    createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
-                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote); 
-                }
                 
-                if (createdVote.VoteTypeId != 1 && oldVoteTypeId == 1) //going from yes/no to any other type of vote 
+                var result = _creationService.Edit(ref createdVote, oldVoteTypeId);
+                if (result != "")
                 {
-                    //remove all options
-                    _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
-                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+                    ViewBag.Message = result;
+                    return View(createdVote);
                 }
-
                 if (createdVote.VoteTypeId == 1)
                 {
                     return RedirectToAction("Confirmation", createdVote);
@@ -158,7 +123,7 @@ namespace VotingApp.Controllers
             else
             {
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
-                return View(createdVote);
+                return View("Index",createdVote);
             }
         }
 
@@ -215,7 +180,11 @@ namespace VotingApp.Controllers
             vm.ChosenVoteDescriptionHeader = _voteTypeRepository.GetChosenVoteHeader(vm.VoteType);
             vm.VotingOptions = createdVote.VoteOptions.ToList();
             vm.ID = createdVote.Id;
+            vm.AnonymousVote = createdVote.AnonymousVote;
             vm.VoteAccessCode = createdVote.VoteAccessCode;
+            vm.ShareURL =
+                $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
+            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? DateTime.Now;
             return View(vm);
         }
 
@@ -235,7 +204,6 @@ namespace VotingApp.Controllers
 
                 CreatedVotesVM createdVotesVM = new CreatedVotesVM(userId, _createdVoteRepository);
                 createdVotesVM.GetCreatedVotesListForUserId(userId);
-
                 return View(createdVotesVM);
             }
             return View();
@@ -258,8 +226,9 @@ namespace VotingApp.Controllers
                 {
                     Id = voteId,
                     Title = voteToEdit.VoteTitle,
-                    Desc = voteToEdit.VoteDiscription
-                };
+                    Desc = voteToEdit.VoteDiscription,
+                    Url = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{voteToEdit.VoteAccessCode}"
+            };
                 JsonResult voteInfo2 = Json(voteData2);
 
                 CreatedVote voteToEdit2 = _createdVoteRepository.AddOrUpdate(voteToEdit);
@@ -268,6 +237,32 @@ namespace VotingApp.Controllers
 
             }
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult VoteResultsButton(int id)
+        {
+            var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("VoteResults", createdVote);
+        }
+
+        [HttpGet]
+        public IActionResult VoteResults(CreatedVote createdVote)
+        {
+            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            var vm = new VoteResultsVM();
+            vm.VoteTitle = createdVote.VoteTitle;
+            vm.VoteDescription = createdVote.VoteDiscription;
+            vm.AnonymousVote = createdVote.AnonymousVote;
+            vm.VoteId = createdVote.Id;
+            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+            vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+            vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
+            vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
+            vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
+            vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+            return View(vm);
         }
 
         [HttpPost]
