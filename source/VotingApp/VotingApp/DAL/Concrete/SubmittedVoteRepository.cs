@@ -119,5 +119,15 @@ namespace VotingApp.DAL.Concrete
         {
             return _context.SubmittedVotes.Where(s => s.UserId == userId && s.CreatedVoteId == voteId).FirstOrDefault();
         }
+
+        public List<SubmittedVote> GetCastVotesById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SubmittedVote EditCastVote(int voteId, int choiceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
