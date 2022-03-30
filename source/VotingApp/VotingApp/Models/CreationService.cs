@@ -6,22 +6,17 @@ namespace VotingApp.Models
 {
     public class CreationService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IVotingUserRepositiory _votingUserRepository;
+        
         private readonly ICreatedVoteRepository _createdVoteRepository;
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
-            IVotingUserRepositiory votingUserRepositiory,
-            UserManager<IdentityUser> userManager,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
             IVoteOptionRepository voteOptionRepository)
         {
-            _userManager = userManager;
-            _votingUserRepository = votingUserRepositiory;
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
@@ -74,7 +69,9 @@ namespace VotingApp.Models
             if (createdVote.VoteTypeId != 1 && oldVoteTypeId == 1) //going from yes/no to any other type of vote 
             {
                 //remove all options
+                //var voteOpts = _voteOptionRepository.GetAllByVoteID(createdVote.VoteTypeId);
                 _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
+                //createdVote.VoteOptions = new List<VoteOption>();
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
 

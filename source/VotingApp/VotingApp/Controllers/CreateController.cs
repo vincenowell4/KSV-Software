@@ -92,7 +92,7 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime,VoteAccessCode")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -123,7 +123,7 @@ namespace VotingApp.Controllers
             else
             {
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
-                return View(createdVote);
+                return View("Index",createdVote);
             }
         }
 
