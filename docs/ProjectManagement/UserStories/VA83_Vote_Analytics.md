@@ -71,7 +71,7 @@ Kaitlin
 f_va83_vote_analytics_page
 
 ## Modeling and Other Documents
-Vote analytics mock up page: [Vote Analytics Page](VA-83VoteAnalyticsUIMockup.png "Mockup of the vote analytics page")
+See Vote Analytics UI MockUp under Modeling folder 
 
 ## Tasks
 1. Add buttons in table on vote review page that say "vote analytics"
