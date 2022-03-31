@@ -73,6 +73,8 @@ Sam Torris
 f_VoteUserAuthorization_VA84
 
 ## Modeling and Other Documents
+<img src="./../UIMockups/AuthorizedUserInput.drawio.svg"></img>
+
 
 ## Tasks
 1. Modify database to allow for a list of users to be entered
