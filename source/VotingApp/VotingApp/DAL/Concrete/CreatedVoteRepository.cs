@@ -51,7 +51,7 @@ namespace VotingApp.DAL.Concrete
 
         public CreatedVote GetById(int id)
         {
-            return _context.CreatedVotes.Where(a => a.Id == id).Include(a => a.VoteOptions).FirstOrDefault();
+            return _context.CreatedVotes.Where(a => a.Id == id).Include(a => a.VoteOptions).Include(a => a.VoteAuthorizedUsers).FirstOrDefault();
         }
 
         public string GetVoteTitle(int id)
