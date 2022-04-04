@@ -1,0 +1,43 @@
+﻿@model VotingApp.ViewModel.AnalyticsVM;
+@{
+	ViewData["Title"] = "Vote Analytics Page";
+}
+
+<div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
+	                                                                height: 90vh; 
+	                                                                background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(/Images/bannerImage6.jpg); 
+	                                                                background-size: cover; left: 50%;
+	                                                                margin-left: -50vw;
+	                                                                margin-right: -50vw;
+	                                                                max-width: 100vw;
+	                                                                position: relative;
+	                                                                right: 50%;
+	                                                                width: 100vw;"> 
+	<div class="text-center text-white">
+		<h1 class="display-4">Vote Analytics</h1>
+		<hr class="mb-4"/>
+
+	</div>
+	@if (Model != null)
+	{
+		<div class="text-center text-white mb-3">
+			<h5>Vote Title: @Model.VoteTitle</h5>
+			<h5>Vote Description: @Model.VoteDescription</h5>
+		</div>
+		<div class="container d-flex justify-container-center">
+			<div class="row">
+				<div class="col-md-12">
+					<input id="chartData" value="@Model.ChartData" hidden></input>
+					<input id="chartVoteOptions" value="@Model.ChartVoteOptions" hidden></input>
+					<input id="chartVoteTotals" value="@Model.ChartVoteTotals" hidden></input>
+					<div id="piechart3d" style="width: 1000px; height: 1000px;"></div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@section Scripts
+{
+	<script type="text/javascript" src="~/js/Analytics.js"></script> 
+}

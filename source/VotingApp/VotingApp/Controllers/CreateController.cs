@@ -241,6 +241,33 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        public IActionResult VoteAnalyticsButton(int id)
+        {
+            var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("Analytics", createdVote);
+        }
+
+        [HttpGet]
+        public IActionResult Analytics(CreatedVote createdVote)
+        {
+            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            var vm = new AnalyticsVM();
+            vm.VoteTitle = createdVote.VoteTitle;
+            vm.VoteDescription = createdVote.VoteDiscription;
+            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+            vm.ChartVoteOptions = _voteOptionRepository.GetVoteOptionString(createdVote.Id);
+            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id);
+
+            vm.ChartData = _submittedVoteRepository.TotalVotes(createdVote.Id, vm.VoteOptions);
+            Newtonsoft.Json.JsonConvert.SerializeObject(vm.ChartData);
+            //vm.DataRows = string.Join(", " + Environment.NewLine,
+            //    vm.ChartData.Select(d => "['" + d.Key + "', " + d.Value + "]"));
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult VoteResultsButton(int id)
         {
             var createdVote = _createdVoteRepository.GetById(id);

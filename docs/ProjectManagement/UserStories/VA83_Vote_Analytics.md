@@ -79,7 +79,12 @@ See Vote Analytics UI MockUp under Modeling folder
 3. Create vote analytics html page 
 4. Add Vote Analytics title to html vote analytics page 
 5. Create vm for vote analytics page 
-6. Add vote title to vm, and set it in create controller with passed in vote id 
+6. Add vote title and description to vm, and set it in create controller with passed in vote id 
+7. Create Analytics JS file 
+8. Add this "<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>" to layout.cshtml in head to use for charts (following example from: https://bbbootstrap.com/snippets/bootstrap-5-pie-44492646)
+9. 
+
+
 7. To create the pie chart I will be following the steps from this micr doc: https://docs.microsoft.com/en-us/aspnet/web-pages/overview/data/7-displaying-data-in-a-chart
 8. Start by creating an array of the voting options - create a method in VoteOption repo that returns array of strings of the voting options for the passed in created vote id 
 9. Test this new repo method 

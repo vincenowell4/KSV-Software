@@ -38,6 +38,7 @@
                         <th>Vote Close Date/Time</th>
 	                    <th>&nbsp;</th>
 	                    <th>&nbsp</th>
+	                    <th>&nbsp</th>
                     </tr>
 
                     @{
@@ -57,6 +58,9 @@
 	                       
 	                        <form asp-action="VoteResultsButton" method="post">
 		                        <td><button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button></td>
+	                        </form>
+	                        <form asp-action="VoteAnalyticsButton" method="post">
+		                        <td><button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Analytics</button></td>
 	                        </form>
                         </tr>
                         {

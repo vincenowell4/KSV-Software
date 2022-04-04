@@ -129,5 +129,23 @@ namespace VotingApp.DAL.Concrete
         {
             throw new NotImplementedException();
         }
+
+        public IList<int> TotalVotesPerOption(int id)
+        {
+           return _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).Select(a => a.Key).ToList();
+        }
+
+        public Dictionary<string, int> TotalVotes(int id, IList<VoteOption> options)
+        {
+            var dict = new Dictionary<string, int>();
+            var votes = TotalVotesForEachOption(id, options);
+
+            foreach (var vote in votes)
+            {
+                dict.Add(vote.Key.VoteOptionString, vote.Value);
+            }
+
+            return dict;
+        }
     }
 }
