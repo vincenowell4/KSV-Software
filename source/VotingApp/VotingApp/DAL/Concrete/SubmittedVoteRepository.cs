@@ -130,22 +130,36 @@ namespace VotingApp.DAL.Concrete
             throw new NotImplementedException();
         }
 
-        public IList<int> TotalVotesPerOption(int id)
+        public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options)
         {
-           return _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).Select(a => a.Key).ToList();
+           var totals = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
+           IList<int> votesList = new List<int>();
+
+           foreach (var vote in totals)
+           {
+               votesList.Add(vote.Count());
+           }
+
+           return votesList;
         }
 
-        public Dictionary<string, int> TotalVotes(int id, IList<VoteOption> options)
+        public IList<string> MatchingOrderOptionsList(int id, IList<VoteOption> options)
         {
-            var dict = new Dictionary<string, int>();
-            var votes = TotalVotesForEachOption(id, options);
+            var totals = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
+            IList<string> optionsList = new List<string>();
 
-            foreach (var vote in votes)
+            foreach (var total in totals)
             {
-                dict.Add(vote.Key.VoteOptionString, vote.Value);
+                foreach (var option in options)
+                {
+                    if (option.Id == total.Key)
+                    {
+                        optionsList.Add(option.VoteOptionString);
+                    }
+                }
             }
 
-            return dict;
+            return optionsList;
         }
     }
 }

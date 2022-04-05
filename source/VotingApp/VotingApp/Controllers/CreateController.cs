@@ -255,13 +255,8 @@ namespace VotingApp.Controllers
             vm.VoteTitle = createdVote.VoteTitle;
             vm.VoteDescription = createdVote.VoteDiscription;
             vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
-            vm.ChartVoteOptions = _voteOptionRepository.GetVoteOptionString(createdVote.Id);
-            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id);
-
-            vm.ChartData = _submittedVoteRepository.TotalVotes(createdVote.Id, vm.VoteOptions);
-            Newtonsoft.Json.JsonConvert.SerializeObject(vm.ChartData);
-            //vm.DataRows = string.Join(", " + Environment.NewLine,
-            //    vm.ChartData.Select(d => "['" + d.Key + "', " + d.Value + "]"));
+            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
 
             return View(vm);
         }
