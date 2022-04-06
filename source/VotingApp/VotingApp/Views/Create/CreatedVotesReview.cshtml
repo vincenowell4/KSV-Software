@@ -54,16 +54,28 @@
                             <td>@createdVote.VoteAccessCode</td>
                             <td>@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")</td>
                             <td>@if(createdVote.VoteCloseDateTime != null){@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}</td>
-	                        <td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:60px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>
-
-	                        <td>
-		                        <form asp-action="VoteResultsButton" method="post">
-			                        <button type="submit" style="width:90px !important" class="btn btn-light bg-success btn-outline-primary mb-1" name="id" value="@createdVote.Id">Results</button>
-		                        </form>
-		                        <form asp-action="VoteAnalyticsButton" method="post">
-			                        <button type="submit" style="width:90px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Analytics</button>
-		                        </form>
-	                        </td>
+                            
+                           
+                            <!--<td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>-->
+                            <td>
+                            @if((createdVote.VoteOpenDateTime == null || createdVote.VoteOpenDateTime >= DateTime.Now) && createdVote.VoteCloseDateTime >= DateTime.Now)
+                            {
+                                <form asp-action="BackToIndexPage" method="post">
+		                        <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@createdVote.Id">Edit</button>
+	                            </form>
+                                
+                            }
+                            else
+                            {
+                                <button style="width:140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@createdVote.Id" disabled>Edit</button>
+                            }
+	                        <form asp-action="VoteResultsButton" method="post">
+		                        <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button>
+	                        </form>
+                            <form asp-action="VoteAnalyticsButton" method="post">
+                                <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Analytics</button>
+                            </form>
+                            </td>
                         </tr>
                         {
                             i++;

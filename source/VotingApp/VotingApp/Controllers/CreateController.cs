@@ -23,6 +23,7 @@ namespace VotingApp.Controllers
         private readonly IVoteOptionRepository _voteOptionRepository;
         private readonly CreationService _creationService;
         private readonly ISubmittedVoteRepository _submittedVoteRepository;
+        private readonly IVoteAuthorizedUsersRepo _voteAuthorizedUsersRepo;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -32,7 +33,8 @@ namespace VotingApp.Controllers
             IVotingUserRepositiory votingUserRepositiory,
             IVoteOptionRepository voteOptionRepository,
             CreationService creationService,
-            ISubmittedVoteRepository submittedVoteRepository)
+            ISubmittedVoteRepository submittedVoteRepository,
+            IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -43,6 +45,7 @@ namespace VotingApp.Controllers
             _voteOptionRepository = voteOptionRepository;
             _creationService = creationService;
             _submittedVoteRepository = submittedVoteRepository;
+            _voteAuthorizedUsersRepo = voteAuthorizedUsersRepo;
         }
 
         [HttpGet]
@@ -56,9 +59,10 @@ namespace VotingApp.Controllers
             return View();
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteCloseDateTime")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteCloseDateTime, PrivateVote")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -74,7 +78,13 @@ namespace VotingApp.Controllers
                     ViewBag.Message = result;
                     return View(createdVote);
                 }
-                if (createdVote.VoteTypeId == 1)
+                if(createdVote.PrivateVote == true)
+                {
+                    createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                    AuthorizedUserPageVM vm = new AuthorizedUserPageVM {id = createdVote.Id };
+                    return RedirectToAction("AddVoteUsers", vm);
+                }
+                else if (createdVote.VoteTypeId == 1)
                 {
                     return RedirectToAction("Confirmation", createdVote);
                 }
@@ -90,9 +100,14 @@ namespace VotingApp.Controllers
                 return View(createdVote);
             }
         }
+
+        public IActionResult AddVoteUsers(AuthorizedUserPageVM vm)
+        {
+            return View("AddVoteUsers",vm);
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime,VoteAccessCode")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime,VoteAccessCode, PrivateVote")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -108,6 +123,18 @@ namespace VotingApp.Controllers
                 {
                     ViewBag.Message = result;
                     return View(createdVote);
+                }
+                createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                if (createdVote.PrivateVote == true)
+                {
+                    
+                    var listofUserString = _creationService.AuthorizedUsersToString(createdVote.VoteAuthorizedUsers.ToList());
+                    AuthorizedUserPageVM vm = new AuthorizedUserPageVM{ emails = listofUserString, id = createdVote.Id};
+                    return RedirectToAction("AddVoteUsers", vm);
+                }
+                if(createdVote.PrivateVote == false && createdVote.VoteAuthorizedUsers.Count > 0)
+                {
+                    _voteAuthorizedUsersRepo.RemoveAllByVoteID(createdVote.Id);
                 }
                 if (createdVote.VoteTypeId == 1)
                 {
@@ -185,6 +212,7 @@ namespace VotingApp.Controllers
             vm.ShareURL =
                 $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
             vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? DateTime.Now;
+            vm.VotingAuthorizedUsers = createdVote.VoteAuthorizedUsers.ToList();
             return View(vm);
         }
 
@@ -303,6 +331,29 @@ namespace VotingApp.Controllers
                 "Value", "Text");
             ViewData["VoteTypeId"] = selectListVoteType;
             return View("Index",result);
+        }
+        public IActionResult GetUsers(int id, string userListString)
+        {
+            var createdVote = _createdVoteRepository.GetById(id);
+            if(createdVote.VoteAuthorizedUsers.Count > 0)
+            {
+                _voteAuthorizedUsersRepo.RemoveAllByVoteID(createdVote.Id);
+            }
+            if(userListString != null)
+            {
+                createdVote.VoteAuthorizedUsers = _creationService.ParseUserList(id, userListString).ToList();
+                createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+            }
+
+            if (createdVote.VoteTypeId == 1)
+            {
+                return RedirectToAction("Confirmation", createdVote);
+            }
+            else
+            {
+                createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                return View("MultipleChoice", createdVote);
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
