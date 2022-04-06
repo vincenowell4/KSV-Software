@@ -48,5 +48,10 @@ namespace VotingApp.DAL.Concrete
         {
             return _context.VoteOptions.Where(a => a.CreatedVoteId == id).ToList();
         }
+
+        public IList<string> GetVoteOptionString(int id)
+        {
+            return _context.VoteOptions.Where(a => a.CreatedVoteId == id).Select(a => a.VoteOptionString).ToList();
+        }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
@@ -88,6 +89,43 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVoteSet.Object);
         }
 
+        [Test]
+        //VA83
+        public void SubmittedVoteRepo_MatchingOrderOptionsList_ShouldBeCorrectOrderOptions()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.MatchingOrderOptionsList(_createdVotes[2].Id, _voteOption);
+            Assert.IsTrue(check[0] == "option 1");
+            Assert.IsTrue(check[1] == "option 2");
+        }
+
+        [Test]
+        //VA83
+        public void SubmittedVoteRepo_MatchingOrderOptionsList_ShouldHave2Options()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.MatchingOrderOptionsList(_createdVotes[2].Id, _voteOption);
+            Assert.AreEqual(check.Count(), 2);
+        }
+
+        [Test]
+        //VA83
+        public void SubmittedVoteRepo_TotalVotesPerOption_ShouldReturnCount2Options()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.TotalVotesPerOption(_createdVotes[2].Id, _voteOption);
+            Assert.AreEqual(check.Count(), 2);
+        }
+
+        [Test]
+        //VA83
+        public void SubmittedVoteRepo_TotalVotesPerOption_ShouldBeInCorrectOrder()
+        {
+            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+            var check = repo.TotalVotesPerOption(_createdVotes[2].Id, _voteOption);
+            Assert.IsTrue(check[0] == 1);
+            Assert.IsTrue(check[1] == 2);
+        }
 
         [Test]
         //VA80

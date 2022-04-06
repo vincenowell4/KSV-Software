@@ -79,17 +79,17 @@ See Vote Analytics UI MockUp under Modeling folder
 3. Create vote analytics html page 
 4. Add Vote Analytics title to html vote analytics page 
 5. Create vm for vote analytics page 
-6. Add vote title to vm, and set it in create controller with passed in vote id 
-7. To create the pie chart I will be following the steps from this micr doc: https://docs.microsoft.com/en-us/aspnet/web-pages/overview/data/7-displaying-data-in-a-chart
-8. Start by creating an array of the voting options - create a method in VoteOption repo that returns array of strings of the voting options for the passed in created vote id 
-9. Test this new repo method 
-10. Create an array of ints for the votes - create a method in SubmittedVotes repo that returns array of ints of the votes (grouped by the voting options) for the passed in created vote id 
-11. Test this new repo method 
-12. In vote analytics view model create two fields for the array of vote options and array of submitted votes - set these in the controller for the action method that returns the vote analytics page 
-13. Create a new cshtml page for the creating of the chart first and fill it out with the vote analytics view model 
-14. In the vote analytics html page add the place for the pie chart. To add in the pie chart we will add an image tag where we will put the cshtml page where we created the pie chart  
-15. Manually test the interface and make sure pie chart looks ok, may need to go back and add in any needed styling of pie chart 
-16. Add in back to vote review page button and call action method that has already been created to go back to that page 
-17. In html page create if statement where array of submitted votes is empty then tell user there are no votes for this created vote yet
-18. Add in any needed tool tips for user to better understand what is happening 
+6. Add vote title and description to vm, and set it in create controller with passed in vote id 
+7. Add this "<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>" to layout.cshtml in head to use for charts (following example from: https://developers.google.com/chart/interactive/docs/gallery/piechart)
+8. in vote analytics view model add list for storing vote totals and list for storing vote options 
+9. Create repo methods for adding to those lists 
+10. Test these repo methods 
+11. Set items in create controller with these repo methods  
+12. On analytics html add javascript code to scripts section in order to get pie charts to work correctly 
+13. Add place in html page for where pie chart will go 
+14. Manually test the interface and make sure pie chart looks ok, may need to go back and add in any needed styling of pie chart 
+15. Add in back to vote review page button and call action method that has already been created to go back to that page 
+16. In html page create if statement where lists of submitted votes is empty then tell user there are no votes for this created vote yet
+17. Add in any needed tool tips for user to better understand what is happening 
+18. Refactor table on created votes review page a bit to make it look nicer 
 

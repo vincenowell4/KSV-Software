@@ -12,5 +12,7 @@ namespace VotingApp.DAL.Abstract
         public VoteOption GetById(int id);
         public IList<VoteOption> GetAllByVoteID(int id);
 
+        public IList<string> GetVoteOptionString(int id);
+
     }
 }
