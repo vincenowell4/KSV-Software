@@ -6,22 +6,17 @@ namespace VotingApp.Models
 {
     public class CreationService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IVotingUserRepositiory _votingUserRepository;
+        
         private readonly ICreatedVoteRepository _createdVoteRepository;
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
-            IVotingUserRepositiory votingUserRepositiory,
-            UserManager<IdentityUser> userManager,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
             IVoteOptionRepository voteOptionRepository)
         {
-            _userManager = userManager;
-            _votingUserRepository = votingUserRepositiory;
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
@@ -74,11 +69,46 @@ namespace VotingApp.Models
             if (createdVote.VoteTypeId != 1 && oldVoteTypeId == 1) //going from yes/no to any other type of vote 
             {
                 //remove all options
+                //var voteOpts = _voteOptionRepository.GetAllByVoteID(createdVote.VoteTypeId);
                 _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
+                //createdVote.VoteOptions = new List<VoteOption>();
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
 
             return "";
+        }
+        public IEnumerable<VoteAuthorizedUser> ParseUserList(int id ,string userString)
+        {
+            var userList = new List<string>();
+            userList = userString.Split(',').ToList();
+            userList = userList.Select(user => user.Trim()).ToList();
+            List<VoteAuthorizedUser> voteAuthorizedUser = new List<VoteAuthorizedUser>();
+            foreach (var user in userList)
+            {
+                voteAuthorizedUser.Add(new VoteAuthorizedUser { CreatedVoteId = id, UserName = user });
+            }
+            return voteAuthorizedUser;
+        }
+        public string AuthorizedUsersToString(List<VoteAuthorizedUser> userList)
+        {
+            string userString = "";
+            foreach(var user in userList)
+            {
+                if(userList.Count == 1)
+                {
+                    userString += user.UserName;
+                }
+                else
+                {
+                    userString += user.UserName + ",";
+                }
+                
+            }
+            if(userString.LastOrDefault() == ',')
+            {
+                userString = userString.Remove(userString.Length -1, 1);
+            }
+            return userString;
         }
     }
 }

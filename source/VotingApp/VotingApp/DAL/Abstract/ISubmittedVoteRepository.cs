@@ -13,6 +13,10 @@ namespace VotingApp.DAL.Abstract
         public Dictionary<VoteOption, int> GetWinner(Dictionary<VoteOption, int> submittedVotes);
 
         public SubmittedVote GetByUserIdAndVoteId(int userId, int voteId);
+        List<SubmittedVote> GetCastVotesById(int v);
+        SubmittedVote EditCastVote(int v1, int v2);
 
+        public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options);
+        public IList<string> MatchingOrderOptionsList(int id, IList<VoteOption> options);
     }
 }

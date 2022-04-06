@@ -64,6 +64,7 @@ builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
+builder.Services.AddScoped<IVoteAuthorizedUsersRepo, VoteAuthorizedUsersRepo>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
        o.TokenLifespan = TimeSpan.FromSeconds(06400)); //email confirmation token will expire after exactly 24 hours (86400 seconds)

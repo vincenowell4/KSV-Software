@@ -119,5 +119,47 @@ namespace VotingApp.DAL.Concrete
         {
             return _context.SubmittedVotes.Where(s => s.UserId == userId && s.CreatedVoteId == voteId).FirstOrDefault();
         }
+
+        public List<SubmittedVote> GetCastVotesById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SubmittedVote EditCastVote(int voteId, int choiceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options)
+        {
+           var totals = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
+           IList<int> votesList = new List<int>();
+
+           foreach (var vote in totals)
+           {
+               votesList.Add(vote.Count());
+           }
+
+           return votesList;
+        }
+
+        public IList<string> MatchingOrderOptionsList(int id, IList<VoteOption> options)
+        {
+            var totals = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
+            IList<string> optionsList = new List<string>();
+
+            foreach (var total in totals)
+            {
+                foreach (var option in options)
+                {
+                    if (option.Id == total.Key)
+                    {
+                        optionsList.Add(option.VoteOptionString);
+                    }
+                }
+            }
+
+            return optionsList;
+        }
     }
 }

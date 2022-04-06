@@ -48,10 +48,38 @@ namespace VotingApp.Controllers
             
             if (model.vote != null && model.vote.VoteCloseDateTime >= DateTime.Now)
             {
+                if (model.vote.PrivateVote == true)
+                {
+                    if (!User.Identity.IsAuthenticated)
+                    {
+                        return Redirect("~/Identity/Account/Login");
+                    }
+                    else
+                    {
+                        VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                        foreach(var users in model.vote.VoteAuthorizedUsers)
+                        {
+                            if(users.UserName == user.UserName)
+                            {
+                                if (user != null && user.Id != 0)
+                                {
+                                    SubmittedVote subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
+                                    if (subVote != null)
+                                    {
+                                        model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                                    }
+                                }
+                                return View("SubmitVote", model);
+                            }
+                        }
+                        ViewBag.ErrorMessage = $"You are not authorized for this vote.";
+                        return View("Index");
+                    }
+                }
                 if (User.Identity.IsAuthenticated) //if user is logged in, check to see if they've already submitted a vote
                 {
                     VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
-                    if (user.Id != 0)
+                    if (user != null && user.Id != 0)
                     {
                         SubmittedVote subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
                         if (subVote != null)

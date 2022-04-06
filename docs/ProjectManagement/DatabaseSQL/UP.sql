@@ -8,7 +8,8 @@ CREATE TABLE [CreatedVote]
 [VoteTypeId] int NOT NULL,
 [VoteAccessCode] NVARCHAR (100) NOT NULL,
 [VoteOpenDateTime] DATETIME,
-[VoteCloseDateTime] DATETIME
+[VoteCloseDateTime] DATETIME,
+[PrivateVote] BIT NOT NULL,
 );
 
 CREATE TABLE [VoteType]
@@ -41,6 +42,13 @@ CREATE TABLE [VotingUser]
 [UserName] nvarchar(250) NOT NULL
 );
 
+CREATE TABLE [VoteAuthorizedUsers] 
+(
+[ID] int PRIMARY KEY IDENTITY(1, 1),
+[CreatedVoteID] int NOT NULL,
+[UserName] nvarchar(250) NOT NULL
+);
+
 ALTER TABLE [VoteOptions] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [SubmittedVote] ADD CONSTRAINT [Fk_Created_Vote_ID]
@@ -51,3 +59,5 @@ ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_Created_Vote_User_ID]
  FOREIGN KEY ([UserID]) REFERENCES [VotingUser] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_Vote_Type_ID]
  FOREIGN KEY ([VoteTypeId]) REFERENCES [VoteType] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ ALTER TABLE [VoteAuthorizedUsers] ADD CONSTRAINT [Fk_AuthorizedUsers_Created_Vote_ID]
+ FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
