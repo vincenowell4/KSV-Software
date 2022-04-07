@@ -123,7 +123,7 @@ namespace VotingApp.Controllers
             {
                 user = null;
             }
-            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice};
+            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice, DateCast=DateTime.Now};
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
             var model = new SubmitConfirmationModel {OptionId=subvote.VoteChoice, CreateId=vote.Id};

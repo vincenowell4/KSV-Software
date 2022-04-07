@@ -72,7 +72,8 @@ namespace Tests_NUnit_Voting_App
                    CreatedVoteId = _createdVotes[1].Id,
                    User = _votingUsers[1],
                    UserId =_votingUsers[1].Id,
-                   VoteChoice = 1
+                   VoteChoice = 1,
+                   DateCast = DateTime.Now.AddDays(-5),
                },
                new SubmittedVote
                {
@@ -81,7 +82,8 @@ namespace Tests_NUnit_Voting_App
                    CreatedVoteId = _createdVotes[2].Id,
                    User = _votingUsers[1],
                    UserId =_votingUsers[1].Id,
-                   VoteChoice = 3
+                   VoteChoice = 3,
+                   DateCast = DateTime.Now,
                }
             };
             _voteOption = new List<VoteOption>()
@@ -138,10 +140,10 @@ namespace Tests_NUnit_Voting_App
             ISubmittedVoteRepository submittedVoteRepository = new SubmittedVoteRepository(_mockContext.Object);
 
             //Act
-            List<SubmittedVote> subVoteList = submittedVoteRepository.GetCastVotesById(2);
+            List<SubmittedVote> subVoteList = submittedVoteRepository.GetCastVotesById(_votingUsers[1].Id);
 
             //Assert that returned list of votes is sorted by date, and only by the intended user
-            
+            Assert.That(subVoteList.Count, Is.EqualTo(2));
         }
         //VA160
         [Test]

@@ -122,7 +122,7 @@ namespace VotingApp.DAL.Concrete
 
         public List<SubmittedVote> GetCastVotesById(int id)
         {
-            throw new NotImplementedException();
+            return _context.SubmittedVotes.Where(a => a.UserId == id).OrderBy(a => a.DateCast).ToList();
         }
 
         public SubmittedVote EditCastVote(int voteId, int choiceId)
