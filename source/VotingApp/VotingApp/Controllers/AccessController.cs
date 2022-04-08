@@ -41,6 +41,17 @@ namespace VotingApp.Controllers
         }
 
         [HttpGet]
+        public IActionResult VoteHistory()
+        {
+            VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+            if (user != null)
+            {
+                return View(_subVoteRepository.GetCastVotesById(user.Id));
+            }
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult Access(string code)
         {
             SubmitVoteVM model = new SubmitVoteVM();
