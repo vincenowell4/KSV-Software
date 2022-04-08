@@ -122,12 +122,19 @@ namespace VotingApp.DAL.Concrete
 
         public List<SubmittedVote> GetCastVotesById(int id)
         {
-            return _context.SubmittedVotes.Where(a => a.UserId == id).OrderBy(a => a.DateCast).ToList();
+            return _context.SubmittedVotes.Where(a => a.UserId == id).OrderByDescending(a => a.DateCast).ToList();
         }
 
         public SubmittedVote EditCastVote(int voteId, int choiceId)
         {
-            throw new NotImplementedException();
+            var vote = _context.SubmittedVotes.Where(a => a.Id == voteId).FirstOrDefault();
+            if (vote != null && vote.VoteChoice != choiceId && vote.CreatedVote.VoteOptions.Select(c => c.Id).ToList().Contains(choiceId) && (vote.CreatedVote.VoteCloseDateTime >= DateTime.Now || vote.CreatedVote.VoteCloseDateTime == null))
+            {
+                vote.VoteChoice = choiceId;
+                _context.SubmittedVotes.Update(vote);
+                _context.SaveChanges();
+            }
+            return vote;
         }
 
         public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options)

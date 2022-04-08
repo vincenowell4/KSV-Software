@@ -60,32 +60,15 @@ namespace Tests_NUnit_Voting_App
                 new CreatedVote
                 {
                     Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote",
-                    VoteDiscription = "Mult choice description", VoteOptions = _voteOption
+                    VoteDiscription = "Mult choice description", VoteOptions = _voteOption, VoteCloseDateTime = DateTime.Now.AddDays(-5)
                 }
             };
-            _submittedVotes = new List<SubmittedVote>()
+            _votingUsers = new List<VotingUser>()
             {
-               new SubmittedVote
-               {
-                   Id = 1,
-                   CreatedVote = _createdVotes[1],
-                   CreatedVoteId = _createdVotes[1].Id,
-                   User = _votingUsers[1],
-                   UserId =_votingUsers[1].Id,
-                   VoteChoice = 1,
-                   DateCast = DateTime.Now.AddDays(-5),
-               },
-               new SubmittedVote
-               {
-                   Id = 2,
-                   CreatedVote = _createdVotes[2],
-                   CreatedVoteId = _createdVotes[2].Id,
-                   User = _votingUsers[1],
-                   UserId =_votingUsers[1].Id,
-                   VoteChoice = 3,
-                   DateCast = DateTime.Now,
-               }
+                new VotingUser { Id = 1, NetUserId = "ABC123CBA31", UserName = "name@mail.com" },
+                new VotingUser { Id = 2, NetUserId = "123456", UserName = "name2@mail.com" }
             };
+            
             _voteOption = new List<VoteOption>()
             {
                 new VoteOption
@@ -95,18 +78,36 @@ namespace Tests_NUnit_Voting_App
                 new VoteOption
                     { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 3, VoteOptionString = "option 3" }
             };
-
-            _votingUsers = new List<VotingUser>()
+            _submittedVotes = new List<SubmittedVote>()
             {
-                new VotingUser { Id = 1, NetUserId = "ABC123CBA31", UserName = "name@mail.com" },
-                new VotingUser { Id = 2, NetUserId = "123456", UserName = "name2@mail.com" }
+                new SubmittedVote
+                {
+                    Id = 1,
+                    CreatedVote = _createdVotes[1],
+                    CreatedVoteId = _createdVotes[1].Id,
+                    User = _votingUsers[1],
+                    UserId =_votingUsers[1].Id,
+                    VoteChoice = 1,
+                    DateCast = DateTime.Now.AddDays(-5)
+                },
+                new SubmittedVote
+                {
+                    Id = 2,
+                    CreatedVote = _createdVotes[2],
+                    CreatedVoteId = _createdVotes[2].Id,
+                    User = _votingUsers[1],
+                    UserId =_votingUsers[1].Id,
+                    VoteChoice = 3,
+                    DateCast = DateTime.Now
+                }
             };
+
 
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
-
+            _submittedVotesSet = GetMockDbSet(_submittedVotes.AsQueryable());
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteType>()).Returns(_voteTypesSet.Object);
@@ -116,6 +117,8 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VoteOption>()).Returns(_voteOptionSet.Object);
             _mockContext.Setup(ctx => ctx.VotingUsers).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
+            _mockContext.Setup(ctx => ctx.SubmittedVotes).Returns(_submittedVotesSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVotesSet.Object);
             _mockContext.Setup(x => x.Add(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) => _createdVotes.Add(s));
             _mockContext.Setup(x => x.Update(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) =>
             {
@@ -143,7 +146,7 @@ namespace Tests_NUnit_Voting_App
             List<SubmittedVote> subVoteList = submittedVoteRepository.GetCastVotesById(_votingUsers[1].Id);
 
             //Assert that returned list of votes is sorted by date, and only by the intended user
-            Assert.That(subVoteList.Count, Is.EqualTo(2));
+            Assert.True(subVoteList.Count == 2 && subVoteList.FirstOrDefault() == _submittedVotes[1]);
         }
         //VA160
         [Test]
@@ -155,7 +158,7 @@ namespace Tests_NUnit_Voting_App
             //Act
             List<SubmittedVote> subVoteList = submittedVoteRepository.GetCastVotesById(1);
 
-            //Assert that returned list is empty
+            Assert.That(subVoteList.Count == 0);
 
         }
 
@@ -169,7 +172,7 @@ namespace Tests_NUnit_Voting_App
             //Act
             List<SubmittedVote> subVoteList = submittedVoteRepository.GetCastVotesById(5);
 
-            //Assert that returned list is empty
+            Assert.That(subVoteList.Count == 0);
 
         }
 
@@ -183,7 +186,7 @@ namespace Tests_NUnit_Voting_App
             //Act
             SubmittedVote editedVote = submittedVoteRepository.EditCastVote(1,2);
 
-            //Assert that returned vote has the same id, and is edited
+            Assert.True(editedVote.VoteChoice == 2 && editedVote.Id == 1);
 
         }
 
@@ -195,9 +198,9 @@ namespace Tests_NUnit_Voting_App
             ISubmittedVoteRepository submittedVoteRepository = new SubmittedVoteRepository(_mockContext.Object);
 
             //Act
-            SubmittedVote editedVote = submittedVoteRepository.EditCastVote(1, 2);
+            SubmittedVote editedVote = submittedVoteRepository.EditCastVote(9, 2);
 
-            //Assert that returned item is null
+            Assert.True(editedVote == null);
 
         }
 
@@ -211,7 +214,7 @@ namespace Tests_NUnit_Voting_App
             //Act
             SubmittedVote editedVote = submittedVoteRepository.EditCastVote(1, 5);
 
-            //Assert that returned vote is the same id and is unedited
+            Assert.True(editedVote.VoteChoice == 1 && editedVote.Id == 1);
 
         }
 
@@ -225,7 +228,7 @@ namespace Tests_NUnit_Voting_App
             //Act
             SubmittedVote editedVote = submittedVoteRepository.EditCastVote(9, 5);
 
-            //Assert that returned item is null
+            Assert.True(editedVote == null);
 
         }
         //VA160
@@ -236,9 +239,9 @@ namespace Tests_NUnit_Voting_App
             ISubmittedVoteRepository submittedVoteRepository = new SubmittedVoteRepository(_mockContext.Object);
 
             //Act
-            SubmittedVote editedVote = submittedVoteRepository.EditCastVote(1, 2);
+            SubmittedVote editedVote = submittedVoteRepository.EditCastVote(2, 2);
 
-            //Assert that returned vote is the same id and is unedited
+            Assert.True(editedVote.VoteChoice == 3 && editedVote.Id == 2);
 
         }
 
