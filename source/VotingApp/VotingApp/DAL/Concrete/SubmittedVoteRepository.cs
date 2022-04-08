@@ -120,6 +120,11 @@ namespace VotingApp.DAL.Concrete
             return _context.SubmittedVotes.Where(s => s.UserId == userId && s.CreatedVoteId == voteId).FirstOrDefault();
         }
 
+        public SubmittedVote GetVoteById(int id)
+        {
+            return _context.SubmittedVotes.Where(s => s.Id == id).FirstOrDefault();
+        }
+
         public List<SubmittedVote> GetCastVotesById(int id)
         {
             return _context.SubmittedVotes.Where(a => a.UserId == id).OrderByDescending(a => a.DateCast).ToList();
@@ -128,7 +133,7 @@ namespace VotingApp.DAL.Concrete
         public SubmittedVote EditCastVote(int voteId, int choiceId)
         {
             var vote = _context.SubmittedVotes.Where(a => a.Id == voteId).FirstOrDefault();
-            if (vote != null && vote.VoteChoice != choiceId && vote.CreatedVote.VoteOptions.Select(c => c.Id).ToList().Contains(choiceId) && (vote.CreatedVote.VoteCloseDateTime >= DateTime.Now || vote.CreatedVote.VoteCloseDateTime == null))
+            if (vote != null && vote.VoteChoice != choiceId && (vote.CreatedVote.VoteCloseDateTime >= DateTime.Now || vote.CreatedVote.VoteCloseDateTime == null) && vote.CreatedVote.VoteOptions.Select(c => c.Id).ToList().Contains(choiceId))
             {
                 vote.VoteChoice = choiceId;
                 _context.SubmittedVotes.Update(vote);

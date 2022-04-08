@@ -43,12 +43,58 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult VoteHistory()
         {
-            VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
-            if (user != null)
+            if(!User.Identity.IsAuthenticated)
             {
-                return View(_subVoteRepository.GetCastVotesById(user.Id));
+                return Redirect("~/Identity/Account/Login");
             }
-            return View();
+            VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+            if (user == null)
+            {
+                var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                user = _votingUserRepository.AddOrUpdate(newUser);
+            }
+            
+            var voteList = _subVoteRepository.GetCastVotesById(user.Id);
+            List<SubmittedVoteHistoryVM> voteListVM = new List<SubmittedVoteHistoryVM>();
+            foreach(var vote in voteList)
+            {
+                SubmittedVoteHistoryVM submittedVoteHistoryVM = new SubmittedVoteHistoryVM();
+                submittedVoteHistoryVM.subVote = vote;
+                submittedVoteHistoryVM.voteOption = vote.CreatedVote.VoteOptions.Where(a => a.Id == vote.VoteChoice).FirstOrDefault();
+                voteListVM.Add(submittedVoteHistoryVM);
+            } 
+            return View(voteListVM);
+
+        }
+
+        public IActionResult EditSubVote(int id)
+        {
+            var subvote = _subVoteRepository.GetVoteById(id);
+            var vote = subvote.CreatedVote;
+            if (vote != null && (vote.VoteOpenDateTime == null || vote.VoteOpenDateTime <= DateTime.Now) && (vote.VoteCloseDateTime == null || vote.VoteCloseDateTime >= DateTime.Now))
+            {
+                if(vote.PrivateVote == true)
+                {
+                    if (!User.Identity.IsAuthenticated)
+                    {
+                        return Redirect("~/Identity/Account/Login");
+                    }
+                    if (!vote.VoteAuthorizedUsers.Select(a => a.UserName).ToList().Contains(_userManager.GetUserName(User)))
+                    {
+                        ViewBag.ErrorMessage = $"You are not authorized for this vote.";
+                        return View("Index");
+                    }
+                    return View("SubmitVote", new SubmitVoteVM { vote = vote, options = vote.VoteOptions.ToList(), submittedVote = subvote });
+                }
+            }
+            return View("SubmitVote", new SubmitVoteVM { vote = vote, options = vote.VoteOptions.ToList(), submittedVote = subvote });
+        }
+        public IActionResult EditCastVote(int Id, int choice)
+        {
+            var item = _subVoteRepository.EditCastVote(Id, choice);
+            var model = new SubmitConfirmationModel {createdVote = item.CreatedVote, OptionId = item.VoteChoice, CreateId = item.Id };
+            return RedirectToAction("SubmitConfirmation", model);
+
         }
 
         [HttpGet]
@@ -68,7 +114,12 @@ namespace VotingApp.Controllers
                     else
                     {
                         VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
-                        foreach(var users in model.vote.VoteAuthorizedUsers)
+                        if (user == null)
+                        {
+                            var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                            user = _votingUserRepository.AddOrUpdate(newUser);
+                        }
+                        foreach (var users in model.vote.VoteAuthorizedUsers)
                         {
                             if(users.UserName == user.UserName)
                             {
@@ -129,6 +180,11 @@ namespace VotingApp.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                if (user == null)
+                {
+                    var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                    user = _votingUserRepository.AddOrUpdate(newUser);
+                }
             }
             else
             {

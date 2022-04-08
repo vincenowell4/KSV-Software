@@ -15,7 +15,7 @@ namespace VotingApp.DAL.Abstract
         public SubmittedVote GetByUserIdAndVoteId(int userId, int voteId);
         List<SubmittedVote> GetCastVotesById(int v);
         SubmittedVote EditCastVote(int v1, int v2);
-
+        public SubmittedVote GetVoteById(int id);
         public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options);
         public IList<string> MatchingOrderOptionsList(int id, IList<VoteOption> options);
     }
