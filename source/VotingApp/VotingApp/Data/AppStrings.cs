@@ -8,5 +8,8 @@
         public const string EmailConfirmationSuccessful = "Thank you for confirming your email";
         public const string EmailConfirmationError = "There was an error confirming your email. To resend the email, please click";
         public const string EmailLoadUserError = "Unable to load user with email";
+        public const string EmailSubjectVoteOpen = "Opiniony - Your Vote Is Now Open";
+        public const string EmailMessageVoteOpen = "The vote you created is now open: ";
+
     }
 }

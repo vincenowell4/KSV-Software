@@ -60,6 +60,35 @@
                         </div>
                     </div>
                 </div>
+                @if (User != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="form-row mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label">Start Vote Immediately</label>
+                                <input type="radio" id="VoteStartNow" checked="checked" name="VoteStart" onclick="setVoteOpenDateTime(0);" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="control-label">Start Vote at a Future Time</label>
+                                <input type="radio" id="VoteStartFuture" name="VoteStart" onclick="setVoteOpenDateTime(1);" />
+                            </div>
+                            <div class="col-md-6 align-self-center">
+                                <label class="control-label text-white">When does voting start? <span data-toggle="tooltip" data-placement="bottom" title="Enter a future date and time for when you want the voting to start">&#8505;</span></label>
+                                <input asp-for="VoteOpenDateTime" type="text" id="VoteOpenDateTime" disabled />
+
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="row mb-3 justify-content-center">
+                    @if (ViewBag.ErrorMessage == "Vote start date/time must be in the future. Please try again." )
+                    {
+                        <div class="alert alert-danger">
+                            <p>@ViewBag.ErrorMessage</p>
+                        </div>
+                    }
+                </div>
+
                 <div class="form-row mb-4">
                     <div class="row">
                         <div class="form-group">
@@ -71,6 +100,15 @@
                         </div>
                         
                     </div>
+                </div>
+                <div class="row mb-3 justify-content-center">
+                    @if (ViewBag.ErrorMessage == "Vote close date/time must be in the future. Please try again." || 
+                         ViewBag.ErrorMessage == "Vote close date/time must be after vote start date/time")
+                    {
+                        <div class="alert alert-danger">
+                            <p>@ViewBag.ErrorMessage</p>
+                        </div>
+                    }
                 </div>
 				<div class="row mb-3 justify-content-center">
 					<h4><u>Voting Type Descriptions:</u></h4>
@@ -98,3 +136,17 @@
 		</div>
 	</div>
 </div>
+@section Scripts
+{
+  <script>
+      function setVoteOpenDateTime(flag) {
+          if (flag == 0) {
+              $("#VoteOpenDateTime").val('');
+              $("#VoteOpenDateTime").attr("disabled",true);
+          }
+          else {
+              $("#VoteOpenDateTime").attr("disabled",false);
+          }
+      }
+  </script>
+}

@@ -82,6 +82,12 @@ namespace VotingApp.DAL.Concrete
         {
             return _context.CreatedVotes.Include(a => a.VoteType).Where(v => v.UserId == userId).ToList();
         }
+
+        public IList<CreatedVote> GetAllVotesWithNoAccessCode()
+        {
+            return _context.CreatedVotes.Where(v => v.VoteAccessCode == null).ToList();
+        }
+
     }
 }
 
