@@ -12,6 +12,7 @@ namespace VotingApp.Models
         public CreatedVote()
         {
             SubmittedVotes = new HashSet<SubmittedVote>();
+            VoteAuthorizedUsers = new HashSet<VoteAuthorizedUser>();
             VoteOptions = new HashSet<VoteOption>();
         }
 
@@ -33,6 +34,7 @@ namespace VotingApp.Models
         
         [Column(TypeName = "datetime")]
         public DateTime? VoteCloseDateTime { get; set; }
+        public bool PrivateVote { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
@@ -42,6 +44,8 @@ namespace VotingApp.Models
         public virtual VoteType VoteType { get; set; } = null!;
         [InverseProperty(nameof(SubmittedVote.CreatedVote))]
         public virtual ICollection<SubmittedVote> SubmittedVotes { get; set; }
+        [InverseProperty(nameof(VoteAuthorizedUser.CreatedVote))]
+        public virtual ICollection<VoteAuthorizedUser> VoteAuthorizedUsers { get; set; }
         [InverseProperty(nameof(VoteOption.CreatedVote))]
         public virtual ICollection<VoteOption> VoteOptions { get; set; }
     }

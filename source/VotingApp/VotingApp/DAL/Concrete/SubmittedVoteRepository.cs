@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
@@ -132,15 +132,15 @@ namespace VotingApp.DAL.Concrete
 
         public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options)
         {
-            var totals = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
-            IList<int> votesList = new List<int>();
+           var totals = _context.SubmittedVotes.AsEnumerable().Where(a => a.CreatedVoteId == id).GroupBy(g => g.VoteChoice).ToList();
+           IList<int> votesList = new List<int>();
 
-            foreach (var vote in totals)
-            {
-                votesList.Add(vote.Count());
-            }
+           foreach (var vote in totals)
+           {
+               votesList.Add(vote.Count());
+           }
 
-            return votesList;
+           return votesList;
         }
 
         public IList<string> MatchingOrderOptionsList(int id, IList<VoteOption> options)
@@ -160,19 +160,6 @@ namespace VotingApp.DAL.Concrete
             }
 
             return optionsList;
-        }
-
-        public Dictionary<string, int> TotalVotes(int id, IList<VoteOption> options)
-        {
-            var dict = new Dictionary<string, int>();
-            var votes = TotalVotesForEachOption(id, options);
-
-            foreach (var vote in votes)
-            {
-                dict.Add(vote.Key.VoteOptionString, vote.Value);
-            }
-
-            return dict;
         }
     }
 }

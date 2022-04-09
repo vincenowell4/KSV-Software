@@ -101,5 +101,38 @@ namespace VotingApp.Models
 
             return "";
         }
+        public IEnumerable<VoteAuthorizedUser> ParseUserList(int id ,string userString)
+        {
+            var userList = new List<string>();
+            userList = userString.Split(',').ToList();
+            userList = userList.Select(user => user.Trim()).ToList();
+            List<VoteAuthorizedUser> voteAuthorizedUser = new List<VoteAuthorizedUser>();
+            foreach (var user in userList)
+            {
+                voteAuthorizedUser.Add(new VoteAuthorizedUser { CreatedVoteId = id, UserName = user });
+            }
+            return voteAuthorizedUser;
+        }
+        public string AuthorizedUsersToString(List<VoteAuthorizedUser> userList)
+        {
+            string userString = "";
+            foreach(var user in userList)
+            {
+                if(userList.Count == 1)
+                {
+                    userString += user.UserName;
+                }
+                else
+                {
+                    userString += user.UserName + ",";
+                }
+                
+            }
+            if(userString.LastOrDefault() == ',')
+            {
+                userString = userString.Remove(userString.Length -1, 1);
+            }
+            return userString;
+        }
     }
 }

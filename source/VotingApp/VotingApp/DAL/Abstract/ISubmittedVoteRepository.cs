@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using VotingApp.Models;
 
@@ -18,7 +18,7 @@ namespace VotingApp.DAL.Abstract
         List<SubmittedVote> GetCastVotesById(int v);
         SubmittedVote EditCastVote(int v1, int v2);
 
-
-        public Dictionary<string,int> TotalVotes(int id, IList<VoteOption> options);
+        public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options);
+        public IList<string> MatchingOrderOptionsList(int id, IList<VoteOption> options);
     }
 }
