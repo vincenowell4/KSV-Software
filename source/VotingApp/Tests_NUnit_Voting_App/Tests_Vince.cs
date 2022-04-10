@@ -10,7 +10,7 @@ using VotingApp.Models;
 
 namespace Tests_NUnit_Voting_App
 {
-    public class RepoTests_Vince
+    public class Tests_Vince
     {
         private Mock<VotingAppDbContext> _mockContext;
         private Mock<DbSet<CreatedVote>> _createdVoteSet;
@@ -43,12 +43,14 @@ namespace Tests_NUnit_Voting_App
                 new VoteType { Id = 2,VotingType =null ,VoteTypeDescription = "null discription" },
                 new VoteType { Id = 3,VotingType ="Multiple Choice Vote" ,VoteTypeDescription = "multiple choice description"}
             };
+
             _createdVotes = new List<CreatedVote>()
             {
                 new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
-                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null},
-                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
+                new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null, VoteAccessCode = "xyz789"},
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption, VoteAccessCode = "l2m4n7"}
             };
+
             _voteOption = new List<VoteOption>()
             {
                 new VoteOption {CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 1, VoteOptionString = "option 1"},
@@ -84,17 +86,125 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.SubmittedVotes).Returns(_submittedVoteSet.Object);
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVoteSet.Object);
+            _mockContext.Setup(x => x.Add(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) => _createdVotes.Add(s));
+            _mockContext.Setup(x => x.Update(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) =>
+            {
+                var found = _createdVotes.FirstOrDefault(a => a.Id == s.Id);
+                if (found == null)
+                {
+                    _createdVotes.Add(s);
+                }
+                else
+                {
+                    var item = _createdVotes.Where(a => a.Id == s.Id).First();
+                    var index = _createdVotes.IndexOf(item);
+                    _createdVotes[index] = s;
+                }
+            });
+
         }
 
         [Test]
+        //VA-86 As a user, I want make a vote delayed, so that I can make it now and have it active for voting later
+        public void VA86_VotingUserRepo_GetUserById_ShouldReturnAVotingUserWhenTheIdIsValid()
+        {
+            // arrange
+            IVotingUserRepositiory repo = new VotingUserRepository(_mockContext.Object);
+
+            // act
+            VotingUser votingUser = repo.GetUserById(2);
+
+            // assert
+            Assert.IsTrue(votingUser.UserName == "name2@mail.com" && votingUser.NetUserId == "123456");
+        }
+
+        [Test]
+        //VA-86 As a user, I want make a vote delayed, so that I can make it now and have it active for voting later
+        public void VA86_VotingUserRepo_GetUserById_ShouldReturnNullWhenTheIdIsNotValid()
+        {
+            // arrange
+            IVotingUserRepositiory repo = new VotingUserRepository(_mockContext.Object);
+
+            // act
+            VotingUser votingUser = repo.GetUserById(3);
+
+            // assert
+            Assert.IsTrue(votingUser == null);
+        }
+
+        [Test]
+        //VA-86 As a user, I want make a vote delayed, so that I can make it now and have it active for voting later
+        public void VA86_CreatedVoteRepo_GetAllVotesWithNoAccessCode_ShouldReturnTwoRowsWhenThereAreTwoDelayedVotes()
+        {
+            // arrange
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+
+            //add two more votes that don't have a Vote Access Code
+            repo.AddOrUpdate(new CreatedVote { Id = 4, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = "Yes No Vote", VoteDiscription = "Yes No description" });
+            repo.AddOrUpdate(new CreatedVote { Id = 5, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription = "Mult choice description", VoteOptions = _voteOption });
+
+
+            // act
+            IList<CreatedVote> createdVote = repo.GetAllVotesWithNoAccessCode();
+
+
+            // assert
+            Assert.IsTrue(createdVote.Count == 2);
+        }
+
+
+        [Test]
+        //VA-86 As a user, I want make a vote delayed, so that I can make it now and have it active for voting later
+        public void VA86_CreatedVoteRepo_GetAllVotesWithNoAccessCode_ShouldReturnZeroRowsWhenThereAreNoDelayedVotes()
+        {
+            // arrange
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+
+
+            // act
+            IList<CreatedVote> createdVote = repo.GetAllVotesWithNoAccessCode(); 
+
+
+            // assert
+            Assert.IsTrue(createdVote.Count == 0);
+        }
+
+        [Test]
+        //VA-86 As a user, I want make a vote delayed, so that I can make it now and have it active for voting later
+        public void VA86_CreationService_AddVoteAccessCode_ShouldReturnCreatedVoteWithVotingAccessCode()
+        {
+            // arrange
+            IVoteOptionRepository voRepo = new VoteOptionRepository(_mockContext.Object);
+            ICreatedVoteRepository createRepo = new CreatedVoteRepository(_mockContext.Object);
+            IVoteTypeRepository typeRepo = new VoteTypeRepository(_mockContext.Object);
+            VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo);
+            //create a "Delayed Vote" - one that has a Vote Open date, but no Vote Access Code
+            var newVote = new CreatedVote
+            { Id = 4, VoteTypeId = 1, AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription = "Test", VoteOpenDateTime = DateTime.Now };
+            createService.Create(ref newVote);
+
+            CreatedVote testVote = createRepo.GetById(4);
+
+            // act
+            string testVAC = createService.AddVoteAccessCode(ref testVote);
+
+            // assert
+            Assert.True(testVAC.Length > 0);
+        }
+
+
+        [Test]
         //VA-79 As a vote creator, I want others to only be able to cast one vote per account, so that we get accurate vote results
-        public void SubmittedVoteRepo_VoteForRegisteredUserWhoHasntCastVote_ShouldReturnNull()
+        public void VA79_SubmittedVoteRepo_VoteForRegisteredUserWhoHasntCastVote_ShouldReturnNull()
         {
             // arrange
             ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
 
+
             // act
             SubmittedVote submittedVote = repo.GetByUserIdAndVoteId(2, 3); //user ID 2 has not voted on vote ID 3; this call should return null
+
 
             // assert
             Assert.IsNull(submittedVote);
@@ -103,13 +213,15 @@ namespace Tests_NUnit_Voting_App
 
         [Test]
         //VA-79 As a vote creator, I want others to only be able to cast one vote per account, so that we get accurate vote results
-        public void SubmittedVoteRepo_VoteForRegisteredUserWhoHasCastVote_ShouldReturnSubmittedVoteObject()
+        public void VA79_SubmittedVoteRepo_VoteForRegisteredUserWhoHasCastVote_ShouldReturnSubmittedVoteObject()
         {
             // arrange
             ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
 
+
             // act
             SubmittedVote submittedVote = repo.GetByUserIdAndVoteId(1, 3); //user ID 1 has voted on vote ID 3; this call should return an object
+
 
             // assert
             Assert.IsNotNull(submittedVote);
