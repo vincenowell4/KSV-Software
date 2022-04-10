@@ -68,7 +68,13 @@ namespace VotingApp.Controllers
             ModelState.Remove("VoteAccessCode");
             if (User.Identity.IsAuthenticated != false)
             {
-                createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                var vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                if (vUser == null)
+                {
+                    var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                    vUser = _votingUserRepository.AddOrUpdate(newUser);
+                }
+                createdVote.User = vUser;
             }
             if (ModelState.IsValid)
             { 
@@ -226,7 +232,11 @@ namespace VotingApp.Controllers
             if (User.Identity.IsAuthenticated != false)
             {
                 VotingUser vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
-
+                if(vUser == null)
+                {
+                    var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                    vUser = _votingUserRepository.AddOrUpdate(newUser);
+                }
                 userId = vUser.Id;
 
                 if (userId == 0)

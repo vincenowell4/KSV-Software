@@ -32,7 +32,8 @@ CREATE TABLE [SubmittedVote]
 [CreatedVoteID] int NOT NULL,
 [VoteChoice] int NOT NULL,
 [UserID] int,
-[Validated] BIT NOT NULL
+[Validated] BIT NOT NULL,
+[DateCast] DATETIME
 );
 
 CREATE TABLE [VotingUser] 
