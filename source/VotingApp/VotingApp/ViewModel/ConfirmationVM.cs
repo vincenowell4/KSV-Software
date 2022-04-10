@@ -11,11 +11,12 @@ namespace VotingApp.ViewModel
         public string ChosenVoteDescriptionHeader { get; set; }
         public List<VoteOption> VotingOptions { get; set; }
         public int ID { get; set; }
-        public string VoteAccessCode { get; set; }
+        public string? VoteAccessCode { get; set; }
         public string ShareURL { get; set; }
         public bool AnonymousVote { get; set; }
         public List<VoteAuthorizedUser> VotingAuthorizedUsers { get; set;}
 
+        public DateTime? VoteOpenDateTime { get; set; }
         public DateTime VoteCloseDateTime { get; set; }
 
     }
