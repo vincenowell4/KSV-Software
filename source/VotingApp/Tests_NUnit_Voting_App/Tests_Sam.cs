@@ -23,6 +23,8 @@ namespace Tests_NUnit_Voting_App
         private List<VotingUser> _votingUsers;
         private Mock<DbSet<SubmittedVote>> _submittedVotesSet;
         private List<SubmittedVote> _submittedVotes;
+        private Mock<DbSet<VoteAuthorizedUser>> _authorizedUsersSet;
+        private List<VoteAuthorizedUser> _authorizedUsers;
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -51,6 +53,7 @@ namespace Tests_NUnit_Voting_App
                 {
                     Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title",
                     VoteDiscription = "This is the description", VoteAccessCode = "abc123"
+                   
                 },
                 new CreatedVote
                 {
@@ -62,6 +65,7 @@ namespace Tests_NUnit_Voting_App
                     Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote",
                     VoteDiscription = "Mult choice description", VoteOptions = _voteOption, VoteCloseDateTime = DateTime.Now.AddDays(-5)
                 }
+                
             };
             _voteOption = new List<VoteOption>()
             {
@@ -86,7 +90,7 @@ namespace Tests_NUnit_Voting_App
                     CreatedVote = _createdVotes[1],
                     CreatedVoteId = _createdVotes[1].Id,
                     User = _votingUsers[1],
-                    UserId =_votingUsers[1].Id,
+                    UserId = _votingUsers[1].Id,
                     VoteChoice = 1,
                     DateCast = DateTime.Now.AddDays(-5)
                 },
@@ -96,16 +100,22 @@ namespace Tests_NUnit_Voting_App
                     CreatedVote = _createdVotes[2],
                     CreatedVoteId = _createdVotes[2].Id,
                     User = _votingUsers[1],
-                    UserId =_votingUsers[1].Id,
+                    UserId = _votingUsers[1].Id,
                     VoteChoice = 3,
                     DateCast = DateTime.Now
                 }
+            };
+            _authorizedUsers = new List<VoteAuthorizedUser>()
+            {
+                new VoteAuthorizedUser { CreatedVoteId = 1, Id = 1, UserName = "user1@mail.com" },
+                new VoteAuthorizedUser { CreatedVoteId = 1, Id = 2, UserName = "user@mail.com" }
             };
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
             _submittedVotesSet = GetMockDbSet(_submittedVotes.AsQueryable());
+            _authorizedUsersSet = GetMockDbSet(_authorizedUsers.AsQueryable());
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteType>()).Returns(_voteTypesSet.Object);
@@ -117,6 +127,8 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.SubmittedVotes).Returns(_submittedVotesSet.Object);
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVotesSet.Object);
+            _mockContext.Setup(ctx => ctx.VoteAuthorizedUsers).Returns(_authorizedUsersSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<VoteAuthorizedUser>()).Returns(_authorizedUsersSet.Object);
             _mockContext.Setup(x => x.Add(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) => _createdVotes.Add(s));
             _mockContext.Setup(x => x.Update(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) =>
             {
@@ -147,9 +159,120 @@ namespace Tests_NUnit_Voting_App
                     _submittedVotes[index] = s;
                 }
             });
+            _mockContext.Setup(x => x.Add(It.IsAny<VoteAuthorizedUser>())).Callback<VoteAuthorizedUser>((s) => _authorizedUsers.Add(s));
+            _mockContext.Setup(x => x.Remove(It.IsAny<VoteAuthorizedUser>())).Callback<VoteAuthorizedUser>((s) => _authorizedUsers.Remove(s));
+            /*
+            _mockContext.Setup(set => set.RemoveRange(It.IsAny<VoteAuthorizedUser>()))
+                .Callback<List<VoteAuthorizedUser>>((s) =>
+                {
+                    foreach (var user in s)
+                    {
+                        _authorizedUsers.Remove(user);
+                    }
+                });
+            */
+
+                    _mockContext.Setup(x => x.Update(It.IsAny<VoteAuthorizedUser>())).Callback<VoteAuthorizedUser>((s) =>
+            {
+                var found = _authorizedUsers.FirstOrDefault(a => a.Id == s.Id);
+                if (found == null)
+                {
+                    _authorizedUsers.Add(s);
+                }
+                else
+                {
+                    var item = _authorizedUsers.Where(a => a.Id == s.Id).First();
+                    var index = _authorizedUsers.IndexOf(item);
+                    _authorizedUsers[index] = s;
+                }
+            });
             //_createdVoteSet.Verify(m => m.Add(It.IsAny<CreatedVote>()), Times.Once());
             //_mockContext.Verify(ctx => ctx.SaveChanges(), Times.Once());
         }
+        //VA84
+        [Test]
+        public void Test_GetAllUserByVoteID_should_return_list_of_authorized_users()
+        {
+            //Arrange
+            IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo = new VoteAuthorizedUsersRepo(_mockContext.Object);
+
+            //Act
+            var list = voteAuthorizedUsersRepo.GetAllUsersByVoteID(1);
+
+            
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            Assert.True(list.Count == 2 && list[0].UserName == "user1@mail.com" && list[1].UserName == "user@mail.com");
+        }
+
+        //VA84
+        [Test] public void Test_RemoveAllByVoteID_should_remove_all_users()
+        {
+            //Arrange
+            IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo = new VoteAuthorizedUsersRepo(_mockContext.Object);
+
+            //Act
+            voteAuthorizedUsersRepo.RemoveAllByVoteID(1);
+            var list = voteAuthorizedUsersRepo.GetAllUsersByVoteID(1);
+
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            Assert.True(list.Count == 0);
+        }
+
+        //VA84
+        [Test]
+        public void Test_GetUserById_should_return_user()
+        {
+            //Arrange
+            IVotingUserRepositiory votingUserRepositiory = new VotingUserRepository(_mockContext.Object);
+
+            //Act
+           var user= votingUserRepositiory.GetUserById(1);
+
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            Assert.True(user != null && user.Id == 1);
+        }
+
+        //VA84
+        [Test]
+        public void Test_GetUserById_submitteVoteRepo_should_return_vote_with_sameID()
+        {
+            //Arrange
+            ISubmittedVoteRepository submittedVoteRepo= new SubmittedVoteRepository(_mockContext.Object);
+
+            //Act
+            var vote = submittedVoteRepo.GetVoteById(1);
+
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            Assert.True(vote != null && vote.Id == 1);
+        }
+
+        //VA86
+        [Test]
+        public void Test_GetAllVotesWithNoAccessCode_should_return_votes_with_no_access_code()
+        {
+            //Arrange
+            ICreatedVoteRepository createdVoteRepository = new CreatedVoteRepository(_mockContext.Object);
+
+            //Act
+            var votes = createdVoteRepository.GetAllVotesWithNoAccessCode();
+
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            Assert.True(votes.Count == 2 && votes[0].Id == 2 && votes[1].Id == 3);
+        }
+
+        
+        [Test]
+        public void Test_VoteOptionString_should_return_string_value_of_vote_option()
+        {
+            //Arrange
+            IVoteOptionRepository voteOptionRepository = new VoteOptionRepository(_mockContext.Object);
+           
+            var options = voteOptionRepository.GetVoteOptionString(3);
+
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            Assert.True(options.Count == 3);
+        }
+
         //VA160
         [Test]
         public void Test_SubmittedVoteRepo_GetCastVotesById_should_return_list_of_sorted_submittedVotes()
