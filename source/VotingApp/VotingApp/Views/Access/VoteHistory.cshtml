@@ -54,13 +54,13 @@
                                     @if((vote.subVote.CreatedVote.VoteOpenDateTime == null || vote.subVote.CreatedVote.VoteOpenDateTime >= DateTime.Now) && vote.subVote.CreatedVote.VoteCloseDateTime >= DateTime.Now)
                                     {
                                         <form asp-action="EditSubVote" method="post">
-		                                <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@vote.subVote.CreatedVote.Id">Edit</button>
+		                                <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@vote.subVote.Id">Edit</button>
 	                                    </form>
                                 
                                     }
                                     else
                                     {
-                                        <button style="width:140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@vote.subVote.CreatedVote.Id" disabled>Edit</button>
+                                        <button style="width:140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@vote.subVote.Id" disabled>Edit</button>
                                     }
                                 </div>
                                 

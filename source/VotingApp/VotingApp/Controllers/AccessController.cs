@@ -92,7 +92,7 @@ namespace VotingApp.Controllers
         public IActionResult EditCastVote(int Id, int choice)
         {
             var item = _subVoteRepository.EditCastVote(Id, choice);
-            var model = new SubmitConfirmationModel {createdVote = item.CreatedVote, OptionId = item.VoteChoice, CreateId = item.Id };
+            var model = new SubmitConfirmationModel { OptionId = item.VoteChoice, CreateId = item.CreatedVoteId };
             return RedirectToAction("SubmitConfirmation", model);
 
         }

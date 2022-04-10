@@ -26,7 +26,11 @@ namespace VotingApp.DAL.Concrete
                 {
                     if (vote.VoteChoice == option.Id)
                     {
-                        votesWithUsers.Add(option, vote);
+                        if (!votesWithUsers.Keys.Contains(option))
+                        {
+                            votesWithUsers.Add(option, vote);
+                        }
+                        
                     }
                 }
             }
