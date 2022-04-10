@@ -28,12 +28,12 @@
                     <p>@ViewBag.ErrorMessage</p>
                 </div>
             }
-            <!--@if (Model.submittedVote != null)
+            @if (Model.submittedVote != null)
             {
-                <div class="alert alert-danger">
-                    <p>You have already submitted your vote</p>
+                <div class="alert alert-warning">
+                    <p>You have already submitted your vote. Resubmitting a vote will overwrite your previous vote</p>
                 </div>
-            }-->
+            }
             <h4 class="text-white">Vote Options:</h4>
             @foreach (var a in Model.vote.VoteOptions)
             {
