@@ -25,7 +25,7 @@
 
     <div class="text-center text-white">
         <div class="text-center col-md-8 mx-auto">
-            <form asp-action=@formValue method="post">
+            <form asp-action=@formValue method="post" onsubmit="return validateDate();">
                 @if (Model != null)
                 {
 	                <input asp-for="Id" type="number" value="@Model.Id" hidden></input>
@@ -60,7 +60,7 @@
                             <div class="col align-self-center">
                             <input asp-for="PrivateVote" class="form-check-input" type="checkbox" value="true" id="privatecheck">
                             <label class="form-check-label" for="privatecheck">
-                                Is this a priavte vote? <span data-toggle="tooltip" data-placement="bottom" title="Check this if you want to specify who can cast a vote for this given vote.">&#8505;</span>
+                                Is this a private vote? <span data-toggle="tooltip" data-placement="bottom" title="Check this if you want to specify who can cast a vote for this given vote.">&#8505;</span>
                             </label>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                             <label class="form-check-label" for="datetime">
                                 When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to never close.">&#8505;</span>
                             </label>
-                            <input asp-for="VoteCloseDateTime" type="text" id="datetime" readonly/>
+                            <input asp-for="VoteCloseDateTime" type="text" id="VoteCloseDateTime" readonly/>
 
                         </div>
                         
@@ -135,7 +135,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<button type="submit" class="btn btn-light btn-lg bg-success btn-outline-primary">Review</button>
+					<button type="submit" class="btn btn-light btn-lg bg-success btn-outline-primary" >Review</button>
 				</div>
             </form>
 		</div>
@@ -148,10 +148,50 @@
           if (flag == 0) {
               $("#VoteOpenDateTime").val('');
               $("#VoteOpenDateTime").attr("disabled",true);
+              $("#VoteOpenDateTime").attr("required",false);
+
           }
           else {
               $("#VoteOpenDateTime").attr("disabled",false);
+              $("#VoteOpenDateTime").attr("required",true);
           }
+      }
+
+      function validateDate() {
+          var currentDateTime = new Date($.now());
+          var openDateDisabled = ( $("#VoteOpenDateTime").prop('disabled') );
+          var noCloseDate = true;
+
+          var openDateTime;
+          if (openDateDisabled == false) {
+              openDateTime = new Date($("#VoteOpenDateTime").val());
+          } 
+
+          var closeDateTime;
+          if ( $("#VoteCloseDateTime").val().length > 0 )
+          {
+              closeDateTime = new Date($("#VoteCloseDateTime").val());
+              noCloseDate = false;
+          } else {
+              noCloseDate = true;
+          }
+
+          if (noCloseDate == false && closeDateTime < openDateTime )
+          {
+              alert("The vote start date/time must be before the vote close date/time");
+              return false;
+          }
+          else if (openDateTime < currentDateTime) 
+          {
+              alert("The vote start date/time must be a future date/time");
+              return false;
+          }
+          else if (noCloseDate == false && closeDateTime < currentDateTime )
+          {
+              alert("The vote close date/time must be a future date/time");
+              return false;
+          }
+          return true;
       }
   </script>
 }
