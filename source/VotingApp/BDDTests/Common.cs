@@ -15,6 +15,7 @@ namespace BDDTests
         public const string LoginPageName = "Login";
         public const string AccessPageName = "Access";
         public const string ResultsPageName = "Results";
+        public const string CreatePageName = "Create";
 
         // A handy way to look these up
         public static readonly Dictionary<string, string> Paths = new()
@@ -22,7 +23,8 @@ namespace BDDTests
             { HomePageName, "/" },
             { LoginPageName, "/Identity/Account/Login" },
             { AccessPageName, "/Access" },
-            { ResultsPageName, "/Access/Results" }
+            { ResultsPageName, "/Access/Results" },
+            { CreatePageName, "/Create" }
         };
 
         public static string PathFor(string pathName) => Paths[pathName];
