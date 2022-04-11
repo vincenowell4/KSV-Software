@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using VotingApp.DAL.Abstract;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +39,54 @@ namespace VotingApp.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult Results(string code)
+        {
+            VoteResultsVM vm = new VoteResultsVM();
+            vm.GetVoteByAccessCode = _createdVoteRepository.GetVoteByAccessCode(code);
+
+            if (vm.GetVoteByAccessCode == null)
+            {
+                ViewBag.ErrorMessage = "Invalid Access Code";
+                return View("Index");
+            }
+
+            if (vm.GetVoteByAccessCode.PrivateVote == true)
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Redirect("~/Identity/Account/Login");
+                }
+
+                var user = _userManager.GetUserName(User); //current users email 
+                if (vm.GetVoteByAccessCode.VoteAuthorizedUsers.Select(a => a.UserName).ToList().Contains(user)) //check they are in the list
+                {
+                    vm.VoteTitle = vm.GetVoteByAccessCode.VoteTitle;
+                    vm.VoteDescription = vm.GetVoteByAccessCode.VoteDiscription;
+                    vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(vm.GetVoteByAccessCode.Id);
+                    vm.TotalVotesForEachOption = _subVoteRepository.TotalVotesForEachOption(vm.GetVoteByAccessCode.Id, vm.VoteOptions);
+                    vm.TotalVotesCount = _subVoteRepository.GetTotalSubmittedVotes(vm.GetVoteByAccessCode.Id);
+                    vm.Winners = _subVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+
+                    return View(vm);
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = $"You are not authorized to view vote results.";
+                    return View("Index");
+                }
+            }
+            
+            vm.VoteTitle = vm.GetVoteByAccessCode.VoteTitle;
+            vm.VoteDescription = vm.GetVoteByAccessCode.VoteDiscription;
+            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(vm.GetVoteByAccessCode.Id);
+            vm.TotalVotesForEachOption = _subVoteRepository.TotalVotesForEachOption(vm.GetVoteByAccessCode.Id, vm.VoteOptions);
+            vm.TotalVotesCount = _subVoteRepository.GetTotalSubmittedVotes(vm.GetVoteByAccessCode.Id);
+            vm.Winners = _subVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+
+            return View(vm);
         }
 
         [HttpGet]
