@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
@@ -26,7 +26,11 @@ namespace VotingApp.DAL.Concrete
                 {
                     if (vote.VoteChoice == option.Id)
                     {
-                        votesWithUsers.Add(option, vote);
+                        if (!votesWithUsers.Keys.Contains(option))
+                        {
+                            votesWithUsers.Add(option, vote);
+                        }
+                        
                     }
                 }
             }
@@ -120,14 +124,26 @@ namespace VotingApp.DAL.Concrete
             return _context.SubmittedVotes.Where(s => s.UserId == userId && s.CreatedVoteId == voteId).FirstOrDefault();
         }
 
+        public SubmittedVote GetVoteById(int id)
+        {
+            return _context.SubmittedVotes.Where(s => s.Id == id).FirstOrDefault();
+        }
+
         public List<SubmittedVote> GetCastVotesById(int id)
         {
-            throw new NotImplementedException();
+            return _context.SubmittedVotes.Where(a => a.UserId == id).OrderByDescending(a => a.DateCast).ToList();
         }
 
         public SubmittedVote EditCastVote(int voteId, int choiceId)
         {
-            throw new NotImplementedException();
+            var vote = _context.SubmittedVotes.Where(a => a.Id == voteId).FirstOrDefault();
+            if (vote != null && vote.VoteChoice != choiceId && (vote.CreatedVote.VoteCloseDateTime >= DateTime.Now || vote.CreatedVote.VoteCloseDateTime == null) && vote.CreatedVote.VoteOptions.Select(c => c.Id).ToList().Contains(choiceId))
+            {
+                vote.VoteChoice = choiceId;
+                _context.SubmittedVotes.Update(vote);
+                _context.SaveChanges();
+            }
+            return vote;
         }
 
         public IList<int> TotalVotesPerOption(int id, IList<VoteOption> options)

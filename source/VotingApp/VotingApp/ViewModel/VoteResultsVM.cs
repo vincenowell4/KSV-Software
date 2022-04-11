@@ -17,5 +17,7 @@ namespace VotingApp.ViewModel
         public int TotalVotesCount { get; set; }
 
         public Dictionary<VoteOption, int> Winners { get; set; }
+
+        public CreatedVote GetVoteByAccessCode { get; set; }
     } 
 }

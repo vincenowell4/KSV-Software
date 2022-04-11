@@ -7,9 +7,9 @@
 
 ## Description
 
-This user story is about a user not logged in being able to see voting results for their created vote so they are able to make decisions on the results. The non logged in user will be able to easily access the voting results from the Access A Vote page, where they can easily click the Voting Results button and be redirected to a page where they enter the access code to then be redirected to the voting results page. On this voting results page it will include the vote title and description as well as a table with the voting results. 
+This user story is about a user not logged in being able to see voting results for their created vote so they are able to make decisions on the results. The non logged in user will be able to easily access the voting results from the Access A Vote page, where they can easily enter the vote access code and be redirected to the voting results page. On this voting results page it will include the vote title and description as well as a table with the voting results.
 
-The voting results table will include the vote option and the total number of votes for that option. The winner will be highlighted with a color so the user can easily see which option won. If there is a tie then a different color will highlight the tied winning options. The user will also be able to see the total number of votes as well. There will also be a button below the table that will bring the user back to the access a vote page easily. Any needed tool tips will be added so that the user is able to better understand what is happening.
+The voting results table will include rows for each vote option and the total number of votes for that option. The winner will be highlighted with a color so the user can easily see which option won. If there is a tie then a different color will highlight the tied winning options. The user will also be able to see the total number of votes as well. There will also be a button below the table that will bring the user back to the access a vote page easily. Any needed tool tips will be added so that the user is able to better understand what is happening.
 
 ### Details:
 
@@ -84,5 +84,15 @@ See Access A Vote page UI MockUp under Modeling folder
 See Vote Results Page UI Mockup under Modeling folder 
 
 ## Tasks
-1. 
+1. Change navbar to say Access a vote rather than submit a vote
+2. Change title to say access a vote on page 
+3. Add two input buttons for access and then submit a vote with submit buttons
+4. Create action method that brings user to view results page when clicking submit for vote results (validate access code)
+5. In action method if created vote is private make sure that only authorized users can access vote results 
+6. Create view for results page 
+7. Add needed fields in vm that's needed for this page 
+8. Add in vote title and description 
+9. Add everything needed on results page in order to get the results table 
+10. Add back to access page button  
+11. 4 BDD tests
 

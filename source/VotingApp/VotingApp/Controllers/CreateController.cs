@@ -62,13 +62,19 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteCloseDateTime, PrivateVote")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote")]CreatedVote createdVote)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             if (User.Identity.IsAuthenticated != false)
             {
-                createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                var vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                if (vUser == null)
+                {
+                    var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                    vUser = _votingUserRepository.AddOrUpdate(newUser);
+                }
+                createdVote.User = vUser;
             }
             if (ModelState.IsValid)
             { 
@@ -107,7 +113,7 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteCloseDateTime,VoteAccessCode, PrivateVote")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteOpenDateTime,VoteCloseDateTime,VoteAccessCode, PrivateVote")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -212,6 +218,8 @@ namespace VotingApp.Controllers
             vm.ShareURL =
                 $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
             vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? DateTime.Now;
+            if (createdVote.VoteOpenDateTime != null)
+                vm.VoteOpenDateTime = createdVote.VoteOpenDateTime;
             vm.VotingAuthorizedUsers = createdVote.VoteAuthorizedUsers.ToList();
             return View(vm);
         }
@@ -224,7 +232,11 @@ namespace VotingApp.Controllers
             if (User.Identity.IsAuthenticated != false)
             {
                 VotingUser vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
-
+                if(vUser == null)
+                {
+                    var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                    vUser = _votingUserRepository.AddOrUpdate(newUser);
+                }
                 userId = vUser.Id;
 
                 if (userId == 0)

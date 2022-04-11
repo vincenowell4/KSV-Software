@@ -23,11 +23,22 @@ namespace VotingApp.ViewModel
             _cvRepository = cvRepo;
         }
 
+        public CreatedVotesVM(ICreatedVoteRepository cvRepo)
+        {
+            _cvRepository = cvRepo;
+        }
+
         public void GetCreatedVotesListForUserId(int userId)
         {
             CreatedVotes = _cvRepository.GetAllForUserId(userId);
             return;
         }
+
+        public IList<CreatedVote> GetAllVotesWithNoVAC()
+        {
+            return _cvRepository.GetAllVotesWithNoAccessCode();
+        }
+
     }
 }
 

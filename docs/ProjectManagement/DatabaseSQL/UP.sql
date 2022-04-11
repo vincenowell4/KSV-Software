@@ -6,7 +6,7 @@ CREATE TABLE [CreatedVote]
 [VoteDiscription] nvarchar(1000) NOT NULL,
 [AnonymousVote] BIT NOT NULL,
 [VoteTypeId] int NOT NULL,
-[VoteAccessCode] NVARCHAR (100) NOT NULL,
+[VoteAccessCode] NVARCHAR (100),
 [VoteOpenDateTime] DATETIME,
 [VoteCloseDateTime] DATETIME,
 [PrivateVote] BIT NOT NULL,
@@ -32,7 +32,8 @@ CREATE TABLE [SubmittedVote]
 [CreatedVoteID] int NOT NULL,
 [VoteChoice] int NOT NULL,
 [UserID] int,
-[Validated] BIT NOT NULL
+[Validated] BIT NOT NULL,
+[DateCast] DATETIME
 );
 
 CREATE TABLE [VotingUser] 
