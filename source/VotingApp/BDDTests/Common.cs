@@ -13,12 +13,16 @@ namespace BDDTests
         // Page names that everyone should use
         public const string HomePageName = "Home";
         public const string LoginPageName = "Login";
+        public const string AccessPageName = "Access";
+        public const string ResultsPageName = "Results";
 
         // A handy way to look these up
         public static readonly Dictionary<string, string> Paths = new()
         {
             { HomePageName, "/" },
-            { LoginPageName, "/Identity/Account/Login" }
+            { LoginPageName, "/Identity/Account/Login" },
+            { AccessPageName, "/Access" },
+            { ResultsPageName, "/Access/Results" }
         };
 
         public static string PathFor(string pathName) => Paths[pathName];
