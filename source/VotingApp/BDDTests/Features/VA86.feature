@@ -27,17 +27,16 @@ Background:
 	  #All passwords are local and are not actual passwords 
 	And the following user does not exist
 	  | UserName | Email               | FirstName | LastName | Password     |
-	  | AndreC   | colea@example.com   | Andre     | Cole     | 0a9dfi3.a    |
+	  | vnowell   | vnowell@example.com   | Vince     | Nowell     | 0a9dfi3.a    |
 
 
 
 @tag1
 Scenario Outline: Non-logged in user can't create future vote time
 	Given I am a user that isn't logged in
-	When I navigate to https://localhost:7297/Create
-#	Then I will not see the 
-	Then I am redirected to the '<Page>' page
-	  And I can see a personalized message in the navbar that includes my email
+	When I navigate to '<Page>' page
+	Then I will not see the Start Immediate button
+	  And I will not see the Start Future Vote button
 	Examples:
 	| FirstName | Page |
-	| sam   | Home |
+	| Vince   | Create |

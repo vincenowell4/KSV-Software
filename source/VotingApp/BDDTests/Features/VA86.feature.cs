@@ -115,10 +115,10 @@ the vote title, description and vote access code in the body of the email.", Pro
                         "LastName",
                         "Password"});
             table4.AddRow(new string[] {
-                        "AndreC",
-                        "colea@example.com",
-                        "Andre",
-                        "Cole",
+                        "vnowell",
+                        "vnowell@example.com",
+                        "Vince",
+                        "Nowell",
                         "0a9dfi3.a"});
 #line 28
  testRunner.And("the following user does not exist", ((string)(null)), table4, "And ");
@@ -128,7 +128,7 @@ the vote title, description and vote access code in the body of the email.", Pro
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Non-logged in user can\'t create future vote time")]
         [NUnit.Framework.CategoryAttribute("tag1")]
-        [NUnit.Framework.TestCaseAttribute("sam", "Home", null)]
+        [NUnit.Framework.TestCaseAttribute("Vince", "Create", null)]
         public virtual void Non_LoggedInUserCantCreateFutureVoteTime(string firstName, string page, string[] exampleTags)
         {
             string[] @__tags = new string[] {
@@ -169,13 +169,13 @@ this.FeatureBackground();
  testRunner.Given("I am a user that isn\'t logged in", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 37
- testRunner.When("I navigate to https://localhost:7297/Create", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I navigate to \'{0}\' page", page), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 38
+ testRunner.Then("I will not see the Start Immediate button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 39
- testRunner.Then(string.Format("I am redirected to the \'{0}\' page", page), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-#line 40
-   testRunner.And("I can see a personalized message in the navbar that includes my email", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+   testRunner.And("I will not see the Start Future Vote button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();
