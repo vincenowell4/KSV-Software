@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests_NUnit_Voting_App", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailService", "EmailService\EmailService.csproj", "{93568577-EBE4-4B0A-ACB6-82C800AD4F97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDDTests", "BDDTests\BDDTests.csproj", "{3A84AB44-9780-4506-A573-BBBD8494719B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDDTests", "BDDTests\BDDTests.csproj", "{3A84AB44-9780-4506-A573-BBBD8494719B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DelayedVoteService", "DelayedVoteService\DelayedVoteService.csproj", "{1DF4F9FB-200B-44DB-91AE-EB9BEBECBFE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{3A84AB44-9780-4506-A573-BBBD8494719B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A84AB44-9780-4506-A573-BBBD8494719B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A84AB44-9780-4506-A573-BBBD8494719B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF4F9FB-200B-44DB-91AE-EB9BEBECBFE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF4F9FB-200B-44DB-91AE-EB9BEBECBFE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF4F9FB-200B-44DB-91AE-EB9BEBECBFE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF4F9FB-200B-44DB-91AE-EB9BEBECBFE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

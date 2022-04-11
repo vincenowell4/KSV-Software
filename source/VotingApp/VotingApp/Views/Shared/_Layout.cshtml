@@ -20,7 +20,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1" id="navbar">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -34,6 +34,7 @@
                         <li>
 		                    <a class="nav-link text-dark" asp-area="" asp-controller="Help" asp-action="Index">Help</a>
 	                    </li>
+                        
 
                         @if(User.IsInRole("admin"))
                         {
@@ -62,6 +63,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
     $("#datetime").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii'
+    });
+    $("#VoteCloseDateTime").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii'
+    });
+    $("#VoteOpenDateTime").datetimepicker({
         format: 'yyyy-mm-dd hh:ii'
     });
 </script>

@@ -5,10 +5,6 @@ This feature is about someone not being logged in being able to see a created vo
 vote is private are able to see the results). If they enter a valid access code they will be brought to the Results page where they will see that vote title, description,
 and a table with the voting options with totals per option, the winning option (or a tie), and the overall total votes as well. 
 
-#Background:
-#	Given the following created vote exists for this access code 
-#	  | AccessCode |
-#	  | f2a277     |
 
 @tag1
 Scenario: User able to see the input box for vote results on Access Page
@@ -23,14 +19,14 @@ Scenario: User is brought back to access page from vote results page after click
     Then I am brought back to the access a vote page 
 	Examples: 
 	| AccessCode |
-	| f2a277     |
+	| 9cd97f     |
 
 Scenario: User enters a valid access code and is brought to results page 
 	Given I have entered the '<AccessCode>' on the 'Access' page
 	Then I am brought to the correct results page
 	Examples: 
 	| AccessCode |
-	| f2a277     |
+	| 9cd97f     |
 
 Scenario: User enters invalid access code and is still on access page 
 	Given I am on the 'Access' a vote page 

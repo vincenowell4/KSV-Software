@@ -31,11 +31,17 @@ namespace VotingApp.Models
 
             if (createdVote.VoteCloseDateTime == null)
             {
-                createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+                if (createdVote.VoteOpenDateTime == null)
+                    createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+                else
+                    createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
+
             }
             try
             {
-                createdVote.VoteAccessCode = _voteCreationService.generateCode();
+                if (createdVote.VoteOpenDateTime == null)
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
+
                 _createdVoteRepository.AddOrUpdate(createdVote);
             }
             catch (Exception ex)
@@ -45,6 +51,24 @@ namespace VotingApp.Models
 
             return "";
         }
+
+        public string AddVoteAccessCode(ref CreatedVote createdVote)
+        {
+            try
+            {
+                if (createdVote.VoteAccessCode == null)
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
+
+                _createdVoteRepository.AddOrUpdate(createdVote);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return createdVote.VoteAccessCode;
+        }
+
 
         public string Edit(ref CreatedVote createdVote, int oldVoteTypeId)
         {

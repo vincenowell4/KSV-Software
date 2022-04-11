@@ -20,26 +20,22 @@ namespace BDDTests.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("VA109_Kaitlin")]
-    public partial class VA109_KaitlinFeature
+    [NUnit.Framework.DescriptionAttribute("VoteHistoryFeature")]
+    public partial class VoteHistoryFeatureFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private string[] _featureTags = ((string[])(null));
         
-#line 1 "VA109_Kaitlin.feature"
+#line 1 "VoteHistoryFeature.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "VA109_Kaitlin", @"**As a user that is not logged in, I want to be able to see the voting results for my created vote, so that I am able to make decisions based on these results.**
-
-This feature is about someone not being logged in being able to see a created votes results if they have the access vote (also added in that only authorized users if the
-vote is private are able to see the results). If they enter a valid access code they will be brought to the Results page where they will see that vote title, description,
-and a table with the voting options with totals per option, the winning option (or a tie), and the overall total votes as well. ", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "VoteHistoryFeature", "A short summary of the feature", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -77,16 +73,45 @@ and a table with the voting options with totals per option, the winning option (
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("User able to see the input box for vote results on Access Page")]
-        [NUnit.Framework.CategoryAttribute("tag1")]
-        public virtual void UserAbleToSeeTheInputBoxForVoteResultsOnAccessPage()
+        public virtual void FeatureBackground()
         {
-            string[] tagsOfScenario = new string[] {
+#line 4
+#line hidden
+            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                        "UserName",
+                        "Email",
+                        "FirstName",
+                        "LastName",
+                        "Password"});
+            table3.AddRow(new string[] {
+                        "sam2",
+                        "sam2@mail.com",
+                        "sam",
+                        "2",
+                        "Password123!"});
+#line 5
+ testRunner.Given("the following users exist", ((string)(null)), table3, "Given ");
+#line hidden
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Logged in user can see Vote History button")]
+        [NUnit.Framework.CategoryAttribute("tag1")]
+        [NUnit.Framework.TestCaseAttribute("sam", "Home", null)]
+        public virtual void LoggedInUserCanSeeVoteHistoryButton(string firstName, string page, string[] exampleTags)
+        {
+            string[] @__tags = new string[] {
                     "tag1"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            string[] tagsOfScenario = @__tags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("User able to see the input box for vote results on Access Page", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 10
+            argumentsOfScenario.Add("FirstName", firstName);
+            argumentsOfScenario.Add("Page", page);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Logged in user can see Vote History button", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 9
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -106,74 +131,35 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 11
- testRunner.Given("I am on the \'Access\' a vote page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 4
+this.FeatureBackground();
 #line hidden
-#line 12
- testRunner.Then("I will see an input box for entering an access code", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 10
+ testRunner.Given(string.Format("I am a user with first name \'{0}\'", firstName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 11
+ testRunner.When("I login", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 13
-    testRunner.And("I will see another input box for entering an access code", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then(string.Format("I am redirected to the \'{0}\' page", page), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 14
+   testRunner.And("I can see the Vote History button in the navbar", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("User is brought back to access page from vote results page after clicking button")]
-        [NUnit.Framework.TestCaseAttribute("9cd97f", null)]
-        public virtual void UserIsBroughtBackToAccessPageFromVoteResultsPageAfterClickingButton(string accessCode, string[] exampleTags)
+        [NUnit.Framework.DescriptionAttribute("Non Logged in user can not see Vote History button")]
+        [NUnit.Framework.TestCaseAttribute("Home", null)]
+        public virtual void NonLoggedInUserCanNotSeeVoteHistoryButton(string page, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            argumentsOfScenario.Add("AccessCode", accessCode);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("User is brought back to access page from vote results page after clicking button", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 15
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            bool isScenarioIgnored = default(bool);
-            bool isFeatureIgnored = default(bool);
-            if ((tagsOfScenario != null))
-            {
-                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((this._featureTags != null))
-            {
-                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
-            }
-            if ((isScenarioIgnored || isFeatureIgnored))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 16
- testRunner.Given(string.Format("I have entered the \'{0}\' on the \'Access\' page", accessCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 17
- testRunner.When("I am on the \'Results\' page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 18
-    testRunner.And("I click on the back to access a vote button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
+            argumentsOfScenario.Add("Page", page);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Non Logged in user can not see Vote History button", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 19
-    testRunner.Then("I am brought back to the access a vote page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("User enters a valid access code and is brought to results page")]
-        [NUnit.Framework.TestCaseAttribute("9cd97f", null)]
-        public virtual void UserEntersAValidAccessCodeAndIsBroughtToResultsPage(string accessCode, string[] exampleTags)
-        {
-            string[] tagsOfScenario = exampleTags;
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            argumentsOfScenario.Add("AccessCode", accessCode);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("User enters a valid access code and is brought to results page", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 24
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -193,26 +179,29 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 25
- testRunner.Given(string.Format("I have entered the \'{0}\' on the \'Access\' page", accessCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 4
+this.FeatureBackground();
 #line hidden
+#line 20
+ testRunner.Given(string.Format("I am on the \'{0}\' page", page), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 21
+ testRunner.Then("I cannot see the Vote History Button in the navbar", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Non Logged that navigate to the vote history page will be taken to loggin")]
+        [NUnit.Framework.TestCaseAttribute("Home", null)]
+        public virtual void NonLoggedThatNavigateToTheVoteHistoryPageWillBeTakenToLoggin(string page, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("Page", page);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Non Logged that navigate to the vote history page will be taken to loggin", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 26
- testRunner.Then("I am brought to the correct results page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("User enters invalid access code and is still on access page")]
-        [NUnit.Framework.TestCaseAttribute("123456", null)]
-        public virtual void UserEntersInvalidAccessCodeAndIsStillOnAccessPage(string accessCode, string[] exampleTags)
-        {
-            string[] tagsOfScenario = exampleTags;
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            argumentsOfScenario.Add("AccessCode", accessCode);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("User enters invalid access code and is still on access page", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 31
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -232,14 +221,71 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 32
- testRunner.Given("I am on the \'Access\' a vote page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 4
+this.FeatureBackground();
 #line hidden
-#line 33
- testRunner.And(string.Format("I have entered the incorrect \'{0}\' to access vote results", accessCode), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 27
+ testRunner.Given(string.Format("I am on the \'{0}\' page", page), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
+#line 28
+  testRunner.And("I navigate to the Vote History page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 29
+ testRunner.Then("I will be redirect to the login page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Logged in users that navigate to the vote history page will be taken to the vote " +
+            "history page")]
+        [NUnit.Framework.TestCaseAttribute("sam", "Home", null)]
+        public virtual void LoggedInUsersThatNavigateToTheVoteHistoryPageWillBeTakenToTheVoteHistoryPage(string firstName, string page, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("FirstName", firstName);
+            argumentsOfScenario.Add("Page", page);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Logged in users that navigate to the vote history page will be taken to the vote " +
+                    "history page", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 34
- testRunner.Then("I will still be on the \'Access\' page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 4
+this.FeatureBackground();
+#line hidden
+#line 35
+ testRunner.Given(string.Format("I am a user with first name \'{0}\'", firstName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 36
+  testRunner.And("I login", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 37
+ testRunner.Then(string.Format("I am redirected to the \'{0}\' page", page), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 38
+  testRunner.And("I navigate to the Vote History page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 39
+ testRunner.Then("I will be redirected to the Vote History Page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
