@@ -65,6 +65,7 @@ builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 builder.Services.AddScoped<IVoteAuthorizedUsersRepo, VoteAuthorizedUsersRepo>();
+builder.Services.AddScoped<GoogleTtsService,GoogleTtsService>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
        o.TokenLifespan = TimeSpan.FromSeconds(06400)); //email confirmation token will expire after exactly 24 hours (86400 seconds)
@@ -87,6 +88,8 @@ using (var scope = app.Services.CreateScope())
         // the configuration on Azure
         // Set password with the Secret Manager tool, or store in Azure app configuration
         // dotnet user-secrets set SeedUserPW <pw>
+        //var apiKey = builder.Configuration["GoogleAPIKey"];
+        //Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", apiKey);
         var testUserPw = builder.Configuration["SeedUserPW"];
         var adminPw = builder.Configuration["SeedAdminPW"];
        
