@@ -10,6 +10,7 @@ CREATE TABLE [CreatedVote]
 [VoteOpenDateTime] DATETIME,
 [VoteCloseDateTime] DATETIME,
 [PrivateVote] BIT NOT NULL,
+[VoteAudioBytes] VARBINARY(max)
 );
 
 CREATE TABLE [VoteType]

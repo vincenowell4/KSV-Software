@@ -13,9 +13,9 @@ namespace VotingApp.Models
         {
             _createdVoteRepository = createdVoteRepository;
         }
-        public async void CreateVoteAudio(int VoteID)
+        public byte[] CreateVoteAudio(CreatedVote vote)
         {
-            var vote = _createdVoteRepository.GetById(VoteID);
+            
             string voteAsString = "";
             voteAsString += $"Vote Title, {vote.VoteTitle}. Vote Description, {vote.VoteDiscription}. Vote Options, ";
             foreach (var option in vote.VoteOptions)
@@ -42,8 +42,10 @@ namespace VotingApp.Models
             clientAsync.Wait();
             var client = clientAsync.Result;
             
-            var response = await client.SynthesizeSpeechAsync(input, voiceSelection, audioConfig);
-            var bytes = response.AudioContent.ToByteArray();
+            var response = client.SynthesizeSpeech(input, voiceSelection, audioConfig);
+            return response.AudioContent.ToByteArray(); // change to byte string
+            //_createdVoteRepository.AddOrUpdate(vote);
+            //var audio = SynthesizeSpeechResponse.Parser.ParseFrom(bytes); //change the bytes to audio
 
         }
     }

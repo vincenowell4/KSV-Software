@@ -70,6 +70,7 @@ namespace VotingApp.Controllers
             
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
+            ModelState.Remove("VoteAudioBytes");
             if (User.Identity.IsAuthenticated != false)
             {
                 var vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -121,6 +122,7 @@ namespace VotingApp.Controllers
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
+            ModelState.Remove("VoteAudioBytes");
             if (User.Identity.IsAuthenticated != false)
             {
                 createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -211,8 +213,11 @@ namespace VotingApp.Controllers
         {
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
-            
-            _googleTtsService.CreateVoteAudio(createdVote.Id);
+
+            //_googleTtsService.CreateVoteAudio(createdVote.Id);
+            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+            createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             var vm = new ConfirmationVM();
             vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);
             vm.VoteDescription = _createdVoteRepository.GetVoteDescription(createdVote.Id);

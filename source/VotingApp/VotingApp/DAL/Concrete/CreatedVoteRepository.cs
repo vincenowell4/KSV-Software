@@ -32,7 +32,7 @@ namespace VotingApp.DAL.Concrete
         public Boolean SetAnonymous(int id)
         {
             var createdVote = _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
-
+            
             if (createdVote != null && createdVote.AnonymousVote == false)
             {
                 createdVote.AnonymousVote = true;
