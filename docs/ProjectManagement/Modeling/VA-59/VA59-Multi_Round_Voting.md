@@ -52,14 +52,14 @@ None - all necessary dependencies have already been completed
 Vince Nowell
 
 ## Git Feature Branch
-VA-59-multi-round-voting
+f_va-59-multi-round-voting
 
 ## Modeling and Other Documents
 
 Mockup and class diagram: 
 
-![Multi Round Vote Mockup](https://github.com/vincenowell4/KSV-Software2/blob/dev/docs/ProjectManagement/Modeling/VA-59/VA-59-UI-Mockup.png)
-![Class diagram](https://github.com/vincenowell4/KSV-Software2/blob/dev/docs/ProjectManagement/Modeling/VA-59/VotingAppClassDiagarm.drawio.svg)
+![Multi Round Vote Mockup](https://github.com/vincenowell4/KSV-Software/blob/f_va-59-multi-round-voting/docs/ProjectManagement/Modeling/VA-59/VA-59-UI-Mockup.png)
+![Class diagram](https://github.com/vincenowell4/KSV-Software/blob/f_va-59-multi-round-voting/docs/ProjectManagement/Modeling/VA-59/VotingAppClassDiagarm.drawio.svg)
 
 
 
