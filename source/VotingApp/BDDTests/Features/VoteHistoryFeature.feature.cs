@@ -77,20 +77,20 @@ namespace BDDTests.Features
         {
 #line 4
 #line hidden
-            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                         "UserName",
                         "Email",
                         "FirstName",
                         "LastName",
                         "Password"});
-            table3.AddRow(new string[] {
+            table5.AddRow(new string[] {
                         "sam2",
                         "sam2@mail.com",
                         "sam",
                         "2",
                         "Password123!"});
 #line 5
- testRunner.Given("the following users exist", ((string)(null)), table3, "Given ");
+ testRunner.Given("the following users exist", ((string)(null)), table5, "Given ");
 #line hidden
         }
         

@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using EmailService;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
@@ -159,7 +160,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetAll_should_return_all_createdVotes()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetAll();
             Assert.AreEqual(_createdVotes, result);
         }
@@ -167,7 +170,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetAllForUserId_should_return_all_createdVotes_for_user()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetAllForUserId(1);
             Assert.AreEqual(_createdVotes, result);
         }
@@ -175,7 +180,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetByAccessCodeShouldReturnCreatedVote()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteByAccessCode("abc123");
             Assert.AreEqual(_createdVotes[0], result);
         }
@@ -183,7 +190,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetVoteTitle_Should_Return_Title()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteTitle(1);
             Assert.AreEqual(result, "Title");
         }
@@ -191,14 +200,18 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetVoteTitle_Should_Return_Null()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteTitle(2);
             Assert.AreEqual(result, null);
         }
         [Test]
         public void Test_CreatedVoteRepo_GetVoteTitle_Should_Throw_Exception()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteTitle(10);
             Assert.AreEqual(result, null);
         }
@@ -206,7 +219,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetVoteDescription_Should_Return_Description()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteDescription(1);
             Assert.AreEqual(result, "This is the description");
         }
@@ -214,7 +229,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetVote_Should_Return_vote()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetById(1);
             Assert.AreEqual(result, _createdVotes[0]);
         }
@@ -222,14 +239,18 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_GetVoteDescription_Should_Return_Null()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteDescription(2);
             Assert.AreEqual(result, null);
         }
         [Test]
         public void Test_CreatedVoteRepo_GetVoteDescription_Should_Throw_Exception()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.GetVoteDescription(10);
             Assert.AreEqual(result, null);
         }
@@ -237,7 +258,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_SetAnonymous_Should_Set_To_True()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.SetAnonymous(1);
             
             Assert.AreEqual(result, true);
@@ -246,7 +269,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_SetAnonymous_Should_return_false()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.SetAnonymous(2);
 
             Assert.AreEqual(result, false);
@@ -254,7 +279,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_SetAnonymous_for_invalid_id_Should_return_false()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             var result = repo.SetAnonymous(10);
 
             Assert.AreEqual(result, false);
@@ -262,7 +289,9 @@ namespace Tests_NUnit_Voting_App
         [Test]
         public void Test_CreatedVoteRepo_AddOrUpdate_throws_exception_if_Null()
         {
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             Assert.Throws<ArgumentNullException>(() => repo.AddOrUpdate(null));
             
         }
