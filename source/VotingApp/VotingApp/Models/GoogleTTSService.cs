@@ -43,10 +43,28 @@ namespace VotingApp.Models
             var client = clientAsync.Result;
             
             var response = client.SynthesizeSpeech(input, voiceSelection, audioConfig);
-            return response.AudioContent.ToByteArray(); // change to byte string
+            var bytes = response.AudioContent.ToByteArray(); // change to byte string
+            //SynthesizeSpeechResponse audio = SynthesizeSpeechResponse.Parser.;
+            return bytes;
             //_createdVoteRepository.AddOrUpdate(vote);
             //var audio = SynthesizeSpeechResponse.Parser.ParseFrom(bytes); //change the bytes to audio
 
+        }
+
+        public void CreateAudioFiles(CreatedVote vote)
+        {
+            Directory.SetCurrentDirectory(@"wwwroot/TempAudio");
+            if (Directory.Exists($"{vote.Id}"))
+            {
+                Directory.Delete($"{vote.Id}");
+            }
+
+            Directory.CreateDirectory($"{vote.Id}");
+            Directory.SetCurrentDirectory(@$"{vote.Id}");
+            if (vote.VoteAudioBytes != null)
+            {
+                File.WriteAllBytes($"{vote.Id}.mp3", vote.VoteAudioBytes);
+            }
         }
     }
 }

@@ -213,10 +213,11 @@ namespace VotingApp.Controllers
         {
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
-
-            //_googleTtsService.CreateVoteAudio(createdVote.Id);
+            
+            //
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+            _googleTtsService.CreateAudioFiles(createdVote);
             createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             var vm = new ConfirmationVM();
             vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);

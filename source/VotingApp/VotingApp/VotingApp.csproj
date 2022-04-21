@@ -36,4 +36,8 @@
     <ProjectReference Include="..\EmailService\EmailService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\TempAudio\" />
+  </ItemGroup>
+
 </Project>
