@@ -51,6 +51,7 @@
                                 <div class="col">
                                     <h4>Close Date:</h4>
                                     @if(vote.subVote.CreatedVote.VoteCloseDateTime != null){@Html.Raw($"{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Month}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Day}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Year} {vote.subVote.CreatedVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}
+                                    <audio controls src="@Url.Action("LoadAudio","Create", new { id = vote.subVote.CreatedVoteId })") />
                                     @if((vote.subVote.CreatedVote.VoteOpenDateTime == null || vote.subVote.CreatedVote.VoteOpenDateTime >= DateTime.Now) && vote.subVote.CreatedVote.VoteCloseDateTime >= DateTime.Now)
                                     {
                                         <form asp-action="EditSubVote" method="post">

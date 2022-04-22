@@ -183,6 +183,11 @@ namespace VotingApp.Controllers
             _createdVoteRepository.AddOrUpdate(vote);
             return RedirectToAction("MultipleChoice", vote);
         }
+        public ActionResult LoadAudio(int id)
+        {
+            var audioBytes = _createdVoteRepository.GetById(id).VoteAudioBytes;
+            return base.File(audioBytes, "audio/wav");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -217,7 +222,7 @@ namespace VotingApp.Controllers
             //
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
-            _googleTtsService.CreateAudioFiles(createdVote);
+            //_googleTtsService.CreateAudioFiles(createdVote);
             createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             var vm = new ConfirmationVM();
             vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);
