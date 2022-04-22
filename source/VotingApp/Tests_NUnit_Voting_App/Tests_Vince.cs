@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using EmailService;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
@@ -137,7 +138,9 @@ namespace Tests_NUnit_Voting_App
         public void VA86_CreatedVoteRepo_GetAllVotesWithNoAccessCode_ShouldReturnTwoRowsWhenThereAreTwoDelayedVotes()
         {
             // arrange
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
 
             //add two more votes that don't have a Vote Access Code
             repo.AddOrUpdate(new CreatedVote { Id = 4, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = "Yes No Vote", VoteDiscription = "Yes No description" });
@@ -158,7 +161,9 @@ namespace Tests_NUnit_Voting_App
         public void VA86_CreatedVoteRepo_GetAllVotesWithNoAccessCode_ShouldReturnZeroRowsWhenThereAreNoDelayedVotes()
         {
             // arrange
-            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
 
 
             // act
@@ -175,7 +180,9 @@ namespace Tests_NUnit_Voting_App
         {
             // arrange
             IVoteOptionRepository voRepo = new VoteOptionRepository(_mockContext.Object);
-            ICreatedVoteRepository createRepo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository createRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository typeRepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo);

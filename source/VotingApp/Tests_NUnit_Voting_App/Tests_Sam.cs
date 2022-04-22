@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using EmailService;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
@@ -251,7 +252,9 @@ namespace Tests_NUnit_Voting_App
         public void Test_GetAllVotesWithNoAccessCode_should_return_votes_with_no_access_code()
         {
             //Arrange
-            ICreatedVoteRepository createdVoteRepository = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository createdVoteRepository = new CreatedVoteRepository(_mockContext.Object, emailSender);
 
             //Act
             var votes = createdVoteRepository.GetAllVotesWithNoAccessCode();
@@ -358,7 +361,9 @@ namespace Tests_NUnit_Voting_App
 
             };
 
-            var createdVoteRepo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            var createdVoteRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             vote = createdVoteRepo.AddOrUpdate(vote);
             _mockContext.Object.Add(newSubVote);
             //Act
@@ -431,7 +436,9 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreationService_should_add_options_to_yes_no_addcloseTime_add_accessCode()
         {
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
@@ -452,7 +459,9 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreationService_should_return_error_message()
         {
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
@@ -473,7 +482,9 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreationService_edit_should_change_type()
         {
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
@@ -497,7 +508,9 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreationService_edit_should_change_type_and_remove_options()
         {
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
@@ -521,7 +534,9 @@ namespace Tests_NUnit_Voting_App
         public void Test_CreationService_edit_should_send_error_message()
         {
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
