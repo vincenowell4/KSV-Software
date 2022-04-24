@@ -8,34 +8,27 @@ Background:
 @tag1
 Scenario Outline: Audio Available On Submit A Vote Page
 	Given I am on the 'Access' a vote page 
-	When I enter in the '<Access Code>'
-	Then I will be navigate to the Submit a Vote page
+	When I enter in the '<AccessCode>'
+	Then I will be navigate to the Submit a vote page for '<AccessCode>'
 		And I will see an option to play audio for the vote
 	Examples: 
 	| AccessCode |
-	| 1450f7     |
+	| 16ba88    |
 
-Scenario Outline:Non Logged in user can not see Vote History button
-	Given I am on the '<Page>' page
-	Then I cannot see the Vote History Button in the navbar
-	Examples:
-	| Page |
-	| Home |
-
-Scenario Outline:Non Logged that navigate to the vote history page will be taken to loggin
-	Given I am on the '<Page>' page
-		And I navigate to the Vote History page
-	Then I will be redirect to the login page
-	Examples:
-	| Page |
-	| Home |
-
-Scenario Outline:Logged in users that navigate to the vote history page will be taken to the vote history page
+Scenario Outline: Audio Available On Vote Review Page
 	Given I am a user with first name '<FirstName>'
 		And I login
-	Then I am redirected to the '<Page>' page
-		And I navigate to the Vote History page
-	Then I will be redirected to the Vote History Page
+	When I navigate to the 'VoteReview' page 
+	Then I will see audio available for each vote
 	Examples:
-	| FirstName | Page |
-	| sam   | Home |
+	| FirstName |
+	| sam   |
+
+Scenario Outline: Audio Available On Vote History Page
+	Given I am a user with first name '<FirstName>'
+		And I login
+	When I navigate to the Vote History page 
+	Then I will see audio available for each vote
+	Examples:
+	| FirstName |
+	| sam   |

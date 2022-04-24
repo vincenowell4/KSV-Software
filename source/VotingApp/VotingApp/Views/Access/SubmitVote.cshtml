@@ -59,7 +59,7 @@
                     </div>
                 </div>
             }
-            <audio class="mt-3 mb-3" style="max-width: 500px;" controls src="@Url.Action("LoadAudio","Create", new { id = Model.vote.Id })"></audio>
+            <audio id="VoteAudio" class="mt-3 mb-3" style="max-width: 500px;" controls src="@Url.Action("LoadAudio","Create", new { id = Model.vote.Id })"></audio>
             <span class="input-group-btn">
                 @if (Model.submittedVote != null)
                 {
