@@ -190,6 +190,31 @@ namespace Tests_NUnit_Voting_App
             //_createdVoteSet.Verify(m => m.Add(It.IsAny<CreatedVote>()), Times.Once());
             //_mockContext.Verify(ctx => ctx.SaveChanges(), Times.Once());
         }
+        //VA82
+        [Test]
+        public void Test_SetVoteAudio_CreatedVotePartial_Should_Set_audio()
+        {
+            //Arrange
+            CreatedVote newCreatedVote = new CreatedVote()
+            {
+                Id = 99,
+                VoteType = _voteTypes[0],
+                AnonymousVote = false,
+                UserId = 1,
+                VoteTitle = "Title",
+                VoteDiscription = "This is the description",
+                VoteAccessCode = "abc12"
+                //VoteAudioBytes = 
+            };
+
+            //Act
+           // var list = voteAuthorizedUsersRepo.GetAllUsersByVoteID(1);
+
+
+            //Assert that returned list of votes is sorted by date, and only by the intended user
+            //Assert.True(list.Count == 2 && list[0].UserName == "user1@mail.com" && list[1].UserName == "user@mail.com");
+        }
+
         //VA84
         [Test]
         public void Test_GetAllUserByVoteID_should_return_list_of_authorized_users()
@@ -441,7 +466,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, null);
             var newVote = new CreatedVote
             {
                 VoteTypeId = 1,
@@ -464,7 +489,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, null);
             var newVote = new CreatedVote
             {
                 VoteTypeId = 1,
@@ -487,7 +512,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo,null);
             var newVote = new CreatedVote
             {
                 Id = 3,
@@ -513,7 +538,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, null);
             var newVote = new CreatedVote
             {
                 Id = 3,
@@ -539,7 +564,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo,null);
             var newVote = new CreatedVote
             {
                 Id = 3,

@@ -121,7 +121,7 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("User is brought back to access page from vote results page after clicking button")]
-        [NUnit.Framework.TestCaseAttribute("9cd97f", null)]
+        [NUnit.Framework.TestCaseAttribute("1450f7", null)]
         public virtual void UserIsBroughtBackToAccessPageFromVoteResultsPageAfterClickingButton(string accessCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
@@ -166,7 +166,7 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("User enters a valid access code and is brought to results page")]
-        [NUnit.Framework.TestCaseAttribute("9cd97f", null)]
+        [NUnit.Framework.TestCaseAttribute("1450f7", null)]
         public virtual void UserEntersAValidAccessCodeAndIsBroughtToResultsPage(string accessCode, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;

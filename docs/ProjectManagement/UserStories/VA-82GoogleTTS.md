@@ -51,7 +51,7 @@ Database is connected, lazy loading is being used by the app. User login is work
 None
 
 ## Effort Points
-4
+8
 ## Owner
 Sam Torris
 ## Git Feature Branch

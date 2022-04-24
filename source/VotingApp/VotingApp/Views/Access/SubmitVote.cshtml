@@ -34,6 +34,7 @@
                     <p>You have already submitted your vote. Resubmitting a vote will overwrite your previous vote</p>
                 </div>
             }
+            
             <h4 class="text-white">Vote Options:</h4>
             @foreach (var a in Model.vote.VoteOptions)
             {
@@ -58,6 +59,7 @@
                     </div>
                 </div>
             }
+            <audio class="mt-3 mb-3" style="max-width: 500px;" controls src="@Url.Action("LoadAudio","Create", new { id = Model.vote.Id })"></audio>
             <span class="input-group-btn">
                 @if (Model.submittedVote != null)
                 {
