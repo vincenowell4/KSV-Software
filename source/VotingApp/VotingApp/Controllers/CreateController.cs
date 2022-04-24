@@ -329,14 +329,14 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult VoteResultsButton(int id)
         {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("VoteResults", createdVote);
+            //var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("VoteResults", new {id = id});
         }
 
         [HttpGet]
-        public IActionResult VoteResults(CreatedVote createdVote)
+        public IActionResult VoteResults(int id)
         {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            var createdVote = _createdVoteRepository.GetById(id);
             var vm = new VoteResultsVM();
             vm.VoteTitle = createdVote.VoteTitle;
             vm.VoteDescription = createdVote.VoteDiscription;

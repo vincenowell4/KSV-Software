@@ -7,11 +7,9 @@ namespace VotingApp.Models
 {
     public class GoogleTtsService
     {
-        private readonly ICreatedVoteRepository _createdVoteRepository;
 
-        public GoogleTtsService(ICreatedVoteRepository createdVoteRepository)
+        public GoogleTtsService()
         {
-            _createdVoteRepository = createdVoteRepository;
         }
         public byte[] CreateVoteAudio(CreatedVote vote)
         {
