@@ -1,4 +1,4 @@
-﻿namespace DelayedVoteService
+﻿namespace VotingAppService
 {
     public static class ApiKey
     {

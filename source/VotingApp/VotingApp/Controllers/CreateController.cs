@@ -9,6 +9,7 @@ using VotingApp.ViewModel;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -51,11 +52,22 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
-                "Value", "Text");
-            ViewData["VoteTypeId"] = selectListVoteType;
+            SelectList selectListVoteType = null; ;
 
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    "Value", "Text");
+            }
+
+            ViewData["VoteTypeId"] = selectListVoteType;
             return View();
         }
 
