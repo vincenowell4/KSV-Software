@@ -25,6 +25,11 @@ namespace VotingAppService
             _logger.LogInformation("VotingAppApiUrl: " + apiClientConfig.VotingAppApiUrl);
 
             string apiKey = ApiKey.voteAppApiKey;
+            int runInterval = 3600000;
+            if (ApiKey.voteSvcRunInterval != null)
+            {
+                runInterval = Convert.ToInt32(ApiKey.voteSvcRunInterval);
+            }
 
             client.BaseAddress = new Uri(apiClientConfig.VotingAppApiUrl);
             client.DefaultRequestHeaders.Accept.Clear();
@@ -270,7 +275,7 @@ namespace VotingAppService
                 }
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 //await Task.Delay(3600000, stoppingToken);
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(runInterval, stoppingToken);
             }
         }
     }
