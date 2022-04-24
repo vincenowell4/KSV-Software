@@ -15,6 +15,7 @@ namespace VotingApp.DAL.Abstract
         public IList<CreatedVote> GetAll();
         public IList<CreatedVote> GetAllForUserId(int userId);
         public IList<CreatedVote> GetAllVotesWithNoAccessCode();
+        public IList<CreatedVote> GetAllClosedMultiRoundVotes();
 
         public void SendEmails(IList<VoteAuthorizedUser> users, CreatedVote vote, string accessCode);
     }

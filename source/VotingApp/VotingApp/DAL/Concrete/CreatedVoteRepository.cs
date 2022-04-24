@@ -111,6 +111,10 @@ namespace VotingApp.DAL.Concrete
             }
         }
 
+        public IList<CreatedVote> GetAllClosedMultiRoundVotes()
+        {
+            return _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null && DateTime.Compare(DateTime.Now, v.VoteCloseDateTime.Value) > 0).ToList();
+        }
     }
 }
 

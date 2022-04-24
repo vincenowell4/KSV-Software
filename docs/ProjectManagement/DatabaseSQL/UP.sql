@@ -10,7 +10,9 @@ CREATE TABLE [CreatedVote]
 [VoteOpenDateTime] DATETIME,
 [VoteCloseDateTime] DATETIME,
 [PrivateVote] BIT NOT NULL,
-[VoteAudioBytes] VARBINARY(max)
+[VoteAudioBytes] VARBINARY(max),
+[RoundNumber] int NOT NULL,
+[NextRoundId] int NOT NULL
 );
 
 CREATE TABLE [VoteType]
@@ -50,6 +52,7 @@ CREATE TABLE [VoteAuthorizedUsers]
 [CreatedVoteID] int NOT NULL,
 [UserName] nvarchar(250) NOT NULL
 );
+
 
 ALTER TABLE [VoteOptions] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
