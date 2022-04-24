@@ -11,19 +11,17 @@ namespace VotingApp.Models
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
-        private readonly GoogleTtsService _googleTtsService;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
-            IVoteOptionRepository voteOptionRepository,
-            GoogleTtsService googleTtsService)
+            IVoteOptionRepository voteOptionRepository
+           )
         {
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _voteOptionRepository = voteOptionRepository;
-            _googleTtsService = googleTtsService;
         }
         public string Create(ref CreatedVote createdVote)
         {
