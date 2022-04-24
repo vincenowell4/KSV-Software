@@ -9,6 +9,7 @@ using VotingApp.ViewModel;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -54,11 +55,22 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
-                "Value", "Text");
-            ViewData["VoteTypeId"] = selectListVoteType;
+            SelectList selectListVoteType = null; ;
 
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    "Value", "Text");
+            }
+
+            ViewData["VoteTypeId"] = selectListVoteType;
             return View();
         }
 
@@ -273,6 +285,11 @@ namespace VotingApp.Controllers
 
                 CreatedVotesVM createdVotesVM = new CreatedVotesVM(userId, _createdVoteRepository);
                 createdVotesVM.GetCreatedVotesListForUserId(userId);
+
+                var votesForUser = _createdVoteRepository.GetAllForUserId(userId);
+                createdVotesVM.OpenVotes = _createdVoteRepository.GetOpenCreatedVotes(votesForUser);
+                createdVotesVM.ClosedVotes = _createdVoteRepository.GetClosedCreatedVotes(votesForUser);
+
                 return View(createdVotesVM);
             }
             return View();
@@ -310,38 +327,16 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult VoteAnalyticsButton(int id)
-        {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("Analytics", createdVote);
-        }
-
-        [HttpGet]
-        public IActionResult Analytics(CreatedVote createdVote)
-        {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
-            var vm = new AnalyticsVM();
-            vm.VoteTitle = createdVote.VoteTitle;
-            vm.VoteDescription = createdVote.VoteDiscription;
-            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
-            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
-            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
-
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult VoteResultsButton(int id)
         {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("VoteResults", createdVote);
+            //var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("VoteResults", new {id = id});
         }
 
         [HttpGet]
-        public IActionResult VoteResults(CreatedVote createdVote)
+        public IActionResult VoteResults(int id)
         {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            var createdVote = _createdVoteRepository.GetById(id);
             var vm = new VoteResultsVM();
             vm.VoteTitle = createdVote.VoteTitle;
             vm.VoteDescription = createdVote.VoteDiscription;
@@ -353,6 +348,8 @@ namespace VotingApp.Controllers
             vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
             vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
             vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
             return View(vm);
         }
 

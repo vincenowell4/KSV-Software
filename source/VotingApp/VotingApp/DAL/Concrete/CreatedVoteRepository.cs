@@ -111,6 +111,26 @@ namespace VotingApp.DAL.Concrete
             }
         }
 
+        public IList<CreatedVote> GetOpenCreatedVotes(IList<CreatedVote> createdVotes)
+        {
+            var currentDate = DateTime.Today;
+
+            var openVotes = createdVotes.Where(a => a.VoteCloseDateTime > currentDate).ToList();
+            var correctOrder = openVotes.OrderBy(a => a.VoteCloseDateTime).ToList();
+            return correctOrder;
+        }
+
+        public IList<CreatedVote> GetClosedCreatedVotes(IList<CreatedVote> createdVotes)
+        {
+            var currentDate = DateTime.Today;
+            var closedVotes = createdVotes.Where(a => a.VoteCloseDateTime < currentDate).ToList();
+            var correctOrder = closedVotes.OrderByDescending(a => a.VoteCloseDateTime).ToList();
+            return correctOrder;
+        }
+        public IList<CreatedVote> GetAllClosedMultiRoundVotes()
+        {
+            return _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null && DateTime.Compare(DateTime.Now, v.VoteCloseDateTime.Value) > 0).ToList();
+        }
     }
 }
 

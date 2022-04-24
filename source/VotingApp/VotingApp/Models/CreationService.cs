@@ -30,6 +30,11 @@ namespace VotingApp.Models
                 createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
             }
 
+            if (createdVote.VoteTypeId == 3 && createdVote.RoundNumber == 0)
+            {
+                createdVote.RoundNumber = 1;
+            }
+
             if (createdVote.VoteCloseDateTime == null)
             {
                 if (createdVote.VoteOpenDateTime == null)

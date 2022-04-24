@@ -35,6 +35,9 @@ namespace VotingApp.Models
         public DateTime? VoteCloseDateTime { get; set; }
         public bool PrivateVote { get; set; }
         public byte[]? VoteAudioBytes { get; set; }
+        public int RoundNumber { get; set; }
+        public int NextRoundId { get; set; }
+
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
