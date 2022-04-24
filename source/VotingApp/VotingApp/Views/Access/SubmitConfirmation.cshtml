@@ -20,13 +20,17 @@
         <h3>@Model.createdVote.VoteTitle</h3>
         <h2 class="mt-5">Vote Description:</h2>
         <h3>@Model.createdVote.VoteDiscription</h3>
-        <h2 class="mt-5">Vote Options:</h2>
-        <ul>
-            @foreach (var option in Model.createdVote.VoteOptions)
-            {
-                <li>@option.VoteOptionString</li>
-            }
-        </ul>
+	    <h2 class="mt-5">Vote Options:</h2>
+        <div class="row">
+	        <div class="col-md-12 text-center">
+		        <ul class="text-left" style="display:inline-block;vertical-align:middle;">
+			        @foreach (var option in Model.createdVote.VoteOptions)
+			        {
+				        <li>@option.VoteOptionString</li>
+			        }
+		        </ul>
+	        </div>
+        </div>
     </div>
     <div class="text-center text-white mt-5">
         <h2>Your Choice:</h2>

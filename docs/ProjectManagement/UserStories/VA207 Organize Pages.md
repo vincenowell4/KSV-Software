@@ -17,7 +17,7 @@ On the vote history page make it more obvious to the user that they are able to 
 
 On the multiple choice page the buttons are confusing for the user being all the same color and spaced together so closely. Change the color of buttons or location so it's not in a triangle. Also change the add button to say "Add voting option" so it is clearer what add button is for. 
 
-On the cast vote page align the radio buttons for the vote options. Also, after submitting vote align list bullets for vote options again.
+After submitting vote page align list bullets for vote options.
 
 ### Details:
 1. Organize create a vote into 3 sections : required, times(optional), and privacy (optional)
@@ -27,12 +27,12 @@ On the cast vote page align the radio buttons for the vote options. Also, after 
 5. On privacy section of create a vote page include vote private checkbox and vote anonymous checkbox
 6. Create one vote results page that will include the pie graph and the vote results tables. Make width of columns in vote results table smaller as well. Get rid of analytics button on vote review page.
 7. Add "..." next to vote descriptions on vote review page 
-8. Add one table for open votes -organized by descending open date 
-9. Add another table for closed votes -organized by descending close date 
+8. Add one table for open votes -(ordered by closing date ascending -ones going to close first)
+9. Add another table for closed votes -(ordered by closing date descending - newest  to oldest)
 10. on vote review page get rid of access link column. Instead make access code a url to that link (only for open vote table)
 11. On vote history page add either a triangle symbol or something to let the user know to click on each accordian for more info
 12. Organize buttons on multiple choice page so they are not all right next to each other 
-13. Try to align radio buttons on casting vote process 
+13. Try to align list items on vote confirmation page
 
 ## Acceptance Criteria
 No .feature file for this one
@@ -58,7 +58,7 @@ No .feature file for this one
 
     Given I am on the vote review page
     And there is an open vote table
-    Then I should see the votes in descending order by open vote date
+    Then I should see the votes in order by closing date ascending 
 
     Given I am on the vote review page
     And there is a closed vote table
@@ -70,13 +70,13 @@ No .feature file for this one
     Then I will be brought to the cast a vote page for that vote
 
     Given I am on the vote history page
-    Then I should see an icon or tool tip so that I understand to click it 
+    Then I should see a header where so I know to click the acordian
 
     Given I am on the multiple choice page
     Then the buttons will not all be next to each other (edit, submit, add)
 
     Given I am on the create a vote page 
-    And I click on the modal (or collapsible) for vote types
+    And I click on the collapsible for vote types
     Then I will see descriptions for each vote type
 
     Given I am on the create a vote page
@@ -113,4 +113,20 @@ See Vote Review page UI Mockup under Modeling folder
 See Vote Results page UI mockup under Modeling folder 
 
 ## Tasks
-1. ...
+1. organize create a vote page into 3 sections 
+2. collapsible for vote types - add so when clicked it drops down descriptions and unclicked goes away 
+3. let the user know that the vote will close after 24 hours unless otherwise clicked on tool tip (before it said voting never closes if you dont enter a close date)
+4. on create votes review delete analytics button
+5. add everything from analytics page to vote results page - styled nicely (delete all analytics view model, methods, things in controller and add any needed things to vote results vm and in create controller)
+6. on create votes review get rid of column for access link (since now user can copy link)
+7. on create votes review page add "..." next to descriptions col 
+8. Create created votes list in created votes vm for vote closed and vote open 
+9. Create methods to get each of these lists of created votes in repos - ordering by dates 
+10. In create controller set these 
+11. Test repo methods
+12. on view results table make two seperate tables (1 for open and other by closed) -- for closed vote get rid of edit button, access link, and open date col 
+13. vote history page let user know they can click on accordian 
+14. on multiple choice page organize the buttons so they aren't in a triangle and all close together 
+15. on create a vote page add tool tip for vote types saying vote will be lost if they switch from mult choice to yes/no
+16. align ul bullet points on cast a vote confirmation page 
+17. BDD tests
