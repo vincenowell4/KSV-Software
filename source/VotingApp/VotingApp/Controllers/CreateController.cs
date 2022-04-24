@@ -185,7 +185,13 @@ namespace VotingApp.Controllers
         }
         public ActionResult LoadAudio(int id)
         {
-            var audioBytes = _createdVoteRepository.GetById(id).VoteAudioBytes;
+            var vote = _createdVoteRepository.GetById(id);
+            if (vote.VoteAudioBytes == null)
+            {
+                vote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(vote);
+                _createdVoteRepository.AddOrUpdate(vote);
+            }
+            var audioBytes = vote.VoteAudioBytes;
             return base.File(audioBytes, "audio/wav");
         }
 

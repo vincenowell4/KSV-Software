@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
 using EmailService;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.Data.SqlClient;
+using System.Reflection;
 
 // Add services to the container.
 
@@ -24,6 +26,9 @@ var connectionStringIdentity = builder.Configuration.GetConnectionString("Voting
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
 //if (connectionStringIdentity.Password.Length == 0)
 //    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestIdentityVotingApp"));
+//if (connectionStringIdentity.Password.Length == 0)
+    //connectionStringIdentity.Password = builder.Configuration["SamAzureIdentityTestPW"];
 //*******************************************************************************************************************************************
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
@@ -35,9 +40,19 @@ builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSql
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
 
+var binDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase);
+string fullPath = Path.Combine(binDirectory, "credentials.json").Replace("file:\\", "");
+
+using (StreamWriter outputFile = new StreamWriter(fullPath, false))
+{
+    outputFile.WriteLine(builder.Configuration["GOOGLECREDS"]);
+}
+
+// Set environment variabel to the full file path
+Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", fullPath);
+
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
 var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
-
 //*******************************************************************************************************************************************
 //IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppDemoConnectionAzure"));
@@ -47,6 +62,9 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
 //if (connectionString.Password.Length == 0)
 //    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestVotingApp"));
+//if (connectionString.Password.Length == 0)
+   // connectionString.Password = builder.Configuration["SamAzureTestPW"];
 //*******************************************************************************************************************************************
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
