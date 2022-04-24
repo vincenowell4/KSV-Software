@@ -71,4 +71,13 @@ See Vote Review page UI MockUp under Modeling folder
 See Vote Creation Confirmation page UI Mockup under Modeling folder 
 
 ## Tasks
-1. ...
+1. Add script to shared layout page so that proj can use already made icons (for copy icon)
+2. fix bug for vote review page (when description is smaller than 5 chars it throws exception, add if statement in html page)
+3. on vote confirmation page add copy icon 
+4. Make it so that upon click of copy icon that the url is copied to clipboard (using js)
+5. alert user when url is copied to clipboard
+6. on vote review page add copy icon similar to vote confirmation page so that when clicked url is copied to the clipboard and alert user 
+7. add js code to copy url buttons to clipboard 
+8. in create controller check if vote is private - if it is then call repo method to send out emails
+9. In repo method make sure email adds the title and description as well as a link to submit a vote  
+10. Test repo method used to send email (test it gets authorized users correct, etc.)

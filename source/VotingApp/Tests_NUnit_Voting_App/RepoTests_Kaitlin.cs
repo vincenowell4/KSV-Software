@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using EmailService;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
@@ -19,11 +20,13 @@ namespace Tests_NUnit_Voting_App
         private Mock<DbSet<VoteOption>> _voteOptionSet;
         private Mock<DbSet<SubmittedVote>> _submittedVoteSet;
         private Mock<DbSet<VotingUser>> _votingUsersSet;
+        private Mock<DbSet<VoteAuthorizedUser>> _authorizedUsersSet;
         private List<CreatedVote> _createdVotes;
         private List<VoteType> _voteTypes;
         private List<VoteOption> _voteOption;
         private List<SubmittedVote> _submittedVotes;
         private List<VotingUser> _votingUsers;
+        private List<VoteAuthorizedUser> _authorizedUsers;
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -48,7 +51,8 @@ namespace Tests_NUnit_Voting_App
             {
                 new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
                 new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null},
-                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption},
+                new CreatedVote { Id = 4, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "123abc", PrivateVote = true, VoteAuthorizedUsers = _authorizedUsers}
             };
             _voteOption = new List<VoteOption>()
             {
@@ -70,11 +74,19 @@ namespace Tests_NUnit_Voting_App
                 new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 3, VoteChoice = 2, User = _votingUsers[1]}
             };
 
+            _authorizedUsers = new List<VoteAuthorizedUser>()
+            {
+                new VoteAuthorizedUser { CreatedVoteId = 4, Id = 1, UserName = "user1@mail.com" },
+                new VoteAuthorizedUser { CreatedVoteId = 4, Id = 2, UserName = "user2@mail.com" },
+                new VoteAuthorizedUser { CreatedVoteId = 4, Id = 3, UserName = "user3@mail.com" }
+            };
+
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
             _submittedVoteSet = GetMockDbSet(_submittedVotes.AsQueryable());
+            _authorizedUsersSet = GetMockDbSet(_authorizedUsers.AsQueryable());
 
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
@@ -87,7 +99,36 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.SubmittedVotes).Returns(_submittedVoteSet.Object);
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVoteSet.Object);
+            _mockContext.Setup(ctx => ctx.VoteAuthorizedUsers).Returns(_authorizedUsersSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<VoteAuthorizedUser>()).Returns(_authorizedUsersSet.Object);
         }
+
+        [Test]
+        //VA206
+        public void CreatedVoteRepo_SendEmails_ShouldHave3AuthorizedUsers()
+        {
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            IVoteAuthorizedUsersRepo voteAuthRepo = new VoteAuthorizedUsersRepo(_mockContext.Object);
+            var authUsers = voteAuthRepo.GetAllUsersByVoteID(4);
+
+            Assert.AreEqual(authUsers.Count, 3);
+            //repo.SendEmails(authUsers, _createdVotes[3], _createdVotes[3].VoteAccessCode);
+        }
+
+        [Test]
+        //VA206
+        public void CreatedVoteRepo_SendEmails_ShouldHaveCorrectAccessCode()
+        {
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+
+            Assert.AreEqual(_createdVotes[3].VoteAccessCode, "123abc");
+            //repo.SendEmails(authUsers, _createdVotes[3], _createdVotes[3].VoteAccessCode);
+        }
+
 
         [Test]
         //VA83

@@ -11,16 +11,19 @@ namespace VotingApp.Models
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
+        private readonly GoogleTtsService _googleTtsService;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
-            IVoteOptionRepository voteOptionRepository)
+            IVoteOptionRepository voteOptionRepository,
+            GoogleTtsService googleTtsService)
         {
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _voteOptionRepository = voteOptionRepository;
+            _googleTtsService = googleTtsService;
         }
         public string Create(ref CreatedVote createdVote)
         {
@@ -46,7 +49,7 @@ namespace VotingApp.Models
             {
                 if (createdVote.VoteOpenDateTime == null)
                     createdVote.VoteAccessCode = _voteCreationService.generateCode();
-
+               // createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 _createdVoteRepository.AddOrUpdate(createdVote);
             }
             catch (Exception ex)
@@ -92,6 +95,7 @@ namespace VotingApp.Models
                 //remove previous options before adding in the new ones
                 _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
                 createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
+                //createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
 
@@ -101,6 +105,7 @@ namespace VotingApp.Models
                 //var voteOpts = _voteOptionRepository.GetAllByVoteID(createdVote.VoteTypeId);
                 _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
                 //createdVote.VoteOptions = new List<VoteOption>();
+                //createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
 

@@ -1,11 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EmailService;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-
+using System.Text;
+using System.Text.Encodings.Web;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
+using VotingApp.Data;
 using VotingApp.Models;
 
 namespace VotingApp.DAL.Concrete
@@ -13,10 +18,12 @@ namespace VotingApp.DAL.Concrete
     public class CreatedVoteRepository : ICreatedVoteRepository
     {
         private VotingAppDbContext _context;
+        private IEmailSender _emailSender;
 
-        public CreatedVoteRepository(VotingAppDbContext ctx)
+        public CreatedVoteRepository(VotingAppDbContext ctx, IEmailSender emailSender)
         {
             _context = ctx;
+            _emailSender = emailSender;
         }
         public CreatedVote AddOrUpdate(CreatedVote createdVote)
         {
@@ -32,7 +39,7 @@ namespace VotingApp.DAL.Concrete
         public Boolean SetAnonymous(int id)
         {
             var createdVote = _context.CreatedVotes.Where(a => a.Id == id).FirstOrDefault();
-
+            
             if (createdVote != null && createdVote.AnonymousVote == false)
             {
                 createdVote.AnonymousVote = true;
@@ -86,6 +93,22 @@ namespace VotingApp.DAL.Concrete
         public IList<CreatedVote> GetAllVotesWithNoAccessCode()
         {
             return _context.CreatedVotes.Where(v => v.VoteAccessCode == null).ToList();
+        }
+
+        public void SendEmails(IList<VoteAuthorizedUser> users, CreatedVote vote, string accessCode)
+        {
+            var voteTitle = vote.VoteTitle;
+            var voteDescription = vote.VoteDiscription;
+
+            foreach (var user in users)
+            {
+                var email = user.UserName;
+
+                var message = new Message(new string[] { email }, "New Vote Authorization from Opiniony",
+                    "You have been authorized to submit your vote for: " + $"<br/><br/>Title: '{voteTitle}'<br/>Description: '{voteDescription}'<br/><br/>Click <a href='{accessCode}'>here</a> to go to submit a vote.");
+
+                _emailSender.SendEmail(message);
+            }
         }
 
         public IList<CreatedVote> GetAllClosedMultiRoundVotes()
