@@ -1,0 +1,58 @@
+# Voting Window 
+
+
+## Title
+
+As a user, I want to be able to set a time window for voting so that votes cannot be cast after the window.
+
+## Description
+
+We want to have the voting close after a specific time so that people cant submit a vote after it has closed
+
+### Details
+1. Allow user to set time window when creating a vote.
+2. Stop people from submitting a vote after the time window has closed
+## Acceptance Criteria
+    
+    Given I am on the vote creation page
+    Then I will see an option to choose a date/time for the vote to close
+    
+    Given I am on the vote creation page
+    and I don't specife a date for vote to close
+    Then it will default to 24 hrs
+
+    Given I am on the vote creation page
+    and I specife a data for vote to close
+    Then it will be open for that amount of time
+
+    Given I am on the access a vote page
+    and I enter in the access code
+    and the vote window is still open
+    then I will navigated to the submit a vote page
+
+    Given I am on the access a vote page
+    and I enter in the access code
+    and the vote window is not open
+    then I will recive a message saying that the window is closed
+
+    Given I am on the vote review page
+    Then I will see the remaining time left on the time window.
+
+## Assumptions/Preconditions
+
+
+## Dependencies
+
+
+## Effort Points
+4
+## Owner
+Sam Torris
+## Git Feature Branch
+f_voting_time_window_VA87
+
+## Modeling and Other Documents
+N/A
+
+## Tasks
+1. 

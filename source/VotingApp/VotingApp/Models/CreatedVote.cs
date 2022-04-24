@@ -11,8 +11,9 @@ namespace VotingApp.Models
     {
         public CreatedVote()
         {
-            Options = new HashSet<Option>();
             SubmittedVotes = new HashSet<SubmittedVote>();
+            VoteAuthorizedUsers = new HashSet<VoteAuthorizedUser>();
+            VoteOptions = new HashSet<VoteOption>();
         }
 
         [Key]
@@ -20,16 +21,32 @@ namespace VotingApp.Models
         public int Id { get; set; }
         [Column("UserID")]
         public int? UserId { get; set; }
-        [StringLength(250)]
+        [StringLength(350)]
+        public string VoteTitle { get; set; } = null!;
+        [StringLength(1000)]
         public string VoteDiscription { get; set; } = null!;
-        public bool Anonymous { get; set; }
+        public bool AnonymousVote { get; set; }
+        public int VoteTypeId { get; set; }
+        [StringLength(100)]
+        public string? VoteAccessCode { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? VoteOpenDateTime { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime? VoteCloseDateTime { get; set; }
+        public bool PrivateVote { get; set; }
+        public byte[]? VoteAudioBytes { get; set; }
 
         [ForeignKey(nameof(UserId))]
+        [InverseProperty(nameof(VotingUser.CreatedVotes))]
+        public virtual VotingUser? User { get; set; }
+        [ForeignKey(nameof(VoteTypeId))]
         [InverseProperty("CreatedVotes")]
-        public virtual User? User { get; set; }
-        [InverseProperty(nameof(Option.CreatedVote))]
-        public virtual ICollection<Option> Options { get; set; }
+        public virtual VoteType VoteType { get; set; } = null!;
         [InverseProperty(nameof(SubmittedVote.CreatedVote))]
         public virtual ICollection<SubmittedVote> SubmittedVotes { get; set; }
+        [InverseProperty(nameof(VoteAuthorizedUser.CreatedVote))]
+        public virtual ICollection<VoteAuthorizedUser> VoteAuthorizedUsers { get; set; }
+        [InverseProperty(nameof(VoteOption.CreatedVote))]
+        public virtual ICollection<VoteOption> VoteOptions { get; set; }
     }
 }

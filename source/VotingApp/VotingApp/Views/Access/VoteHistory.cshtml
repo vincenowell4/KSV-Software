@@ -1,0 +1,78 @@
+﻿@using VotingApp.ViewModel
+@model IEnumerable<SubmittedVoteHistoryVM>
+@{
+    ViewData["Title"] = "Vote History";
+}
+<div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
+                                                                    height: 90vh; 
+                                                                    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage4.jpg); 
+                                                                    background-size: cover; left: 50%;
+                                                                    margin-left: -50vw;
+                                                                    margin-right: -50vw;
+                                                                    max-width: 100vw;
+                                                                    position: relative;
+                                                                    right: 50%;
+                                                                    width: 100vw;"> 
+    <div class="text-center text-white">
+        <h1 class="display-4">Vote History</h1>
+    </div>
+    <div class="container text-dark">
+        <div class="accordion" id="accordionExample">
+        @foreach(var vote in Model)
+        {
+            
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="@Html.Raw("HeadingA" + vote.subVote.Id)">
+                        <button class="btn btn-lg btn-block collapsed" style="width: 100%" type="button" data-bs-toggle="collapse" data-bs-target="@Html.Raw("#collapseA" + vote.subVote.Id)" aria-expanded="false" aria-controls="@Html.Raw("collapseA" + vote.subVote.Id)">
+                            <div class="row ">
+                                <div class="col-sm text-left">Vote Title: @vote.subVote.CreatedVote.VoteTitle</div>
+                                <div class="col-sm text-left"> Your Choice: @vote.voteOption.VoteOptionString</div>
+                                <div class="col-sm text-right">Date Voted: @vote.subVote.DateCast</div> 
+                            </div>  
+                        </button>
+                        
+                    </h2>
+                    <div id="@Html.Raw("collapseA" + vote.subVote.Id)" class="accordion-collapse collapse" aria-labelledby="@Html.Raw("HeadingA" + vote.subVote.Id)" data-bs-parent="#accordionExample">
+                        <div class="accordion-body text-black">
+                            <div class="row">
+                                <div class="col">
+                                    <h4>Vote Discription:</h4>
+                                    @vote.subVote.CreatedVote.VoteDiscription
+                                </div>
+                                <div class="col">
+                                    <h4>Vote Options:</h4>
+                                    <ul>
+                                        @foreach (var option in vote.subVote.CreatedVote.VoteOptions)
+                                        {
+                                            <li>@option.VoteOptionString</li>
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="col">
+                                    <h4>Close Date:</h4>
+                                    @if(vote.subVote.CreatedVote.VoteCloseDateTime != null){@Html.Raw($"{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Month}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Day}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Year} {vote.subVote.CreatedVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}
+                                    <audio controls src="@Url.Action("LoadAudio", "Create", new { id = vote.subVote.CreatedVoteId })"></audio>
+                                    @if((vote.subVote.CreatedVote.VoteOpenDateTime == null || vote.subVote.CreatedVote.VoteOpenDateTime >= DateTime.Now) && vote.subVote.CreatedVote.VoteCloseDateTime >= DateTime.Now)
+                                    {
+                                        <form asp-action="EditSubVote" method="post">
+		                                <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@vote.subVote.Id">Edit</button>
+	                                    </form>
+                                
+                                    }
+                                    else
+                                    {
+                                        <button style="width:140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@vote.subVote.Id" disabled>Edit</button>
+                                    }
+                                </div>
+                                
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+               
+        }
+        </div>
+    </div>
+</div>

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailService;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using VotingApp.DAL.Abstract;
+using VotingApp.Models;
+using VotingApp.Data;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -28,14 +32,16 @@ namespace VotingApp.Areas.Identity.Pages.Account
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IVotingUserRepositiory _votingUserRepository;
+        private readonly EmailService.IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            EmailService.IEmailSender emailSender,
+            IVotingUserRepositiory votingUserRepositiory)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +49,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _votingUserRepository = votingUserRepositiory;
         }
 
         /// <summary>
@@ -70,6 +77,14 @@ namespace VotingApp.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+            [StringLength(100)]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [StringLength(100)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -130,9 +145,12 @@ namespace VotingApp.Areas.Identity.Pages.Account
                         pageHandler: null,
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
-
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    var message = new Message( new string[] { Input.Email.ToString() }, AppStrings.EmailSubject,
+                        AppStrings.EmailMessage + $" <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    
+                    _emailSender.SendEmail(message);
+                    var newUser = new VotingUser { NetUserId=userId, UserName = user.UserName };
+                    _votingUserRepository.AddOrUpdate(newUser);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

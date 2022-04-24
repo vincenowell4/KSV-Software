@@ -17,9 +17,11 @@ namespace VotingApp.Models
         }
 
         public virtual DbSet<CreatedVote> CreatedVotes { get; set; } = null!;
-        public virtual DbSet<Option> Options { get; set; } = null!;
         public virtual DbSet<SubmittedVote> SubmittedVotes { get; set; } = null!;
-        public virtual DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<VoteAuthorizedUser> VoteAuthorizedUsers { get; set; } = null!;
+        public virtual DbSet<VoteOption> VoteOptions { get; set; } = null!;
+        public virtual DbSet<VoteType> VoteTypes { get; set; } = null!;
+        public virtual DbSet<VotingUser> VotingUsers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,15 +39,12 @@ namespace VotingApp.Models
                     .WithMany(p => p.CreatedVotes)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("Fk_Created_Vote_User_ID");
-            });
 
-            modelBuilder.Entity<Option>(entity =>
-            {
-                entity.HasOne(d => d.CreatedVote)
-                    .WithMany(p => p.Options)
-                    .HasForeignKey(d => d.CreatedVoteId)
+                entity.HasOne(d => d.VoteType)
+                    .WithMany(p => p.CreatedVotes)
+                    .HasForeignKey(d => d.VoteTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Fk_Options_Created_Vote_ID");
+                    .HasConstraintName("Fk_Vote_Type_ID");
             });
 
             modelBuilder.Entity<SubmittedVote>(entity =>
@@ -60,6 +59,24 @@ namespace VotingApp.Models
                     .WithMany(p => p.SubmittedVotes)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("Fk_Submitted_Vote_User_ID");
+            });
+
+            modelBuilder.Entity<VoteAuthorizedUser>(entity =>
+            {
+                entity.HasOne(d => d.CreatedVote)
+                    .WithMany(p => p.VoteAuthorizedUsers)
+                    .HasForeignKey(d => d.CreatedVoteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_AuthorizedUsers_Created_Vote_ID");
+            });
+
+            modelBuilder.Entity<VoteOption>(entity =>
+            {
+                entity.HasOne(d => d.CreatedVote)
+                    .WithMany(p => p.VoteOptions)
+                    .HasForeignKey(d => d.CreatedVoteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_Options_Created_Vote_ID");
             });
 
             OnModelCreatingPartial(modelBuilder);

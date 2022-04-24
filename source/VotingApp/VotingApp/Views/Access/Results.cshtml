@@ -1,0 +1,83 @@
+﻿@model VotingApp.ViewModel.VoteResultsVM
+@{
+	ViewData["Title"] = "Vote Results Page";
+}
+
+<div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
+	                                                                height: 90vh; 
+	                                                                background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(/Images/bannerImage6.jpg); 
+	                                                                background-size: cover; left: 50%;
+	                                                                margin-left: -50vw;
+	                                                                margin-right: -50vw;
+	                                                                max-width: 100vw;
+	                                                                position: relative;
+	                                                                right: 50%;
+	                                                                width: 100vw;"> 
+	<div class="text-center text-white">
+		<h1 class="display-4">Vote Results</h1>
+		<hr class="mb-4"/>
+
+	</div>
+	@if (Model != null)
+	{
+		<div class="text-center text-white mb-3">
+			<h5>Vote Title: @Model.VoteTitle</h5>
+			<h5>Vote Description: @Model.VoteDescription</h5>
+		</div>
+		<div class="container text-center text-white">
+			<div class="text-center col-md mx-auto">
+				<div class="row">
+					<table class="table table-borderless rounded bg-dark text-white table-striped">
+						<tr class="bg-secondary">
+							<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote. The winning vote row is highlighted in red. If there is a tie the winning votes will be highlighted yellow.">&#8505;</span></th>
+							<th>Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
+						</tr>
+						@foreach (var vote in Model.TotalVotesForEachOption)
+						{
+							var winnerCheck = false;
+							foreach (var winner in Model.Winners)
+							{
+								if (winner.Key.Id == vote.Key.Id)
+								{
+									winnerCheck = true;
+								}
+							}
+							if (winnerCheck && Model.Winners.Count == 1)
+							{
+								<tr class="table-danger">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
+							else if (winnerCheck && Model.Winners.Count > 1 )
+							{
+								<tr class="table-warning">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
+							else
+							{
+								<tr class="text-white-50">
+									<td>@vote.Key.VoteOptionString</td>
+									<td>@vote.Value</td>
+								</tr>
+							}
+						}
+						<tfoot>
+						<tr class="table-info">
+							<td>Total Votes: <span data-toggle="tooltip" data-placement="bottom" title="Here are the overall total votes for your created vote.">&#8505;</span></td>
+							<td>@Model.TotalVotesCount</td>
+						</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+	<div class="text-center mt-3">
+		<form asp-action="Index" method="get">
+			<td><button type="submit" id="back-button" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary">Back to access a vote</button></td>
+		</form>
+	</div>
+</div>

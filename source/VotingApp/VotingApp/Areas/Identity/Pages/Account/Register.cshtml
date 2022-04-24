@@ -4,33 +4,59 @@
     ViewData["Title"] = "Register";
 }
 
-<h1>@ViewData["Title"]</h1>
 
-<div class="row">
-    <div class="col-md-4">
+<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px;
+    height: 90vh; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/AndYouAre3.jpg); 
+    background-size: cover; 
+    left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    position: relative;
+    right: 50%;
+    width: 100vw;"> 
+
+    <div class="container text-white">
+        <h1 class="display-4">@ViewData["Title"]</h1>
+        <hr class="mt-lg-5" style="border-top: 3px solid white; color: white; background-color: white;">
+
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
+            <h2>Create a new account</h2>
             <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-floating">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                <label asp-for="Input.Email"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
-                <label asp-for="Input.Password"></label>
+            <div class="w-25 text-black">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="new-name" aria-required="true" />
+                <label asp-for="Input.FirstName"></label>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
-            <div class="form-floating">
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="new-name" aria-required="true" />
+                <label asp-for="Input.LastName"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                <label asp-for="Input.Email" ></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                <label asp-for="Input.Password" ></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
-                <label asp-for="Input.ConfirmPassword"></label>
+                <label asp-for="Input.ConfirmPassword" ></label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-light btn-lg bg-success btn-outline-primary mb-3">Register</button>
+            </div>
         </form>
     </div>
-    <div class="col-md-6 col-md-offset-2">
+    <div class="col-md-6 col-md-offset-2" style="display:none">
         <section>
             <h3>Use another service to register.</h3>
             <hr />

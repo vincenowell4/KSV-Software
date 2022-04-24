@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "mssql2": {
+      "ignored": "true",
+      "suggestion": "true",
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:VotingAppConnection"
+    },
+    "mssql3": {
+      "ignored": "true",
+      "suggestion": "true",
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:VotingAppIdentity"
+    }
+  }
+}

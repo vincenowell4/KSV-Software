@@ -1,10 +1,24 @@
 ﻿@page
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = "Registration confirmation";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px;
+    height: 90vh; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(/Images/bannerImage5.jpg); 
+    background-size: cover; 
+    left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    position: relative;
+    right: 50%;
+    width: 100vw;"> 
+
+    <div class="container text-white">
+
+<h1 class="display-4">@ViewData["Title"]</h1>
 @{
     if (@Model.DisplayConfirmAccountLink)
     {
@@ -15,9 +29,13 @@
     }
     else
     {
-<p>
-        Please check your email to confirm your account.
+<p> 
+        We're happy that you've registered to use Opiniony! Please check your @Model.Email email for a verification link to confirm your account. <br/>
+        You have 24 hours to confirm your account, but if you are unable to confirm within that time period, you can have the email resent.
 </p>
     }
 }
+    <div></div>
+</div>>
+
 

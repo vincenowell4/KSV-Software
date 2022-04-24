@@ -7,12 +7,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using EmailService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using VotingApp.Data;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -20,9 +22,9 @@ namespace VotingApp.Areas.Identity.Pages.Account
     public class ResendEmailConfirmationModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly EmailService.IEmailSender _emailSender;
 
-        public ResendEmailConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender emailSender)
+        public ResendEmailConfirmationModel(UserManager<IdentityUser> userManager, EmailService.IEmailSender emailSender)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -32,7 +34,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
-        [BindProperty]
+        [BindProperty (SupportsGet = true)]
         public InputModel Input { get; set; }
 
         /// <summary>
@@ -50,8 +52,14 @@ namespace VotingApp.Areas.Identity.Pages.Account
             public string Email { get; set; }
         }
 
-        public void OnGet()
+        public IActionResult OnGet(string userEmail)
         {
+            if (userEmail != null && userEmail.Length > 0) 
+            {
+                Input.Email = userEmail;
+            }
+            ModelState.ClearValidationState("Email");
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -64,7 +72,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+                ModelState.AddModelError(string.Empty, AppStrings.EmailSentMessage);
                 return Page();
             }
 
@@ -74,14 +82,13 @@ namespace VotingApp.Areas.Identity.Pages.Account
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new { userId = userId, code = code },
+                values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                Input.Email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            var message = new Message(new string[] { Input.Email.ToString() }, AppStrings.EmailSubject,
+                AppStrings.EmailMessage + $" <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+            _emailSender.SendEmail(message);
 
-            ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+            ModelState.AddModelError(string.Empty, AppStrings.EmailSentMessage);
             return Page();
         }
     }
