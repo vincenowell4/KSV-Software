@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using VotingApp.Data;
 using static VotingApp.Utilities.SeedUser;
 using EmailService;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.Data.SqlClient;
+using System.Reflection;
 
 // Add services to the container.
 
@@ -24,6 +26,9 @@ var connectionStringIdentity = builder.Configuration.GetConnectionString("Voting
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppIdentityAzure"));
 //if (connectionStringIdentity.Password.Length == 0)
 //    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestIdentityVotingApp"));
+//if (connectionStringIdentity.Password.Length == 0)
+    //connectionStringIdentity.Password = builder.Configuration["SamAzureIdentityTestPW"];
 //*******************************************************************************************************************************************
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
@@ -35,9 +40,19 @@ builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSql
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
 
+var binDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase);
+string fullPath = Path.Combine(binDirectory, "credentials.json").Replace("file:\\", "");
+
+using (StreamWriter outputFile = new StreamWriter(fullPath, false))
+{
+    outputFile.WriteLine(builder.Configuration["GOOGLECREDS"]);
+}
+
+// Set environment variabel to the full file path
+Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", fullPath);
+
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
 var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
-
 //*******************************************************************************************************************************************
 //IMPORTANT - USE THE NEXT 3 LINES OF CODE WHEN DEPLOYING TO THE DEMO SITE, 
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppDemoConnectionAzure"));
@@ -47,6 +62,9 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("VotingAppConnectionAzure"));
 //if (connectionString.Password.Length == 0)
 //    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
+//var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestVotingApp"));
+//if (connectionString.Password.Length == 0)
+   // connectionString.Password = builder.Configuration["SamAzureTestPW"];
 //*******************************************************************************************************************************************
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
@@ -64,6 +82,8 @@ builder.Services.AddScoped<IVoteOptionRepository, VoteOptionRepository>();
 builder.Services.AddScoped<VoteCreationService, VoteCreationService>();
 builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
+builder.Services.AddScoped<IVoteAuthorizedUsersRepo, VoteAuthorizedUsersRepo>();
+builder.Services.AddScoped<GoogleTtsService,GoogleTtsService>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
        o.TokenLifespan = TimeSpan.FromSeconds(06400)); //email confirmation token will expire after exactly 24 hours (86400 seconds)
@@ -86,6 +106,8 @@ using (var scope = app.Services.CreateScope())
         // the configuration on Azure
         // Set password with the Secret Manager tool, or store in Azure app configuration
         // dotnet user-secrets set SeedUserPW <pw>
+        //var apiKey = builder.Configuration["GoogleAPIKey"];
+        //Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", apiKey);
         var testUserPw = builder.Configuration["SeedUserPW"];
         var adminPw = builder.Configuration["SeedAdminPW"];
        

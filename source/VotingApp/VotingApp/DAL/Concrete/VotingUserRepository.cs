@@ -37,6 +37,10 @@ namespace VotingApp.DAL.Concrete
             return _context.VotingUsers.Where(a => a.NetUserId == id).FirstOrDefault();
         }
 
-       
+        public VotingUser GetUserById(int id)
+        {
+            return _context.VotingUsers.Where(a => a.Id == id).FirstOrDefault();
+        }
+
     }
 }

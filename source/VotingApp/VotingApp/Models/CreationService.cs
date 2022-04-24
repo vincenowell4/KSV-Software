@@ -11,16 +11,19 @@ namespace VotingApp.Models
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
+        private readonly GoogleTtsService _googleTtsService;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
-            IVoteOptionRepository voteOptionRepository)
+            IVoteOptionRepository voteOptionRepository,
+            GoogleTtsService googleTtsService)
         {
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _voteOptionRepository = voteOptionRepository;
+            _googleTtsService = googleTtsService;
         }
         public string Create(ref CreatedVote createdVote)
         {
@@ -29,13 +32,24 @@ namespace VotingApp.Models
                 createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
             }
 
+            if (createdVote.VoteTypeId == 3 && createdVote.RoundNumber == 0)
+            {
+                createdVote.RoundNumber = 1;
+            }
+
             if (createdVote.VoteCloseDateTime == null)
             {
-                createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+                if (createdVote.VoteOpenDateTime == null)
+                    createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+                else
+                    createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
+
             }
             try
             {
-                createdVote.VoteAccessCode = _voteCreationService.generateCode();
+                if (createdVote.VoteOpenDateTime == null)
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
+               // createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 _createdVoteRepository.AddOrUpdate(createdVote);
             }
             catch (Exception ex)
@@ -45,6 +59,24 @@ namespace VotingApp.Models
 
             return "";
         }
+
+        public string AddVoteAccessCode(ref CreatedVote createdVote)
+        {
+            try
+            {
+                if (createdVote.VoteAccessCode == null)
+                    createdVote.VoteAccessCode = _voteCreationService.generateCode();
+
+                _createdVoteRepository.AddOrUpdate(createdVote);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+
+            return createdVote.VoteAccessCode;
+        }
+
 
         public string Edit(ref CreatedVote createdVote, int oldVoteTypeId)
         {
@@ -63,6 +95,7 @@ namespace VotingApp.Models
                 //remove previous options before adding in the new ones
                 _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
                 createdVote.VoteOptions = _voteTypeRepository.CreateYesNoVoteOptions();
+                //createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
 
@@ -72,10 +105,44 @@ namespace VotingApp.Models
                 //var voteOpts = _voteOptionRepository.GetAllByVoteID(createdVote.VoteTypeId);
                 _voteOptionRepository.RemoveAllOptions(createdVote.VoteOptions.ToList());
                 //createdVote.VoteOptions = new List<VoteOption>();
+                //createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
 
             return "";
+        }
+        public IEnumerable<VoteAuthorizedUser> ParseUserList(int id ,string userString)
+        {
+            var userList = new List<string>();
+            userList = userString.Split(',').ToList();
+            userList = userList.Select(user => user.Trim()).ToList();
+            List<VoteAuthorizedUser> voteAuthorizedUser = new List<VoteAuthorizedUser>();
+            foreach (var user in userList)
+            {
+                voteAuthorizedUser.Add(new VoteAuthorizedUser { CreatedVoteId = id, UserName = user });
+            }
+            return voteAuthorizedUser;
+        }
+        public string AuthorizedUsersToString(List<VoteAuthorizedUser> userList)
+        {
+            string userString = "";
+            foreach(var user in userList)
+            {
+                if(userList.Count == 1)
+                {
+                    userString += user.UserName;
+                }
+                else
+                {
+                    userString += user.UserName + ",";
+                }
+                
+            }
+            if(userString.LastOrDefault() == ',')
+            {
+                userString = userString.Remove(userString.Length -1, 1);
+            }
+            return userString;
         }
     }
 }

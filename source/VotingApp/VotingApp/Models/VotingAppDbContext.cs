@@ -18,6 +18,7 @@ namespace VotingApp.Models
 
         public virtual DbSet<CreatedVote> CreatedVotes { get; set; } = null!;
         public virtual DbSet<SubmittedVote> SubmittedVotes { get; set; } = null!;
+        public virtual DbSet<VoteAuthorizedUser> VoteAuthorizedUsers { get; set; } = null!;
         public virtual DbSet<VoteOption> VoteOptions { get; set; } = null!;
         public virtual DbSet<VoteType> VoteTypes { get; set; } = null!;
         public virtual DbSet<VotingUser> VotingUsers { get; set; } = null!;
@@ -58,6 +59,15 @@ namespace VotingApp.Models
                     .WithMany(p => p.SubmittedVotes)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("Fk_Submitted_Vote_User_ID");
+            });
+
+            modelBuilder.Entity<VoteAuthorizedUser>(entity =>
+            {
+                entity.HasOne(d => d.CreatedVote)
+                    .WithMany(p => p.VoteAuthorizedUsers)
+                    .HasForeignKey(d => d.CreatedVoteId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_AuthorizedUsers_Created_Vote_ID");
             });
 
             modelBuilder.Entity<VoteOption>(entity =>
