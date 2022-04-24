@@ -19,5 +19,7 @@ namespace VotingApp.ViewModel
         public Dictionary<VoteOption, int> Winners { get; set; }
 
         public CreatedVote GetVoteByAccessCode { get; set; }
+        public IList<string> ChartVoteOptions { get; set; }
+        public IList<int> ChartVoteTotals { get; set; }
     } 
 }
