@@ -190,30 +190,190 @@ namespace Tests_NUnit_Voting_App
             //_createdVoteSet.Verify(m => m.Add(It.IsAny<CreatedVote>()), Times.Once());
             //_mockContext.Verify(ctx => ctx.SaveChanges(), Times.Once());
         }
-        //VA82
+
+        //VA-82
         [Test]
-        public void Test_SetVoteAudio_CreatedVotePartial_Should_Set_audio()
+        public void Test_GoogleTtsService_Create_Audio_should_return_byte_Array()
         {
-            //Arrange
-            CreatedVote newCreatedVote = new CreatedVote()
+            var vote = new CreatedVote
             {
-                Id = 99,
+                Id = 9,
                 VoteType = _voteTypes[0],
                 AnonymousVote = false,
                 UserId = 1,
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
-                VoteAccessCode = "abc12"
-                //VoteAudioBytes = 
+                VoteAccessCode = "abc123",
+                VoteCloseDateTime = DateTime.Now.AddDays(1)
             };
-
-            //Act
-           // var list = voteAuthorizedUsersRepo.GetAllUsersByVoteID(1);
-
-
-            //Assert that returned list of votes is sorted by date, and only by the intended user
-            //Assert.True(list.Count == 2 && list[0].UserName == "user1@mail.com" && list[1].UserName == "user@mail.com");
+            vote.VoteOptions = new List<VoteOption>
+            {
+                new VoteOption
+                {
+                    Id = 10,
+                    CreatedVote = vote,
+                    CreatedVoteId = 9,
+                    VoteOptionString = "Yes"
+                },
+                new VoteOption
+                {
+                    Id = 11,
+                    CreatedVote = vote,
+                    CreatedVoteId = 9,
+                    VoteOptionString = "No"
+                },
+            };
+            GoogleTtsService ttsService = new GoogleTtsService();
+            var results = ttsService.CreateVoteAudio(vote);
+            Assert.True(results != null);
         }
+
+        //VA-IDK
+        [Test]
+        public void Test_AuthorizedUsersToString_should_return_string()
+        {
+            List<VoteAuthorizedUser> userList = new List<VoteAuthorizedUser>
+            {
+                new VoteAuthorizedUser
+                {
+                    Id = 20,
+                    UserName = "Bill@mail.com",
+                },
+                new VoteAuthorizedUser
+                {
+                    Id = 21,
+                    UserName = "Bob@mail.com",
+                },
+                new VoteAuthorizedUser
+                {
+                    Id = 22,
+                    UserName = "Jill@mail.com",
+                }
+            };
+            IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
+            VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            var result = service.AuthorizedUsersToString(userList);
+            Assert.AreEqual(result, "Bill@mail.com,Bob@mail.com,Jill@mail.com");
+        }
+
+        [Test]
+        public void Test_AuthorizedUsersToString_single_users_should_return_string()
+        {
+            List<VoteAuthorizedUser> userList = new List<VoteAuthorizedUser>
+            {
+                new VoteAuthorizedUser
+                {
+                    Id = 20,
+                    UserName = "Bill@mail.com",
+                },
+            };
+            IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
+            VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            var result = service.AuthorizedUsersToString(userList);
+            Assert.AreEqual(result, "Bill@mail.com");
+        }
+
+        [Test]
+        public void Test_add_access_code_creation_service_should_return_access_code()
+        {
+            var vote = new CreatedVote
+            {
+                Id = 9,
+                VoteType = _voteTypes[0],
+                AnonymousVote = false,
+                UserId = 1,
+                VoteTitle = "Title",
+                VoteDiscription = "This is the description",
+                VoteAccessCode = "abc123",
+                VoteCloseDateTime = DateTime.Now.AddDays(1)
+            };
+            IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
+            VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            var result = service.AddVoteAccessCode(ref vote);
+            Assert.True(result != null && result.Length == 6);
+        }
+
+        [Test]
+        public void Test_add_access_code_creation_service_should_return_access_code_thows_exception()
+        {
+            var vote = new CreatedVote
+            {
+                Id = 9,
+                VoteType = _voteTypes[0],
+                AnonymousVote = false,
+                UserId = 1,
+                VoteTitle = "Title",
+                VoteDiscription = "This is the description",
+                VoteAccessCode = "abc123",
+                VoteCloseDateTime = DateTime.Now.AddDays(1)
+            };
+            IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
+            VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            CreationService service = new CreationService(null, Typerepo, voteServ, Oprepo);
+            var result = service.AddVoteAccessCode(ref vote);
+            Assert.True(result != null);
+        }
+
+        //VA-IDK
+        [Test]
+        public void Test_ParseUserList_should_return_List_of_Users()
+        {
+            List<VoteAuthorizedUser> expected = new List<VoteAuthorizedUser>
+            {
+                new VoteAuthorizedUser
+                {
+                    
+                    UserName = "Bill@mail.com",
+                    CreatedVoteId = 22
+                },
+                new VoteAuthorizedUser
+                {
+                    
+                    UserName = "Bob@mail.com",
+                    CreatedVoteId = 22
+                },
+                new VoteAuthorizedUser
+                {
+                    
+                    UserName = "Jill@mail.com",
+                    CreatedVoteId = 22
+                }
+            };
+            IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
+            VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            var result = service.ParseUserList(22, "Bill@mail.com,Bob@mail.com,Jill@mail.com").ToList();
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.True(result[i].UserName == expected[i].UserName &&
+                            result[i].CreatedVoteId == expected[i].CreatedVoteId);
+            }
+        }
+
+
 
         //VA84
         [Test]
@@ -466,7 +626,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, null);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
             var newVote = new CreatedVote
             {
                 VoteTypeId = 1,
@@ -489,7 +649,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, null);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
             var newVote = new CreatedVote
             {
                 VoteTypeId = 1,
@@ -512,7 +672,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo,null);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
             var newVote = new CreatedVote
             {
                 Id = 3,
@@ -538,7 +698,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, null);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
             var newVote = new CreatedVote
             {
                 Id = 3,
@@ -564,7 +724,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo,null);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
             var newVote = new CreatedVote
             {
                 Id = 3,

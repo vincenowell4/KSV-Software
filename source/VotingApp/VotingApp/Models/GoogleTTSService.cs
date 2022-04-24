@@ -49,20 +49,5 @@ namespace VotingApp.Models
 
         }
 
-        public void CreateAudioFiles(CreatedVote vote)
-        {
-            Directory.SetCurrentDirectory(@"wwwroot/TempAudio");
-            if (Directory.Exists($"{vote.Id}"))
-            {
-                Directory.Delete($"{vote.Id}");
-            }
-
-            Directory.CreateDirectory($"{vote.Id}");
-            Directory.SetCurrentDirectory(@$"{vote.Id}");
-            if (vote.VoteAudioBytes != null)
-            {
-                File.WriteAllBytes($"{vote.Id}.mp3", vote.VoteAudioBytes);
-            }
-        }
     }
 }
