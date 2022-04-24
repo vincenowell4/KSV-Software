@@ -66,8 +66,8 @@
                                 <h3 class="text-black">Vote Access Code:</h3>
                                 <p class="card-text text-black">@Model.VoteAccessCode</p>
                             }
-                            <h3 class="text-black">Vote Access Link:</h3>
-                            <p class="card-text text-black">@Model.ShareURL</p>
+                            <h3 class="text-black">Vote Access Link: <button><i onclick="copyAccessCode()" class="fa-solid fa-copy fa-2xs"></i></button></h3>
+                            <p id="accessLink" class="card-text text-black">@Model.ShareURL</p>
                         </div>
                     </div>
                 </div>
@@ -131,3 +131,27 @@
 		</div>
 	</div>
 </div>
+
+@section Scripts
+{
+	<script>
+		function copyAccessCode() {
+
+			if (!navigator.clipboard) {
+				alert("cannot use clipboard");
+			}
+
+			var text = document.getElementById("accessLink");
+			var copyText = text.textContent;
+
+
+			/* Copy the url */
+			navigator.clipboard.writeText(copyText).then(() => {
+					alert("Copied the text: " + copyText);
+				})
+				.catch(err => {
+					alert('Something went wrong ' + err);
+				});
+		}
+	</script>
+}

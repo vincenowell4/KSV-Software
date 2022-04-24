@@ -224,12 +224,17 @@ namespace VotingApp.Controllers
         {
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
-            
-            //
+
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
             //_googleTtsService.CreateAudioFiles(createdVote);
             createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+            if (createdVote.PrivateVote)
+            {
+                var accessCode = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
+                var listOfEmails = createdVote.VoteAuthorizedUsers.ToList();
+                _createdVoteRepository.SendEmails(listOfEmails, createdVote, accessCode);
+            }
             var vm = new ConfirmationVM();
             vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);
             vm.VoteDescription = _createdVoteRepository.GetVoteDescription(createdVote.Id);
