@@ -24,6 +24,7 @@
 
     @if (Model != null)
     {
+
 	    <div class="container text-center text-white">
 		    @*opened votes table*@
 		    <div class="row text-center m-2">
@@ -61,7 +62,7 @@
 							    <td >@createdVote.VoteType.VotingType</td>
 							    <td>@createdVote.AnonymousVote</td>
 							    <td>@createdVote.VoteAccessCode
-								    <button class="accessBtn" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
+								    <button class="btn btn-light accessBtn" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
 									    <i class="fa-solid fa-copy fa-2xs"></i></button></td>
 
 							    <td>
@@ -89,6 +90,22 @@
 								    <form asp-action="VoteResultsButton" method="post">
 									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button>
 								    </form>
+								    <button type="button" style="width:140px" class="btn btn-light bg-success btn-outline-primary" data-toggle="modal" data-target="@Html.Raw("#modal" +createdVote.Id)">
+									    Audio
+								    </button>
+
+								    <!-- Modal -->
+								    <div class="modal fade" id="@Html.Raw("modal" + createdVote.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+									    <div class="modal-dialog" role="document">
+										    <div class="modal-content">
+											    <div class="modal-body">
+												    <div class="row justify-content-center"><audio controls src="@Url.Action("LoadAudio", "Create", new { id = createdVote.Id })"></audio>
+													    <button style="max-width: 300px;" type="button" class="btn btn-secondary mt-2" data-dismiss="modal">Close</button></div>
+                                            
+											    </div>
+										    </div>
+									    </div>
+								    </div>
 							    </td>
 						    </tr>
 						    {

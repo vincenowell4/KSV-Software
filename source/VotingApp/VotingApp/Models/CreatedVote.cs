@@ -28,13 +28,16 @@ namespace VotingApp.Models
         public bool AnonymousVote { get; set; }
         public int VoteTypeId { get; set; }
         [StringLength(100)]
-        public string? VoteAccessCode { get; set; } = null!;
+        public string? VoteAccessCode { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? VoteOpenDateTime { get; set; }
-        
         [Column(TypeName = "datetime")]
         public DateTime? VoteCloseDateTime { get; set; }
         public bool PrivateVote { get; set; }
+        public byte[]? VoteAudioBytes { get; set; }
+        public int RoundNumber { get; set; }
+        public int NextRoundId { get; set; }
+
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]

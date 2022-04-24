@@ -1,4 +1,4 @@
-using DelayedVoteService;
+using VotingAppService;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);

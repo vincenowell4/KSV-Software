@@ -19,14 +19,14 @@ Scenario: User is brought back to access page from vote results page after click
     Then I am brought back to the access a vote page 
 	Examples: 
 	| AccessCode |
-	| 9cd97f     |
+	| 1450f7     |
 
 Scenario: User enters a valid access code and is brought to results page 
 	Given I have entered the '<AccessCode>' on the 'Access' page
 	Then I am brought to the correct results page
 	Examples: 
 	| AccessCode |
-	| 9cd97f     |
+	| 1450f7     |
 
 Scenario: User enters invalid access code and is still on access page 
 	Given I am on the 'Access' a vote page 

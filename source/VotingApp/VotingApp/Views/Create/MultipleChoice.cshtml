@@ -79,7 +79,7 @@
 				</form>
 				&nbsp;&nbsp;
 				<form asp-action="MultipleChoiceToConfirmation" method="post">
-					@if (@Model.VoteOptions.Count() >= 2)
+					@if (@Model.VoteOptions.Count() >= ((Model.VoteTypeId == 3) ? 3 : 2 ) )
 					{
 						<button name="id" type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-secondary btn-outline-primary" value="@Model.Id">Submit</button>
 					}
