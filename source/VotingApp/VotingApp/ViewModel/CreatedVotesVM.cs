@@ -14,6 +14,9 @@ namespace VotingApp.ViewModel
         public int Id { get; set; }
         public int UserId { get; set; }
         public IList<CreatedVote> CreatedVotes { get; set; }
+        public IList<CreatedVote> ClosedVotes { get; set; }
+        public IList<CreatedVote> OpenVotes { get; set; }
+
         private readonly ICreatedVoteRepository _cvRepository;
         
 

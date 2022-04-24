@@ -37,24 +37,3 @@ Scenario: User enters invalid access code and is still on access page
 	| 123456     |
 
 	
-
-#Scenario: User is redirected to submit a vote page after entering valid access code 
-#    Given I am on the 'Access' a vote page
-#    And I enter a valid access code for the subit a vote box
-#    When I click the submit button for submitting a vote
-#    Then I will be redirected to the 'SubmitVote' a vote page 
-#
-#Scenario: A user enters an invalid access code 
-#    Given I am on the 'Access' a vote page
-#    And I have entered an invalid vote access code
-#    Then I will be told the code is invalid
-#    And I will still be on the 'Access' a vote page 
-#
-#Scenario: A user sees the correct vote title and description for the vote they clicked 
-#    Given I am on the 'Results' vote page 
-#    Then I will see the correct vote title 
-
-#Scenario: A user sees the correct vote title and description for the vote they clicked 
-#    Given I am on the 'Results' vote page 
-#    Then I will see the correct vote description 
-
