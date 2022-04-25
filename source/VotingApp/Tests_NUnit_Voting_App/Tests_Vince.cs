@@ -268,8 +268,7 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository createRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository typeRepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            //CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo);
-            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo, null);
+            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo);
 
             //create a "Delayed Vote" - one that has a Vote Open date, but no Vote Access Code
             var newVote = new CreatedVote
