@@ -74,7 +74,7 @@ namespace BDDTests.StepDefinitions
         public void ThenIAmBroughtToTheCorrectResultsPage()
         {
             _accessPage.ClickResultsSubmit();
-            _browserInteractions.GetUrl().Should().Be("https://localhost:7297/Access/Results?code=1450f7");
+            _browserInteractions.GetUrl().Should().Be("https://localhost:7297/Access/Results?code=16ba88");
         }
 
         [Given(@"I have entered the incorrect '([^']*)' to access vote results")]
