@@ -12,12 +12,14 @@ namespace VotingApp.ViewModel
         public Dictionary<VoteOption, int> TotalVotesForEachOption { get; set; }
         public bool AnonymousVote { get; set; }
 
-        public Dictionary<VoteOption, SubmittedVote> VotesForLoggedInUsers { get; set; }
+        public Dictionary<string, string> VotesForLoggedInUsers { get; set; }
         public Dictionary<VoteOption, int> VotesForUsersNotLoggedIn { get; set; }
         public int TotalVotesCount { get; set; }
 
         public Dictionary<VoteOption, int> Winners { get; set; }
 
         public CreatedVote GetVoteByAccessCode { get; set; }
+        public IList<string> ChartVoteOptions { get; set; }
+        public IList<int> ChartVoteTotals { get; set; }
     } 
 }

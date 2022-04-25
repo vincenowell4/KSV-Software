@@ -14,14 +14,14 @@
                                                                     right: 50%;
                                                                     width: 100vw;"> 
     <div class="text-center text-white">
-        <h1 class="display-4">Vote History</h1>
+	    <h1 class="display-4">Vote History</h1>
+	    <h5>Click each for more information</h5>
     </div>
     <div class="container text-dark">
         <div class="accordion" id="accordionExample">
         @foreach(var vote in Model)
         {
-            
-                <div class="accordion-item">
+	        <div class="accordion-item">
                     <h2 class="accordion-header" id="@Html.Raw("HeadingA" + vote.subVote.Id)">
                         <button class="btn btn-lg btn-block collapsed" style="width: 100%" type="button" data-bs-toggle="collapse" data-bs-target="@Html.Raw("#collapseA" + vote.subVote.Id)" aria-expanded="false" aria-controls="@Html.Raw("collapseA" + vote.subVote.Id)">
                             <div class="row ">
@@ -51,6 +51,7 @@
                                 <div class="col">
                                     <h4>Close Date:</h4>
                                     @if(vote.subVote.CreatedVote.VoteCloseDateTime != null){@Html.Raw($"{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Month}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Day}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Year} {vote.subVote.CreatedVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}
+                                    <audio id="VoteAudio" controls src="@Url.Action("LoadAudio", "Create", new { id = vote.subVote.CreatedVoteId })"></audio>
                                     @if((vote.subVote.CreatedVote.VoteOpenDateTime == null || vote.subVote.CreatedVote.VoteOpenDateTime >= DateTime.Now) && vote.subVote.CreatedVote.VoteCloseDateTime >= DateTime.Now)
                                     {
                                         <form asp-action="EditSubVote" method="post">

@@ -10,4 +10,4 @@ DROP TABLE [SubmittedVote];
 DROP TABLE [VoteOptions];
 DROP TABLE [VotingUser];
 DROP TABLE [VoteType];
-z
+DROP TABLE [VoteAuthorizedUsers];

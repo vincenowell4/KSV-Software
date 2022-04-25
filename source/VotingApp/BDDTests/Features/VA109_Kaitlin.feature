@@ -19,14 +19,14 @@ Scenario: User is brought back to access page from vote results page after click
     Then I am brought back to the access a vote page 
 	Examples: 
 	| AccessCode |
-	| 9cd97f     |
+	| 16ba88     |
 
 Scenario: User enters a valid access code and is brought to results page 
 	Given I have entered the '<AccessCode>' on the 'Access' page
 	Then I am brought to the correct results page
 	Examples: 
 	| AccessCode |
-	| 9cd97f     |
+	| 16ba88     |
 
 Scenario: User enters invalid access code and is still on access page 
 	Given I am on the 'Access' a vote page 
@@ -37,24 +37,3 @@ Scenario: User enters invalid access code and is still on access page
 	| 123456     |
 
 	
-
-#Scenario: User is redirected to submit a vote page after entering valid access code 
-#    Given I am on the 'Access' a vote page
-#    And I enter a valid access code for the subit a vote box
-#    When I click the submit button for submitting a vote
-#    Then I will be redirected to the 'SubmitVote' a vote page 
-#
-#Scenario: A user enters an invalid access code 
-#    Given I am on the 'Access' a vote page
-#    And I have entered an invalid vote access code
-#    Then I will be told the code is invalid
-#    And I will still be on the 'Access' a vote page 
-#
-#Scenario: A user sees the correct vote title and description for the vote they clicked 
-#    Given I am on the 'Results' vote page 
-#    Then I will see the correct vote title 
-
-#Scenario: A user sees the correct vote title and description for the vote they clicked 
-#    Given I am on the 'Results' vote page 
-#    Then I will see the correct vote description 
-

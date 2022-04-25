@@ -1,6 +1,7 @@
 ﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
+
 function FillValues(voteId) {
     $("#created-vote-id").val(voteId);
     $("#vote-title").val( $("#Title-" + voteId).html() );
@@ -72,3 +73,21 @@ function CheckFieldsValid() {
     SaveEditedVote();
     return true;
 }
+
+
+const element = document.querySelectorAll("#accessTable .accessBtn");
+element.forEach(button => {
+    button.addEventListener('click',
+        function(e) {
+            if (!navigator.clipboard) {
+                alert("cannot use clipboard");
+            }
+            navigator.clipboard.writeText(this.dataset.url).then(() => {
+                    alert("Copied the text: " + this.dataset.url);
+                })
+                .catch(err => {
+                    alert('Something went wrong' + err);
+                });
+        });
+});
+

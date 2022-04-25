@@ -67,3 +67,11 @@ Scenario Outline: Logged in user enters a Future DateTime then clicks Start Imme
 	Examples:
 	| FirstName | Page   |
 	| Vince     | Create |
+
+Scenario Outline: Logged in user will see Multi-Round Multiple Choice as Vote Type option
+	Given I am a user that is logged in
+	When I navigate to '<Page>' page 
+	Then clicking Vote Types will show Multiple Choice Multi-Round Vote as a Vote Type option
+	Examples:
+	| FirstName | Page   |
+	| Vince     | Create |

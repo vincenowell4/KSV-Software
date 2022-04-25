@@ -9,6 +9,7 @@ using VotingApp.ViewModel;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -24,6 +25,7 @@ namespace VotingApp.Controllers
         private readonly CreationService _creationService;
         private readonly ISubmittedVoteRepository _submittedVoteRepository;
         private readonly IVoteAuthorizedUsersRepo _voteAuthorizedUsersRepo;
+        private readonly GoogleTtsService _googleTtsService;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -34,7 +36,8 @@ namespace VotingApp.Controllers
             IVoteOptionRepository voteOptionRepository,
             CreationService creationService,
             ISubmittedVoteRepository submittedVoteRepository,
-            IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo)
+            IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
+            GoogleTtsService googleTtsService)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -46,16 +49,28 @@ namespace VotingApp.Controllers
             _creationService = creationService;
             _submittedVoteRepository = submittedVoteRepository;
             _voteAuthorizedUsersRepo = voteAuthorizedUsersRepo;
+            _googleTtsService = googleTtsService;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
-                "Value", "Text");
-            ViewData["VoteTypeId"] = selectListVoteType;
+            SelectList selectListVoteType = null; ;
 
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    "Value", "Text");
+            }
+
+            ViewData["VoteTypeId"] = selectListVoteType;
             return View();
         }
 
@@ -64,8 +79,10 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote")]CreatedVote createdVote)
         {
+            
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
+            ModelState.Remove("VoteAudioBytes");
             if (User.Identity.IsAuthenticated != false)
             {
                 var vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -117,6 +134,7 @@ namespace VotingApp.Controllers
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
+            ModelState.Remove("VoteAudioBytes");
             if (User.Identity.IsAuthenticated != false)
             {
                 createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -177,6 +195,17 @@ namespace VotingApp.Controllers
             _createdVoteRepository.AddOrUpdate(vote);
             return RedirectToAction("MultipleChoice", vote);
         }
+        public ActionResult LoadAudio(int id)
+        {
+            var vote = _createdVoteRepository.GetById(id);
+            if (vote.VoteAudioBytes == null)
+            {
+                vote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(vote);
+                _createdVoteRepository.AddOrUpdate(vote);
+            }
+            var audioBytes = vote.VoteAudioBytes;
+            return base.File(audioBytes, "audio/wav");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -205,7 +234,19 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Confirmation(CreatedVote createdVote)
         {
+
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
+
+            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+            //_googleTtsService.CreateAudioFiles(createdVote);
+            createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+            if (createdVote.PrivateVote)
+            {
+                var accessCode = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
+                var listOfEmails = createdVote.VoteAuthorizedUsers.ToList();
+                _createdVoteRepository.SendEmails(listOfEmails, createdVote, accessCode);
+            }
             var vm = new ConfirmationVM();
             vm.VoteTitle = _createdVoteRepository.GetVoteTitle(createdVote.Id);
             vm.VoteDescription = _createdVoteRepository.GetVoteDescription(createdVote.Id);
@@ -244,6 +285,11 @@ namespace VotingApp.Controllers
 
                 CreatedVotesVM createdVotesVM = new CreatedVotesVM(userId, _createdVoteRepository);
                 createdVotesVM.GetCreatedVotesListForUserId(userId);
+
+                var votesForUser = _createdVoteRepository.GetAllForUserId(userId);
+                createdVotesVM.OpenVotes = _createdVoteRepository.GetOpenCreatedVotes(votesForUser);
+                createdVotesVM.ClosedVotes = _createdVoteRepository.GetClosedCreatedVotes(votesForUser);
+
                 return View(createdVotesVM);
             }
             return View();
@@ -281,38 +327,16 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult VoteAnalyticsButton(int id)
-        {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("Analytics", createdVote);
-        }
-
-        [HttpGet]
-        public IActionResult Analytics(CreatedVote createdVote)
-        {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
-            var vm = new AnalyticsVM();
-            vm.VoteTitle = createdVote.VoteTitle;
-            vm.VoteDescription = createdVote.VoteDiscription;
-            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
-            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
-            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
-
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult VoteResultsButton(int id)
         {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("VoteResults", createdVote);
+            //var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("VoteResults", new {id = id});
         }
 
         [HttpGet]
-        public IActionResult VoteResults(CreatedVote createdVote)
+        public IActionResult VoteResults(int id)
         {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
+            var createdVote = _createdVoteRepository.GetById(id);
             var vm = new VoteResultsVM();
             vm.VoteTitle = createdVote.VoteTitle;
             vm.VoteDescription = createdVote.VoteDiscription;
@@ -324,6 +348,8 @@ namespace VotingApp.Controllers
             vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
             vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
             vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
             return View(vm);
         }
 
