@@ -108,8 +108,8 @@
 										@foreach (var vote in Model.VotesForLoggedInUsers)
 										{
 											<tr class="text-white-50">
-												<td>@vote.Key.VoteOptionString</td>
-												<td>@vote.Value.User.UserName</td>
+												<td>@vote.Key</td>
+												<td>@vote.Value</td>
 											</tr>
 										}
 									</table>

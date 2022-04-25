@@ -126,7 +126,7 @@ namespace VotingApp.Controllers
         }
 
         [HttpGet("cmv/all")]
-        public ActionResult GetAllClosedMutliVotes()
+        public ActionResult GetAllClosedMultiVotes()
         {
             IList<CreatedVote> cmVotes = new List<CreatedVote>();
             cmVotes = _createdVoteRepository.GetAllClosedMultiRoundVotes();

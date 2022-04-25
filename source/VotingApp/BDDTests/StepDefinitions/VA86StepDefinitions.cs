@@ -81,12 +81,6 @@ namespace BDDTests.StepDefinitions
             _loginPage.Login();
         }
 
-        //[Then(@"I will see that the Future DateTime textbox will be disabled")]
-        //public void ThenIWillSeeThatTheFutureDateTimeTextboxWillBeDisabled()
-        //{
-        //    throw new PendingStepException();
-        //}
-
         [Then(@"I will see the Start Immediate Vote button")]
         public void ThenIWillSeeTheStartImmediateVoteButton()
         {
@@ -132,11 +126,19 @@ namespace BDDTests.StepDefinitions
             _createPage.GetFutureDateText.Should().BeEmpty();
         }
 
-    [Then(@"the Future DateTime textbox will be disabled")]
+        [Then(@"the Future DateTime textbox will be disabled")]
         public void ThenTheFutureDateTimeTextboxWillBeDisabled()
         {
             bool isVoteOpenDateTimeEnabled = _createPage.GetVoteOpenDateTimeEnabled;
             isVoteOpenDateTimeEnabled.Should().BeFalse();
+        }
+
+        //This test is for VA-59
+        [Then(@"clicking Vote Types will show Multiple Choice Multi-Round Vote as a Vote Type option")]
+        public void ThenClickingVoteTypesWillShowMultipleChoiceMulti_RoundVoteAsAVoteTypeOption()
+        {
+            var check = _createPage.SetVoteTypeDropDown;
+            check.Should().NotBeNull();
         }
     }
 }

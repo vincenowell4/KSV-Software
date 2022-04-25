@@ -25,7 +25,6 @@ namespace BDDTests.PageObjects
         public Boolean GetVoteTitleArea => VoteTitleField.Displayed;
         public Boolean GetVoteDescriptionArea => VoteDescriptionField.Displayed;
         public Boolean GetVoteTypeDropDown => VoteTypeDropDown.Displayed;
-
         public string GetFutureDateText => VoteOpenDateTime.Text;
 
 
@@ -43,7 +42,12 @@ namespace BDDTests.PageObjects
 
         public void StartVoteFutureClick()
         {
-            VoteStartFuture.Click();
+            VoteStartFuture.ClickWithRetry();
+        }
+
+        public void SetVoteTypeDropDown()
+        {
+            VoteTypeDropDown.SelectDropdownOptionByValue("Multiple Choice Multi-Round Vote");
         }
 
         public void EnterFutureDate(string date)

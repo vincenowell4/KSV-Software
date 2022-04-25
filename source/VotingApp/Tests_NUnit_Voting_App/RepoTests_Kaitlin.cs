@@ -312,16 +312,16 @@ namespace Tests_NUnit_Voting_App
             Assert.IsTrue(check.Count() == 1);
         }
 
-        [Test]
+        //[Test]
         //VA81
-        public void SubmittedVoteRepo_GetAllSubmittedVotesWithLoggedInUsers_ShouldGetCorrectVoteOptionString()
-        {
-            ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
-            var check = repo.GetAllSubmittedVotesWithLoggedInUsers(_createdVotes[2].Id, _voteOption);
-            var item = check.ElementAt(0);
+        //public void SubmittedVoteRepo_GetAllSubmittedVotesWithLoggedInUsers_ShouldGetCorrectVoteOptionString()
+        //{
+        //    ISubmittedVoteRepository repo = new SubmittedVoteRepository(_mockContext.Object);
+        //    var check = repo.GetAllSubmittedVotesWithLoggedInUsers(_createdVotes[2].Id, _voteOption);
+        //    var item = check.ElementAt(0);
 
-            Assert.AreEqual(item.Key.VoteOptionString, "option 2");
-        }
+        //    Assert.AreEqual(item.Key.VoteOptionString, "option 2");
+        //}
 
         [Test]
         //VA81

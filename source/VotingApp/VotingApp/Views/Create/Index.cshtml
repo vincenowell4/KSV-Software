@@ -49,7 +49,7 @@
 						<div class="row justify-content-md-center p-2">
 							<div class="col-md-6">
 								<label asp-for="VoteTypeId" class="control-label" id="VoteType">Vote Type: <span data-toggle="tooltip" data-placement="bottom" title="If you change your vote type from multiple choice to yes/no the vote options you created will be lost">&#8505;</span></label>
-								<select asp-for="VoteTypeId" class="form-control" asp-items="ViewBag.VoteTypeId"></select>
+								<select asp-for="VoteTypeId" class="form-control" id="VoteTypeSelect" asp-items="ViewBag.VoteTypeId"></select>
 								<span asp-validation-for="VoteTypeId" class="text-danger"></span>
 							</div>
 							<div class="col-md-4 mt-4">
