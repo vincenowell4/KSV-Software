@@ -53,18 +53,20 @@ namespace Tests_NUnit_Voting_App
                 new CreatedVote
                 {
                     Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title",
-                    VoteDiscription = "This is the description", VoteAccessCode = "abc123"
-                   
+                    VoteDiscription = "This is the description", VoteAccessCode = "abc123",
+                    TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
+
                 },
                 new CreatedVote
                 {
                     Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null,
-                    VoteDiscription = null
+                    VoteDiscription = null, TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
                 },
                 new CreatedVote
                 {
                     Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote",
-                    VoteDiscription = "Mult choice description", VoteOptions = _voteOption, VoteCloseDateTime = DateTime.Now.AddDays(-5)
+                    VoteDiscription = "Mult choice description", VoteOptions = _voteOption, VoteCloseDateTime = DateTime.Now.AddDays(-5),
+                    TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
                 }
                 
             };
@@ -517,7 +519,8 @@ namespace Tests_NUnit_Voting_App
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
                 VoteAccessCode = "abc123",
-                VoteCloseDateTime = DateTime.Now.AddDays(1)
+                VoteCloseDateTime = DateTime.Now.AddDays(1),
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
             };
             vote.VoteOptions = new List<VoteOption>
             {
@@ -634,7 +637,8 @@ namespace Tests_NUnit_Voting_App
                 UserId = 1,
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
-                
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
+
             };
             service.Create(ref newVote);
             Assert.True(newVote.VoteOptions.Count() == 2 && newVote.VoteCloseDateTime != null && newVote.VoteAccessCode != null);
@@ -646,17 +650,18 @@ namespace Tests_NUnit_Voting_App
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
             EmailConfiguration emailConfig = new EmailConfiguration();
             IEmailSender emailSender = new EmailSender(emailConfig);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
             CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
             var newVote = new CreatedVote
             {
-                VoteTypeId = 1,
+                
                 AnonymousVote = false,
                 UserId = 1,
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
+                TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
 
             };
             var result = service.Create(ref newVote);
