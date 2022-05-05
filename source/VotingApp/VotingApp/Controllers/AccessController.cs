@@ -122,7 +122,7 @@ namespace VotingApp.Controllers
         {
             var subvote = _subVoteRepository.GetVoteById(id);
             var vote = subvote.CreatedVote;
-            if (vote != null && (vote.VoteOpenDateTime == null || vote.VoteOpenDateTime <= DateTime.Now) && (vote.VoteCloseDateTime == null || vote.VoteCloseDateTime >= DateTime.Now))
+            if (vote != null && (vote.VoteOpenDateTime == null || vote.VoteOpenDateTime <= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) && (vote.VoteCloseDateTime == null || vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName))))
             {
                 if(vote.PrivateVote == true)
                 {
@@ -154,7 +154,7 @@ namespace VotingApp.Controllers
             SubmitVoteVM model = new SubmitVoteVM();
             model.vote = _createdVoteRepository.GetVoteByAccessCode(code);
             
-            if (model.vote != null && model.vote.VoteCloseDateTime >= DateTime.Now)
+            if (model.vote != null && model.vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
             {
                 if (model.vote.PrivateVote == true)
                 {
@@ -203,7 +203,7 @@ namespace VotingApp.Controllers
                 }
                 return View("SubmitVote", model);
             }
-            else if (model.vote != null && model.vote.VoteCloseDateTime < DateTime.Now)
+            else if (model.vote != null && model.vote.VoteCloseDateTime < TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
             {
                 ViewBag.ErrorMessage = $"The Voting Window Has Closed\nVoting Closed on {model.vote.VoteCloseDateTime.Value.Month}/{model.vote.VoteCloseDateTime.Value.Day}/{model.vote.VoteCloseDateTime.Value.Year} at {model.vote.VoteCloseDateTime.Value.TimeOfDay}";
                 return View("Index");
@@ -241,7 +241,7 @@ namespace VotingApp.Controllers
             {
                 user = null;
             }
-            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice, DateCast=DateTime.Now};
+            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice, DateCast= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
             var model = new SubmitConfirmationModel {OptionId=subvote.VoteChoice, CreateId=vote.Id};

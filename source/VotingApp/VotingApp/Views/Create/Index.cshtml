@@ -74,8 +74,7 @@
 						<div class="d-flex flex-column justify-content-center">
 							<span class="p-2 border border-white">
 								<h3 style="text-decoration: underline" class="p-2">Times (optional):</h3>
-								
-								@if (User != null && User.Identity.IsAuthenticated)
+                                @if (User != null && User.Identity.IsAuthenticated)
 								{
 									<div class="form-row">
 										<div class="row p-2">
@@ -106,17 +105,22 @@
 										</div>
 									</div>
 								}
-								<div class="form-row mb-4">
-									<div class="row">
-										<div class="form-group">
-											<label class="form-check-label" for="datetime">
-												When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
-											</label>
-											<input asp-for="VoteCloseDateTime" type="text" id="VoteCloseDateTime" readonly/>
-										</div>
+                                <div class="form-row mb-4">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label class="form-check-label" for="datetime">
+                                                When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
+                                            </label>
+                                            <input asp-for="VoteCloseDateTime" type="text" id="VoteCloseDateTime" readonly/>
+                                        </div>
 				                        
-									</div>
-								</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="TimeZoneId" class="control-label" id="TimeZone">TimeZone:<span data-toggle="tooltip" data-placement="bottom" title="Select the time zone you would like your vote to be in.">&#8505;</span></label>
+                                    <select asp-for="TimeZoneId" class="form-control" id="timeZoneList" asp-items="ViewBag.TimeZoneId"></select>
+                                    <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                                </div>
 								<div class="row mb-3 justify-content-center">
 									@if (ViewBag.ErrorMessage == "Vote close date/time must be in the future. Please try again." || 
 									     ViewBag.ErrorMessage == "Vote close date/time must be after vote start date/time")

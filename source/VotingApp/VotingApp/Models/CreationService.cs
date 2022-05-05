@@ -38,7 +38,7 @@ namespace VotingApp.Models
             if (createdVote.VoteCloseDateTime == null)
             {
                 if (createdVote.VoteOpenDateTime == null)
-                    createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+                    createdVote.VoteCloseDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName).AddHours(24);
                 else
                     createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
 

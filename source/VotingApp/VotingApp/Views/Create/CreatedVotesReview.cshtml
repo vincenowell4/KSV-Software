@@ -77,7 +77,7 @@
 							    </td>
 							    <!--<td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>-->
 							    <td>
-								    @if ((createdVote.VoteOpenDateTime == null || createdVote.VoteOpenDateTime >= DateTime.Now) && createdVote.VoteCloseDateTime >= DateTime.Now)
+								    @if ((createdVote.VoteOpenDateTime == null || createdVote.VoteOpenDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName)) && createdVote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName))
 								    {
 									    <form asp-action="BackToIndexPage" method="post">
 										    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@createdVote.Id">Edit</button>
