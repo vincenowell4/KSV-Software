@@ -26,6 +26,8 @@ namespace Tests_NUnit_Voting_App
         private List<SubmittedVote> _submittedVotes;
         private Mock<DbSet<VoteAuthorizedUser>> _authorizedUsersSet;
         private List<VoteAuthorizedUser> _authorizedUsers;
+        private List<VoteTimeZone> _voteTimeZones;
+        private Mock<DbSet<VoteTimeZone>> _voteTimeZonesSet;
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -41,6 +43,13 @@ namespace Tests_NUnit_Voting_App
         [SetUp]
         public void Setup()
         {
+            _voteTimeZones = new List<VoteTimeZone>()
+            {
+                new VoteTimeZone { Id = 1, TimeName = "Pacific Standard Time" },
+                new VoteTimeZone { Id = 2, TimeName = "Dateline Standard Time" },
+                new VoteTimeZone { Id = 3, TimeName = "UTC-11" },
+            };
+
             _voteTypes = new List<VoteType>()
             {
                 new VoteType { Id = 1, VotingType = "Yes/No Vote", VoteTypeDescription = "yes/no discription" },
@@ -53,18 +62,20 @@ namespace Tests_NUnit_Voting_App
                 new CreatedVote
                 {
                     Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title",
-                    VoteDiscription = "This is the description", VoteAccessCode = "abc123"
-                   
+                    VoteDiscription = "This is the description", VoteAccessCode = "abc123",
+                    TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
+
                 },
                 new CreatedVote
                 {
                     Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null,
-                    VoteDiscription = null
+                    VoteDiscription = null, TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
                 },
                 new CreatedVote
                 {
                     Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote",
-                    VoteDiscription = "Mult choice description", VoteOptions = _voteOption, VoteCloseDateTime = DateTime.Now.AddDays(-5)
+                    VoteDiscription = "Mult choice description", VoteOptions = _voteOption, VoteCloseDateTime = DateTime.Now.AddDays(-5),
+                    TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
                 }
                 
             };
@@ -117,6 +128,7 @@ namespace Tests_NUnit_Voting_App
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
             _submittedVotesSet = GetMockDbSet(_submittedVotes.AsQueryable());
             _authorizedUsersSet = GetMockDbSet(_authorizedUsers.AsQueryable());
+            _voteTimeZonesSet = GetMockDbSet(_voteTimeZones.AsQueryable());
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteType>()).Returns(_voteTypesSet.Object);
@@ -130,6 +142,8 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVotesSet.Object);
             _mockContext.Setup(ctx => ctx.VoteAuthorizedUsers).Returns(_authorizedUsersSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteAuthorizedUser>()).Returns(_authorizedUsersSet.Object);
+            _mockContext.Setup(ctx => ctx.VoteTimeZones).Returns(_voteTimeZonesSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<VoteTimeZone>()).Returns(_voteTimeZonesSet.Object);
             _mockContext.Setup(x => x.Add(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) => _createdVotes.Add(s));
             _mockContext.Setup(x => x.Update(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) =>
             {
@@ -189,6 +203,26 @@ namespace Tests_NUnit_Voting_App
             });
             //_createdVoteSet.Verify(m => m.Add(It.IsAny<CreatedVote>()), Times.Once());
             //_mockContext.Verify(ctx => ctx.SaveChanges(), Times.Once());
+        }
+
+        [Test]
+        //VA-244
+        public void Test_VoteTimeZoneRepo_GetAllTimeZones_should_return_all()
+        {
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            var result = timeZoneRepo.GetAllTimeZones();
+            Assert.True(result.Count == 3);
+
+        }
+
+        [Test]
+        //VA-244
+        public void Test_VoteTimeZoneRepo_GetbyID_should_return_all()
+        {
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            var result = timeZoneRepo.GetById(1);
+            Assert.True(result.Id == 1);
+
         }
 
         //VA-82
@@ -256,7 +290,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var result = service.AuthorizedUsersToString(userList);
             Assert.AreEqual(result, "Bill@mail.com,Bob@mail.com,Jill@mail.com");
         }
@@ -278,7 +313,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var result = service.AuthorizedUsersToString(userList);
             Assert.AreEqual(result, "Bill@mail.com");
         }
@@ -303,7 +339,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var result = service.AddVoteAccessCode(ref vote);
             Assert.True(result != null && result.Length == 6);
         }
@@ -328,7 +365,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(null, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(null, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var result = service.AddVoteAccessCode(ref vote);
             Assert.True(result != null);
         }
@@ -364,7 +402,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var result = service.ParseUserList(22, "Bill@mail.com,Bob@mail.com,Jill@mail.com").ToList();
             for (int i = 0; i < 3; i++)
             {
@@ -517,7 +556,8 @@ namespace Tests_NUnit_Voting_App
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
                 VoteAccessCode = "abc123",
-                VoteCloseDateTime = DateTime.Now.AddDays(1)
+                VoteCloseDateTime = DateTime.Now.AddDays(1),
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
             };
             vote.VoteOptions = new List<VoteOption>
             {
@@ -626,7 +666,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var newVote = new CreatedVote
             {
                 VoteTypeId = 1,
@@ -634,7 +675,9 @@ namespace Tests_NUnit_Voting_App
                 UserId = 1,
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
-                
+                VoteCloseDateTime = DateTime.Now,
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
+
             };
             service.Create(ref newVote);
             Assert.True(newVote.VoteOptions.Count() == 2 && newVote.VoteCloseDateTime != null && newVote.VoteAccessCode != null);
@@ -646,17 +689,20 @@ namespace Tests_NUnit_Voting_App
             IVoteOptionRepository Oprepo = new VoteOptionRepository(_mockContext.Object);
             EmailConfiguration emailConfig = new EmailConfiguration();
             IEmailSender emailSender = new EmailSender(emailConfig);
-            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
+            ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo); 
             var newVote = new CreatedVote
             {
-                VoteTypeId = 1,
+                
                 AnonymousVote = false,
                 UserId = 1,
                 VoteTitle = "Title",
                 VoteDiscription = "This is the description",
+                VoteCloseDateTime = DateTime.Now,
+                TimeZone = new VoteTimeZone{Id = 1, TimeName = "Alaskan Standard Time" }
 
             };
             var result = service.Create(ref newVote);
@@ -672,8 +718,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
-            var newVote = new CreatedVote
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo); var newVote = new CreatedVote
             {
                 Id = 3,
                 VoteTypeId = 1,
@@ -698,8 +744,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
-            var newVote = new CreatedVote
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo); var newVote = new CreatedVote
             {
                 Id = 3,
                 VoteTypeId = 2,
@@ -724,7 +770,8 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository Createrepo = new CreatedVoteRepository(null, emailSender);
             IVoteTypeRepository Typerepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService service = new CreationService(Createrepo, Typerepo, voteServ, Oprepo, timeZoneRepo);
             var newVote = new CreatedVote
             {
                 Id = 3,

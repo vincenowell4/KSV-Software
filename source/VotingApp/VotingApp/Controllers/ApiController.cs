@@ -71,6 +71,7 @@ namespace VotingApp.Controllers
                 CreatedVoteModel cvVM = new CreatedVoteModel();
                 cvVM.Id = noVACvotes[i].Id;
                 cvVM.VoteOpenDateTime = noVACvotes[i].VoteOpenDateTime;
+                cvVM.TimeZone = noVACvotes[i].TimeZone.TimeName;
                 vmNoVACvotes.Add(cvVM);
             }
 
@@ -217,8 +218,9 @@ namespace VotingApp.Controllers
             nextRound.VoteDiscription = currRound.VoteDiscription;
             nextRound.AnonymousVote = currRound.AnonymousVote;
             nextRound.VoteTypeId = currRound.VoteTypeId;
-            nextRound.VoteOpenDateTime = DateTime.Now;
-            nextRound.VoteCloseDateTime = DateTime.Now.AddDays(1);
+            nextRound.TimeZone = currRound.TimeZone;
+            nextRound.VoteOpenDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, currRound.TimeZone.TimeName);
+            nextRound.VoteCloseDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, currRound.TimeZone.TimeName).AddDays(1);
             nextRound.PrivateVote = currRound.PrivateVote;
 
             nextRound = _createdVoteRepository.AddOrUpdate(nextRound);
@@ -385,6 +387,8 @@ namespace VotingApp.Controllers
     {
         public int Id { get; set; }
         public DateTime? VoteOpenDateTime { get; set; }
+
+        public string TimeZone { get; set; }
     }
 
     public class MultiRoundVoteModel

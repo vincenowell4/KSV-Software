@@ -52,7 +52,7 @@
                                     <h4>Close Date:</h4>
                                     @if(vote.subVote.CreatedVote.VoteCloseDateTime != null){@Html.Raw($"{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Month}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Day}/{vote.subVote.CreatedVote.VoteCloseDateTime.Value.Year} {vote.subVote.CreatedVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")}
                                     <audio id="VoteAudio" controls src="@Url.Action("LoadAudio", "Create", new { id = vote.subVote.CreatedVoteId })"></audio>
-                                    @if((vote.subVote.CreatedVote.VoteOpenDateTime == null || vote.subVote.CreatedVote.VoteOpenDateTime >= DateTime.Now) && vote.subVote.CreatedVote.VoteCloseDateTime >= DateTime.Now)
+                                    @if((vote.subVote.CreatedVote.VoteOpenDateTime == null || vote.subVote.CreatedVote.VoteOpenDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.subVote.CreatedVote.TimeZone.TimeName)) && vote.subVote.CreatedVote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.subVote.CreatedVote.TimeZone.TimeName))
                                     {
                                         <form asp-action="EditSubVote" method="post">
 		                                <button type="submit" style="width:140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@vote.subVote.Id">Edit</button>

@@ -26,6 +26,7 @@ namespace VotingApp.Controllers
         private readonly ISubmittedVoteRepository _submittedVoteRepository;
         private readonly IVoteAuthorizedUsersRepo _voteAuthorizedUsersRepo;
         private readonly GoogleTtsService _googleTtsService;
+        private readonly ITimeZoneRepo _timeZoneRepo;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -37,7 +38,8 @@ namespace VotingApp.Controllers
             CreationService creationService,
             ISubmittedVoteRepository submittedVoteRepository,
             IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
-            GoogleTtsService googleTtsService)
+            GoogleTtsService googleTtsService,
+            ITimeZoneRepo timeZoneRepo)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -50,13 +52,15 @@ namespace VotingApp.Controllers
             _submittedVoteRepository = submittedVoteRepository;
             _voteAuthorizedUsersRepo = voteAuthorizedUsersRepo;
             _googleTtsService = googleTtsService;
+            _timeZoneRepo = timeZoneRepo;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            SelectList selectListVoteType = null; ;
-
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList( _timeZoneRepo.GetAllTimeZones().Select(x => new {Text = $"{x.TimeName}", Value = x.Id}), "Value", "Text");
             if (User.Identity.IsAuthenticated != false)
             {
                 selectListVoteType = new SelectList(
@@ -71,18 +75,37 @@ namespace VotingApp.Controllers
             }
 
             ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             return View();
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote, TimeZoneId")]CreatedVote createdVote)
         {
             
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
+            ModelState.Remove("TimeZone");
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    "Value", "Text");
+            }
+            ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             if (User.Identity.IsAuthenticated != false)
             {
                 var vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -98,6 +121,7 @@ namespace VotingApp.Controllers
                 var result = _creationService.Create(ref createdVote);
                 if (result != "")
                 {
+                    
                     ViewBag.Message = result;
                     return View(createdVote);
                 }
@@ -130,11 +154,29 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteOpenDateTime,VoteCloseDateTime,VoteAccessCode, PrivateVote")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteOpenDateTime,VoteCloseDateTime,VoteAccessCode, PrivateVote, TimeZoneId")] CreatedVote createdVote, int oldVoteTypeId)
         {
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
+            ModelState.Remove("TimeZone");
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    "Value", "Text");
+            }
+            ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             if (User.Identity.IsAuthenticated != false)
             {
                 createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -258,7 +300,8 @@ namespace VotingApp.Controllers
             vm.VoteAccessCode = createdVote.VoteAccessCode;
             vm.ShareURL =
                 $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
-            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? DateTime.Now;
+            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote
+                .TimeZone.TimeName);
             if (createdVote.VoteOpenDateTime != null)
                 vm.VoteOpenDateTime = createdVote.VoteOpenDateTime;
             vm.VotingAuthorizedUsers = createdVote.VoteAuthorizedUsers.ToList();
@@ -364,10 +407,23 @@ namespace VotingApp.Controllers
         public IActionResult BackToIndexPage(int ID)
         {
             var result = _createdVoteRepository.GetById(ID);
-            var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
-                "Value", "Text");
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    "Value", "Text");
+            }
             ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             return View("Index",result);
         }
         public IActionResult GetUsers(int id, string userListString)

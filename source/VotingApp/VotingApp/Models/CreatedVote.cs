@@ -37,8 +37,11 @@ namespace VotingApp.Models
         public byte[]? VoteAudioBytes { get; set; }
         public int RoundNumber { get; set; }
         public int NextRoundId { get; set; }
+        public int TimeZoneId { get; set; }
 
-
+        [ForeignKey(nameof(TimeZoneId))]
+        [InverseProperty(nameof(VoteTimeZone.CreatedVotes))]
+        public virtual VoteTimeZone TimeZone { get; set; } = null!;
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
         public virtual VotingUser? User { get; set; }
