@@ -1,13 +1,13 @@
 INSERT INTO [VoteType](VotingType,VoteTypeDescription) VALUES ('Yes/No Vote','Voters will get to choose between two simple options: yes or no.');
 INSERT INTO [VoteType](VotingType,VoteTypeDescription) VALUES ('Multiple Choice Vote','Voters will get to choose one option from up to 10 choices.');
 INSERT INTO [VoteType](VotingType,VoteTypeDescription) VALUES ('Multiple Choice Multi-Round Vote','Voters will get to choose one option from up to 10 choices. There can be multiple rounds of voting until one option has the majority of votes');
+INSERT INTO [VoteTimeZones](TimeName) VALUES('Pacific Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Dateline Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('UTC-11');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Samoa Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Hawaiian Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Alaskan Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Pacific Standard Time (Mexico)');
-INSERT INTO [VoteTimeZones](TimeName) VALUES('Pacific Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('US Mountain Standard Time');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Mountain Standard Time (Mexico)');
 INSERT INTO [VoteTimeZones](TimeName) VALUES('Mountain Standard Time');

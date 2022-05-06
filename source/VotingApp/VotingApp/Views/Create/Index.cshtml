@@ -116,10 +116,12 @@
 				                        
                                     </div>
                                 </div>
+                                <div class="row mb-3 justify-content-center">
                                 <div class="col-md-6">
                                     <label asp-for="TimeZoneId" class="control-label" id="TimeZone">TimeZone:<span data-toggle="tooltip" data-placement="bottom" title="Select the time zone you would like your vote to be in.">&#8505;</span></label>
                                     <select asp-for="TimeZoneId" class="form-control" id="timeZoneList" asp-items="ViewBag.TimeZoneId"></select>
                                     <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                                </div>
                                 </div>
 								<div class="row mb-3 justify-content-center">
 									@if (ViewBag.ErrorMessage == "Vote close date/time must be in the future. Please try again." || 
