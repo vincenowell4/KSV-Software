@@ -31,6 +31,7 @@ namespace VotingApp.Controllers
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly EmailService.IEmailSender _emailSender;
         private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IAppLogRepository _appLogRepository;
 
         public ApiController(ILogger<HomeController> logger,
             ICreatedVoteRepository createdVoteRepo,
@@ -42,7 +43,8 @@ namespace VotingApp.Controllers
             CreationService creationService,
             ISubmittedVoteRepository submittedVoteRepository,
             IUserStore<IdentityUser> userStore,
-            EmailService.IEmailSender emailSender)
+            EmailService.IEmailSender emailSender,
+            IAppLogRepository appLogRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -56,6 +58,7 @@ namespace VotingApp.Controllers
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _emailSender = emailSender;
+            _appLogRepository = appLogRepository;
         }
 
         [HttpGet("novac/all")]

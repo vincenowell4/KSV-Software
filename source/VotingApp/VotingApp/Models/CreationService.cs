@@ -92,7 +92,7 @@ namespace VotingApp.Models
             }
             catch (Exception ex)
             {
-                _appLogRepository.LogError("Error occured when trying to edit vote with id: " + createdVote.Id + ", Error message: " + ex);
+                _appLogRepository.LogError("Error occurred when trying to edit vote with id: " + createdVote.Id + ", Error message: " + ex);
                 return ex.Message;
             }
             createdVote = _createdVoteRepository.GetById(createdVote.Id); //this is for checking what the vote is in the db

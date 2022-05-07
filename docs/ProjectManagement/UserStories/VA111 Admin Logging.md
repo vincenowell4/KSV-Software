@@ -75,3 +75,5 @@ See VotingAppClass Diagram under Modeling folder
 12. In all controllers add call to bug and info method in appropriate places
 13. In admin index create drop down for table 
 14. On index page add view model to the top and table for logs  
+15. Test repo methods 
+16. BDD tests

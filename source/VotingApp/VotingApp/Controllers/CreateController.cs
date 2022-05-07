@@ -95,7 +95,6 @@ namespace VotingApp.Controllers
                     vUser = _votingUserRepository.AddOrUpdate(newUser);
                 }
                 createdVote.User = vUser;
-                _appLogRepository.LogInfo("Successfully created user: " + vUser.UserName);
             }
             if (ModelState.IsValid)
             { 

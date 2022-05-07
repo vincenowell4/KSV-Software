@@ -27,7 +27,7 @@ namespace VotingApp.DAL.Concrete
             var log = new AppLog
             {
                 Date = DateTime.Now,
-                LogLevel = "Informational",
+                LogLevel = "Info",
                 LogMessage = message
             };
 

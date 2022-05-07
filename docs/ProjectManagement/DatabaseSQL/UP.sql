@@ -53,15 +53,6 @@ CREATE TABLE [VoteAuthorizedUsers]
 [UserName] nvarchar(250) NOT NULL
 );
 
-CREATE TABLE [AppLogs]
-(
-[ID] int PRIMARY KEY IDENTITY(1, 1),
-[Date] DATETIME NOT NULL,
-[LogLevel] nvarchar(10) NOT NULL,
-[LogMessage] nvarchar(500) NOT NULL   
-);
-
-
 ALTER TABLE [VoteOptions] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [SubmittedVote] ADD CONSTRAINT [Fk_Created_Vote_ID]

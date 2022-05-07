@@ -75,7 +75,7 @@ namespace Tests_NUnit_Voting_App
             _appLogs = new List<AppLog>()
             {
                 new AppLog { Id = 1, Date = DateTime.Today, LogLevel = "Error", LogMessage = "There was an error creating this page"},
-                new AppLog { Id = 2, Date = DateTime.Today, LogLevel = "Informational", LogMessage = "Successfully created a vote"}
+                new AppLog { Id = 2, Date = DateTime.Today, LogLevel = "Info", LogMessage = "Successfully created a vote"}
             };
 
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());

@@ -90,7 +90,7 @@ namespace Tests_NUnit_Voting_App
             _appLogs = new List<AppLog>()
             {
                 new AppLog { Id = 1, Date = new DateTime(2022, 5, 2, 5, 10, 20), LogLevel = "Error", LogMessage = "There was an error creating this page"},
-                new AppLog { Id = 2, Date = new DateTime(2022, 5, 3, 5, 10, 20), LogLevel = "Informational", LogMessage = "Successfully created a vote"}
+                new AppLog { Id = 2, Date = new DateTime(2022, 5, 3, 5, 10, 20), LogLevel = "Info", LogMessage = "Successfully created a vote"}
             };
 
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
@@ -138,7 +138,7 @@ namespace Tests_NUnit_Voting_App
             var info = repo.LogInfo("Info message");
 
             Assert.IsTrue(info.LogMessage == "Info message");
-            Assert.IsTrue(info.LogLevel == "Informational");
+            Assert.IsTrue(info.LogLevel == "Info");
         }
 
         [Test]
