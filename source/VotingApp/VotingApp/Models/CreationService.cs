@@ -12,19 +12,22 @@ namespace VotingApp.Models
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
         private readonly IAppLogRepository _appLogRepository;
+        private readonly ITimeZoneRepo _timeZoneRepository;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
             IVoteOptionRepository voteOptionRepository,
-            IAppLogRepository appLogRepository
-           )
+            IAppLogRepository appLogRepository,
+            ITimeZoneRepo timeZoneRepo
+        )
         {
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _voteOptionRepository = voteOptionRepository;
             _appLogRepository = appLogRepository;
+            _timeZoneRepository = timeZoneRepo;
         }
         public string Create(ref CreatedVote createdVote)
         {
@@ -41,7 +44,8 @@ namespace VotingApp.Models
             if (createdVote.VoteCloseDateTime == null)
             {
                 if (createdVote.VoteOpenDateTime == null)
-                    createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+
+                    createdVote.VoteCloseDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, _timeZoneRepository.GetById(createdVote.TimeZoneId).TimeName).AddHours(24);
                 else
                     createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
 

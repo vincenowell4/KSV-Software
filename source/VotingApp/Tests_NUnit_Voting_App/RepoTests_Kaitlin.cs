@@ -53,7 +53,7 @@ namespace Tests_NUnit_Voting_App
             {
                 new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
                 new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null},
-                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption},
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption, TimeZone = new VoteTimeZone {Id = 1, TimeName = "Alaskan Standard Time"}},
                 new CreatedVote { Id = 4, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "123abc", PrivateVote = true, VoteAuthorizedUsers = _authorizedUsers},
                 new CreatedVote { Id = 5, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 2, VoteTitle = "open vote 1", VoteDiscription="description", VoteCloseDateTime = DateTime.Today.AddDays(5)},
                 new CreatedVote { Id = 6, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 2, VoteTitle = "open vote 2", VoteDiscription="descript", VoteCloseDateTime = DateTime.Today.AddDays(1)},

@@ -55,7 +55,7 @@ namespace VotingAppService
 
                             foreach (CreatedVoteViewModel createdVote in createdVotes)
                             {
-                                if (createdVote.VoteOpenDateTime != null && DateTime.Compare(createdVote.VoteOpenDateTime.Value, DateTime.Now) < 0 )
+                                if (createdVote.VoteOpenDateTime != null && DateTime.Compare(createdVote.VoteOpenDateTime.Value, TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone)) < 0 )
                                 {
                                     // The vote open date/time for this vote is in the past - create an access code
                                     _logger.LogInformation("Created Vote ID: " + createdVote.Id + " opened " + createdVote.VoteOpenDateTime);
@@ -284,6 +284,8 @@ namespace VotingAppService
     {
         public int Id { get; set; }
         public DateTime? VoteOpenDateTime { get; set; }
+
+        public string TimeZone { get; set; }
     }
 
     public class CreatedMultiRoundVoteViewModel

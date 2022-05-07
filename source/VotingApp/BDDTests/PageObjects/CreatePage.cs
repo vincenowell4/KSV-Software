@@ -15,8 +15,12 @@ namespace BDDTests.PageObjects
         private IWebElement VoteTitleField => _browserInteractions.WaitAndReturnElement(By.Id("VoteTitle"));
         private IWebElement VoteDescriptionField => _browserInteractions.WaitAndReturnElement(By.Id("VoteDescription"));
         private IWebElement VoteTypeDropDown => _browserInteractions.WaitAndReturnElement(By.Id("VoteType"));
+        private IWebElement TimeZoneDropDown => _browserInteractions.WaitAndReturnElement(By.Id("timeZoneList"));
 
+        private IEnumerable<IWebElement> TimeZoneOptions => _browserInteractions.WaitAndReturnElements(By.CssSelector("#timeZonesList option"));
 
+        public string GetTimeZoneItems(int index) => TimeZoneOptions.ElementAt(index).Text;
+        public IEnumerable<string> GetTimeZoneItemsTexts() => TimeZoneOptions.Select(x => x.Text);
         public Boolean GetVoteStartNowDisplayed => VoteStartNow.Displayed;
         public Boolean GetVoteStartFutureDisplayed => VoteStartFuture.Displayed;
         public Boolean GetVoteOpenDateTimeEnabled => VoteOpenDateTime.Enabled;
@@ -25,6 +29,7 @@ namespace BDDTests.PageObjects
         public Boolean GetVoteTitleArea => VoteTitleField.Displayed;
         public Boolean GetVoteDescriptionArea => VoteDescriptionField.Displayed;
         public Boolean GetVoteTypeDropDown => VoteTypeDropDown.Displayed;
+        public Boolean GetTimeZoneDropDown => TimeZoneDropDown.Displayed;
         public string GetFutureDateText => VoteOpenDateTime.Text;
 
 
