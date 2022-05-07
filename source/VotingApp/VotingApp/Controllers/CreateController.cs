@@ -26,6 +26,7 @@ namespace VotingApp.Controllers
         private readonly ISubmittedVoteRepository _submittedVoteRepository;
         private readonly IVoteAuthorizedUsersRepo _voteAuthorizedUsersRepo;
         private readonly GoogleTtsService _googleTtsService;
+        private readonly IAppLogRepository _appLogRepository;
         private readonly ITimeZoneRepo _timeZoneRepo;
 
         public CreateController(ILogger<HomeController> logger, 
@@ -39,7 +40,9 @@ namespace VotingApp.Controllers
             ISubmittedVoteRepository submittedVoteRepository,
             IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
             GoogleTtsService googleTtsService,
+            IAppLogRepository appLogRepository,
             ITimeZoneRepo timeZoneRepo)
+
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -52,6 +55,7 @@ namespace VotingApp.Controllers
             _submittedVoteRepository = submittedVoteRepository;
             _voteAuthorizedUsersRepo = voteAuthorizedUsersRepo;
             _googleTtsService = googleTtsService;
+            _appLogRepository = appLogRepository;
             _timeZoneRepo = timeZoneRepo;
         }
 
@@ -144,6 +148,7 @@ namespace VotingApp.Controllers
             else
             {
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
+                _appLogRepository.LogError("An unknown error occurred while trying to create this vote with id: " + createdVote.Id);
                 return View(createdVote);
             }
         }
@@ -216,6 +221,7 @@ namespace VotingApp.Controllers
             else
             {
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
+                _appLogRepository.LogError("An unknown error occurred while trying to edit created vote id: " + createdVote.Id);
                 return View("Index",createdVote);
             }
         }
@@ -233,9 +239,17 @@ namespace VotingApp.Controllers
             var vote = _createdVoteRepository.GetById(id);
             VoteOption voteOption = new VoteOption();
             voteOption.VoteOptionString = option;
-            vote.VoteOptions.Add(voteOption);
-            _createdVoteRepository.AddOrUpdate(vote);
-            return RedirectToAction("MultipleChoice", vote);
+            if (option == null)
+            {
+                _appLogRepository.LogError("Error adding null vote option to created vote id: " + vote.Id);
+                return RedirectToAction("MultipleChoice", vote);
+            }
+            else
+            {
+                vote.VoteOptions.Add(voteOption);
+                _createdVoteRepository.AddOrUpdate(vote);
+                return RedirectToAction("MultipleChoice", vote);
+            }
         }
         public ActionResult LoadAudio(int id)
         {
@@ -332,6 +346,7 @@ namespace VotingApp.Controllers
                 var votesForUser = _createdVoteRepository.GetAllForUserId(userId);
                 createdVotesVM.OpenVotes = _createdVoteRepository.GetOpenCreatedVotes(votesForUser);
                 createdVotesVM.ClosedVotes = _createdVoteRepository.GetClosedCreatedVotes(votesForUser);
+                //
 
                 return View(createdVotesVM);
             }
@@ -453,6 +468,7 @@ namespace VotingApp.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            _appLogRepository.LogError("Error - RequestId = " + Activity.Current?.Id);
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }

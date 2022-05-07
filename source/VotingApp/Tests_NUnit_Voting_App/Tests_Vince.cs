@@ -20,11 +20,13 @@ namespace Tests_NUnit_Voting_App
         private Mock<DbSet<VoteOption>> _voteOptionSet;
         private Mock<DbSet<SubmittedVote>> _submittedVoteSet;
         private Mock<DbSet<VotingUser>> _votingUsersSet;
+        private Mock<DbSet<AppLog>> _appLogSet;
         private List<CreatedVote> _createdVotes;
         private List<VoteType> _voteTypes;
         private List<VoteOption> _voteOption;
         private List<SubmittedVote> _submittedVotes;
         private List<VotingUser> _votingUsers;
+        private List<AppLog> _appLogs;
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -70,12 +72,18 @@ namespace Tests_NUnit_Voting_App
             {
                 new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 1, VoteChoice = 1, UserId = 1},
             };
+            _appLogs = new List<AppLog>()
+            {
+                new AppLog { Id = 1, Date = DateTime.Today, LogLevel = "Error", LogMessage = "There was an error creating this page"},
+                new AppLog { Id = 2, Date = DateTime.Today, LogLevel = "Info", LogMessage = "Successfully created a vote"}
+            };
 
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
             _submittedVoteSet = GetMockDbSet(_submittedVotes.AsQueryable());
+            _appLogSet = GetMockDbSet(_appLogs.AsQueryable());
 
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
@@ -88,6 +96,8 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.SubmittedVotes).Returns(_submittedVoteSet.Object);
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVoteSet.Object);
+            _mockContext.Setup(ctx => ctx.AppLogs).Returns(_appLogSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<AppLog>()).Returns(_appLogSet.Object);
             _mockContext.Setup(x => x.Add(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) => _createdVotes.Add(s));
             _mockContext.Setup(x => x.Update(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) =>
             {
@@ -268,9 +278,9 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository createRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository typeRepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
+            IAppLogRepository appLogRepo = new AppLogRepository(_mockContext.Object);
             ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
-
-            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo, timeZoneRepo);
+            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo, appLogRepo, timeZoneRepo);
 
             //create a "Delayed Vote" - one that has a Vote Open date, but no Vote Access Code
             var newVote = new CreatedVote

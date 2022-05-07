@@ -84,6 +84,7 @@ builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 builder.Services.AddScoped<IVoteAuthorizedUsersRepo, VoteAuthorizedUsersRepo>();
 builder.Services.AddScoped<GoogleTtsService,GoogleTtsService>();
+builder.Services.AddScoped<IAppLogRepository, AppLogRepository>();
 builder.Services.AddScoped<ITimeZoneRepo, TimeZoneRepo>();
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
