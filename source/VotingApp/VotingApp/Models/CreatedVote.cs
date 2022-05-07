@@ -38,7 +38,6 @@ namespace VotingApp.Models
         public int RoundNumber { get; set; }
         public int NextRoundId { get; set; }
 
-
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
         public virtual VotingUser? User { get; set; }

@@ -16,6 +16,7 @@ namespace VotingApp.Models
         {
         }
 
+        public virtual DbSet<AppLog> AppLogs { get; set; } = null!;
         public virtual DbSet<CreatedVote> CreatedVotes { get; set; } = null!;
         public virtual DbSet<SubmittedVote> SubmittedVotes { get; set; } = null!;
         public virtual DbSet<VoteAuthorizedUser> VoteAuthorizedUsers { get; set; } = null!;
