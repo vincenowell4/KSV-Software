@@ -303,6 +303,7 @@ namespace VotingApp.Controllers
                 var votesForUser = _createdVoteRepository.GetAllForUserId(userId);
                 createdVotesVM.OpenVotes = _createdVoteRepository.GetOpenCreatedVotes(votesForUser);
                 createdVotesVM.ClosedVotes = _createdVoteRepository.GetClosedCreatedVotes(votesForUser);
+                //
 
                 return View(createdVotesVM);
             }
