@@ -21,5 +21,7 @@ namespace VotingApp.DAL.Abstract
 
         public IList<CreatedVote> GetOpenCreatedVotes(IList<CreatedVote> createdVotes);
         public IList<CreatedVote> GetClosedCreatedVotes(IList<CreatedVote> createdVotes);
+
+        public string GetMultiRoundVoteDuration(int id);
     }
 }
