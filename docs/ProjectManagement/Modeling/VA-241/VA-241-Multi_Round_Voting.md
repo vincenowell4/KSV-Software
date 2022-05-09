@@ -63,5 +63,4 @@ Mockup and class diagram:
 1. Create three new integer fields in CreatedVote table: RoundDays, RoundHours and RoundMinutes to indicate the duration for rounds of a multi-round vote after the first round
 2. Modify the Create a Vote page to add the three new fields, which should be displayed only if the voting type is multi-round voting
 3. Create new method in CreatedVoteRepository: GetMultiRoundVoteDuration, which takes the VoteId as a parameter, and returns the days, hours and minutes as a comma-separated string
-   (it will return all rows in the CreatedVote table where VotingType is 3, CloseDate is in the past, and NextRoundId is zero)
-4. Modify the endpoint in the ApiController that creates the next round of voting, to use the RoundDays, RoundHours and RoundMinutes fields, to set the Vote close time
+4. Modify the endpoint in the ApiController that creates the next round of voting, to use the RoundDays, RoundHours and RoundMinutes fields, to set the next round of voting's close date/time

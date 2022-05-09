@@ -121,7 +121,7 @@
 											<label class="form-check-label px-2" for="RoundDays">Days &nbsp;<label>
 											<input style="width:60px" min=0 max=999 asp-for="RoundDays" type="number" id="MRVoteDays"/>
 											<label class="form-check-label px-2" for="RoundHours">Hours &nbsp;<label>
-											<input style="width:60px" value=24 min=0 max=24 asp-for="RoundHours" type="number" id="MRVoteHours"/>
+											<input style="width:60px" min=0 max=24 asp-for="RoundHours" type="number" id="MRVoteHours"/>
 											<label class="form-check-label px-2" for="RoundMinutes">Minutes &nbsp;<label>
 											<input style="width:60px" min=0 max=60  asp-for="RoundMinutes" type="number" id="MRVoteMins"/>
 										</div>
@@ -183,6 +183,26 @@
 {
 	<script>
 
+		function setRoundDurationDefaultValues() {
+			var voteType = document.getElementById('VoteTypeSelect').value;
+			if(voteType == 3) {
+				var roundDays = document.getElementById('MRVoteDays');
+				var roundHours = document.getElementById('MRVoteHours');
+				var roundMinutes = document.getElementById('MRVoteMins');
+				if (!roundDays.value)
+					roundDays.value = 0; 
+				if (!roundHours.value)
+					roundHours.value = 24; 
+				if (!roundMinutes.value)
+					roundMinutes.value = 0; 
+			}
+		}
+
+		$('document').ready(function(){
+			changeVoteType();
+			setRoundDurationDefaultValues();
+		});
+
 		function changeVoteType() {
 			var divMRVoteLength = document.getElementById('RoundLength');
 			var voteType = document.getElementById('VoteTypeSelect').value;
@@ -193,6 +213,7 @@
 				else
 					divMRVoteLength.style.display = "none";	
 			}
+			setRoundDurationDefaultValues();
 		}
 
 		function setVoteOpenDateTime(flag) {
@@ -241,6 +262,18 @@
 			{
 				alert("The vote close date/time must be a future date/time");
 				return false;
+			}
+
+			var voteType = document.getElementById('VoteTypeSelect').value;
+			if (voteType == 3)
+			{
+				var roundDays = document.getElementById('MRVoteDays');
+				var roundHours = document.getElementById('MRVoteHours');
+				var roundMinutes = document.getElementById('MRVoteMins');
+				if((parseInt(roundDays.value) + parseInt(roundHours.value) + parseInt(roundMinutes.value)) == 0) {
+					alert("Multi-Round Voting Days, Hours and Minutes cannot all be zero");
+					return false;
+				}
 			}
 			return true;
 		}

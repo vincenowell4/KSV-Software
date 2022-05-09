@@ -129,7 +129,18 @@ namespace VotingApp.DAL.Concrete
         }
         public IList<CreatedVote> GetAllClosedMultiRoundVotes()
         {
-            return _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null && DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, v.TimeZone.TimeName), v.VoteCloseDateTime.Value) > 0).ToList();
+            IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote2= new List<CreatedVote>();
+            if (createdVote != null) {
+                foreach (CreatedVote cv in createdVote)
+                {
+                    if (DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, cv.TimeZone.TimeName), cv.VoteCloseDateTime.Value) > 0) 
+                {
+                        createdVote2.Add(cv);
+                    }
+                }
+            }
+            return createdVote2;
         }
 
         public string GetMultiRoundVoteDuration(int id)

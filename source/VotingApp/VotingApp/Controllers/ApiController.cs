@@ -234,7 +234,13 @@ namespace VotingApp.Controllers
             nextRound.RoundDays = roundDays;
             nextRound.RoundHours = roundHours;
             nextRound.RoundMinutes = roundMinutes;
-            nextRound.VoteTitle = currRound.VoteTitle + " - round " + ((int)currRound.RoundNumber + 1).ToString();
+            if (currRound.VoteTitle.Contains("- round") )
+            {
+                nextRound.VoteTitle = currRound.VoteTitle.Replace(("- round " + ((int)currRound.RoundNumber).ToString()), ("- round " + ((int)currRound.RoundNumber + 1).ToString()));
+            } else
+            {
+                nextRound.VoteTitle = currRound.VoteTitle + " - round " + ((int)currRound.RoundNumber + 1).ToString();
+            }
             nextRound.VoteDiscription = currRound.VoteDiscription;
             nextRound.AnonymousVote = currRound.AnonymousVote;
             nextRound.VoteTypeId = currRound.VoteTypeId;

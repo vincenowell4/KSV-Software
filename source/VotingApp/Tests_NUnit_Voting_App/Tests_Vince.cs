@@ -27,6 +27,9 @@ namespace Tests_NUnit_Voting_App
         private List<SubmittedVote> _submittedVotes;
         private List<VotingUser> _votingUsers;
         private List<AppLog> _appLogs;
+        private List<VoteTimeZone> _voteTimeZones;
+        private Mock<DbSet<VoteTimeZone>> _voteTimeZonesSet;
+
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -41,6 +44,13 @@ namespace Tests_NUnit_Voting_App
         [SetUp]
         public void Setup()
         {
+            _voteTimeZones = new List<VoteTimeZone>()
+            {
+                new VoteTimeZone { Id = 1, TimeName = "Pacific Standard Time" },
+                new VoteTimeZone { Id = 2, TimeName = "Dateline Standard Time" },
+                new VoteTimeZone { Id = 3, TimeName = "UTC-11" },
+            };
+
             _voteTypes = new List<VoteType>()
             {
                 new VoteType { Id = 1,VotingType ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
@@ -133,7 +143,8 @@ namespace Tests_NUnit_Voting_App
                 VoteCloseDateTime = pastDate,
                 VoteTypeId = 3,
                 AnonymousVote = false,
-                NextRoundId = 0
+                NextRoundId = 0,
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
             }); ;
 
             //act
@@ -160,7 +171,8 @@ namespace Tests_NUnit_Voting_App
                 VoteCloseDateTime = futureDate,
                 VoteTypeId = 3,
                 AnonymousVote = false,
-                NextRoundId = 0
+                NextRoundId = 0,
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
             }); ;
 
             //act
@@ -327,6 +339,44 @@ namespace Tests_NUnit_Voting_App
 
             // assert
             Assert.IsNotNull(submittedVote);
+        }
+
+        [Test]
+        //VA-241 As a logged-in user I want to be able to set the duration time when I create a multi-round vote, so I can control how long each round of voting will be open
+        public void VA241_CreatedVoteRepo_GetMultiRoundVoteDuration_ShouldReturnRoundDurationForValidMultiRoundVoteId()
+        {
+            // arrange
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+
+            repo.AddOrUpdate(new CreatedVote { Id = 4, VoteType = _voteTypes[2], AnonymousVote = true, UserId = 1, VoteTitle = "Multi-round Vote", VoteDiscription = "Multi-round description", RoundDays=2, RoundHours=5, RoundMinutes=30 });
+
+
+            // act
+            string testRoundDuration = repo.GetMultiRoundVoteDuration(4);
+
+
+            // assert
+            Assert.True(testRoundDuration == "2,5,30");
+        }
+
+        [Test]
+        //VA-241 As a logged-in user I want to be able to set the duration time when I create a multi-round vote, so I can control how long each round of voting will be open
+        public void VA241_CreatedVoteRepo_GetMultiRoundVoteDuration_ShouldReturnEmptyStringForInvalidVoteId()
+        {
+            // arrange
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+
+
+            // act
+            string testRoundDuration = repo.GetMultiRoundVoteDuration(8);
+
+
+            // assert
+            Assert.True(testRoundDuration == "");
         }
     }
 }
