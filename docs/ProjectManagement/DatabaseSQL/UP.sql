@@ -13,6 +13,9 @@ CREATE TABLE [CreatedVote]
 [VoteAudioBytes] VARBINARY(max),
 [RoundNumber] int NOT NULL,
 [NextRoundId] int NOT NULL,
+[RoundDays] int NOT NULL,
+[RoundHours] int NOT NULL,
+[RoundMinutes] int NOT NULL,
 [TimeZoneId] int NOT NULL
 );
 
@@ -58,6 +61,14 @@ CREATE TABLE [VoteTimeZones]
 (
 [ID] int PRIMARY KEY IDENTITY(1, 1),
 [TimeName] nvarchar(250) NOT NULL
+);
+
+CREATE TABLE [AppLogs]
+(
+[ID] int PRIMARY KEY IDENTITY(1, 1),
+[Date] DATETIME NOT NULL,
+[LogLevel] nvarchar(10) NOT NULL,
+[LogMessage] nvarchar(500) NOT NULL   
 );
 
 ALTER TABLE [VoteOptions] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
