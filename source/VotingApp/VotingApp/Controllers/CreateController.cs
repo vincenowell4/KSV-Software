@@ -93,6 +93,10 @@ namespace VotingApp.Controllers
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
             ModelState.Remove("TimeZone");
+            ModelState.Remove("RoundDays");
+            ModelState.Remove("RoundHours");
+            ModelState.Remove("RoundMinutes");
+            ModelState.Remove("RoundNumber");
             SelectList selectListVoteType = null;
             SelectList timeZoneList = null;
             timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
@@ -147,6 +151,9 @@ namespace VotingApp.Controllers
             }
             else
             {
+                var errors = ModelState.Select(x => x.Value.Errors)
+                    .Where(y => y.Count > 0)
+                    .ToList();
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
                 _appLogRepository.LogError("An unknown error occurred while trying to create this vote with id: " + createdVote.Id);
                 return View(createdVote);
@@ -165,6 +172,10 @@ namespace VotingApp.Controllers
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
             ModelState.Remove("TimeZone");
+            ModelState.Remove("RoundDays");
+            ModelState.Remove("RoundHours");
+            ModelState.Remove("RoundMinutes");
+            ModelState.Remove("RoundNumber");
             SelectList selectListVoteType = null;
             SelectList timeZoneList = null;
             timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
