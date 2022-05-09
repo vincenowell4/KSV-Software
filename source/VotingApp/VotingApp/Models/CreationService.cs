@@ -11,17 +11,23 @@ namespace VotingApp.Models
         private readonly IVoteTypeRepository _voteTypeRepository;
         private readonly VoteCreationService _voteCreationService;
         private readonly IVoteOptionRepository _voteOptionRepository;
+        private readonly IAppLogRepository _appLogRepository;
+        private readonly ITimeZoneRepo _timeZoneRepository;
         public CreationService(
             ICreatedVoteRepository createdVoteRepository,
             IVoteTypeRepository voteTypeRepository,
             VoteCreationService voteCreationService,
-            IVoteOptionRepository voteOptionRepository
-           )
+            IVoteOptionRepository voteOptionRepository,
+            IAppLogRepository appLogRepository,
+            ITimeZoneRepo timeZoneRepo
+        )
         {
             _createdVoteRepository = createdVoteRepository;
             _voteTypeRepository = voteTypeRepository;
             _voteCreationService = voteCreationService;
             _voteOptionRepository = voteOptionRepository;
+            _appLogRepository = appLogRepository;
+            _timeZoneRepository = timeZoneRepo;
         }
         public string Create(ref CreatedVote createdVote)
         {
@@ -38,7 +44,8 @@ namespace VotingApp.Models
             if (createdVote.VoteCloseDateTime == null)
             {
                 if (createdVote.VoteOpenDateTime == null)
-                    createdVote.VoteCloseDateTime = DateTime.Now.AddHours(24);
+
+                    createdVote.VoteCloseDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, _timeZoneRepository.GetById(createdVote.TimeZoneId).TimeName).AddHours(24);
                 else
                     createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
 
@@ -49,12 +56,15 @@ namespace VotingApp.Models
                     createdVote.VoteAccessCode = _voteCreationService.generateCode();
                // createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 _createdVoteRepository.AddOrUpdate(createdVote);
+
             }
             catch (Exception ex)
             {
+                _appLogRepository.LogError("There was an error generating a code for this created vote id: " + createdVote.Id + " , Error message: " + ex);
                 return ex.Message;
             }
 
+            _appLogRepository.LogInfo("Successfully created vote with id: " + createdVote.Id);
             return "";
         }
 
@@ -69,6 +79,7 @@ namespace VotingApp.Models
             }
             catch (Exception ex)
             {
+                _appLogRepository.LogError("There was an error generating a vote access code for created vote id: " + createdVote.Id + ", Error message: " + ex);
                 return ex.Message;
             }
 
@@ -85,6 +96,7 @@ namespace VotingApp.Models
             }
             catch (Exception ex)
             {
+                _appLogRepository.LogError("Error occurred when trying to edit vote with id: " + createdVote.Id + ", Error message: " + ex);
                 return ex.Message;
             }
             createdVote = _createdVoteRepository.GetById(createdVote.Id); //this is for checking what the vote is in the db
@@ -106,7 +118,7 @@ namespace VotingApp.Models
                 //createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
                 createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             }
-
+            _appLogRepository.LogInfo("Successfully edited vote with id: " + createdVote.Id);
             return "";
         }
         public IEnumerable<VoteAuthorizedUser> ParseUserList(int id ,string userString)

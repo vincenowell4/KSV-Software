@@ -93,21 +93,6 @@ the vote title, description and vote access code in the body of the email.", Pro
         {
 #line 23
 #line hidden
-            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
-                        "UserName",
-                        "Email",
-                        "FirstName",
-                        "LastName",
-                        "Password"});
-            table4.AddRow(new string[] {
-                        "vnowell21",
-                        "vnowell21@wou.edu",
-                        "Vince",
-                        "Nowell",
-                        "Password123!"});
-#line 24
- testRunner.Given("the following user exists", ((string)(null)), table4, "Given ");
-#line hidden
             TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                         "UserName",
                         "Email",
@@ -115,13 +100,28 @@ the vote title, description and vote access code in the body of the email.", Pro
                         "LastName",
                         "Password"});
             table5.AddRow(new string[] {
+                        "vnowell21",
+                        "vnowell21@wou.edu",
+                        "Vince",
+                        "Nowell",
+                        "Password123!"});
+#line 24
+ testRunner.Given("the following user exists", ((string)(null)), table5, "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                        "UserName",
+                        "Email",
+                        "FirstName",
+                        "LastName",
+                        "Password"});
+            table6.AddRow(new string[] {
                         "pjonesl",
                         "pjones@example.com",
                         "Paul",
                         "Jones",
                         "0a9dfi3.a"});
 #line 28
- testRunner.And("the following user does not exist", ((string)(null)), table5, "And ");
+ testRunner.And("the following user does not exist", ((string)(null)), table6, "And ");
 #line hidden
         }
         

@@ -17,6 +17,7 @@ namespace VotingApp.Controllers
         private readonly IVotingUserRepositiory _votingUserRepository;
         private readonly IVoteOptionRepository _voteOptionRepository;
         private readonly ISubmittedVoteRepository _subVoteRepository;
+        private readonly IAppLogRepository _appLogRepository;
 
         public AccessController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -24,7 +25,8 @@ namespace VotingApp.Controllers
             UserManager<IdentityUser> userManager,
             IVotingUserRepositiory votingUserRepositiory,
             IVoteOptionRepository voteOptionRepository,
-            ISubmittedVoteRepository subVoteRepository)
+            ISubmittedVoteRepository subVoteRepository,
+            IAppLogRepository appLogRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -33,6 +35,7 @@ namespace VotingApp.Controllers
             _votingUserRepository = votingUserRepositiory;
             _voteOptionRepository = voteOptionRepository;
             _subVoteRepository = subVoteRepository;
+            _appLogRepository = appLogRepository;
         }
 
         [HttpGet]
@@ -49,6 +52,7 @@ namespace VotingApp.Controllers
 
             if (vm.GetVoteByAccessCode == null)
             {
+                _appLogRepository.LogError("User entered invalid access code: " + code);
                 ViewBag.ErrorMessage = "Invalid Access Code";
                 return View("Index");
             }
@@ -57,6 +61,8 @@ namespace VotingApp.Controllers
             {
                 if (!User.Identity.IsAuthenticated)
                 {
+                    _appLogRepository.LogInfo(
+                        "Redirected unlogged in user trying to access private vote to /Identity/Account/Login");
                     return Redirect("~/Identity/Account/Login");
                 }
 
@@ -76,6 +82,8 @@ namespace VotingApp.Controllers
                 }
                 else
                 {
+                    _appLogRepository.LogError(
+                        "Someone tried accessing private vote who is not part of authorized users list for vote id: " + vm.VoteId);
                     ViewBag.ErrorMessage = $"You are not authorized to view vote results.";
                     return View("Index");
                 }
@@ -96,11 +104,14 @@ namespace VotingApp.Controllers
         {
             if(!User.Identity.IsAuthenticated)
             {
+                _appLogRepository.LogInfo(
+                    "Redirected unlogged in user trying to access vote history to /Identity/Account/Login");
                 return Redirect("~/Identity/Account/Login");
             }
             VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
             if (user == null)
             {
+                _appLogRepository.LogError("unable to find user in voting user table for vote history page");
                 var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
                 user = _votingUserRepository.AddOrUpdate(newUser);
             }
@@ -122,16 +133,19 @@ namespace VotingApp.Controllers
         {
             var subvote = _subVoteRepository.GetVoteById(id);
             var vote = subvote.CreatedVote;
-            if (vote != null && (vote.VoteOpenDateTime == null || vote.VoteOpenDateTime <= DateTime.Now) && (vote.VoteCloseDateTime == null || vote.VoteCloseDateTime >= DateTime.Now))
+            if (vote != null && (vote.VoteOpenDateTime == null || vote.VoteOpenDateTime <= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) && (vote.VoteCloseDateTime == null || vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName))))
             {
                 if(vote.PrivateVote == true)
                 {
                     if (!User.Identity.IsAuthenticated)
                     {
+                        _appLogRepository.LogError("redirected unlogged in user from editing vote for a private vote to /Identity/Account/Login");
                         return Redirect("~/Identity/Account/Login");
                     }
                     if (!vote.VoteAuthorizedUsers.Select(a => a.UserName).ToList().Contains(_userManager.GetUserName(User)))
                     {
+                        _appLogRepository.LogError("unauthorized user tried to access private vote with id: " +
+                                                   vote.Id);
                         ViewBag.ErrorMessage = $"You are not authorized for this vote.";
                         return View("Index");
                     }
@@ -154,12 +168,14 @@ namespace VotingApp.Controllers
             SubmitVoteVM model = new SubmitVoteVM();
             model.vote = _createdVoteRepository.GetVoteByAccessCode(code);
             
-            if (model.vote != null && model.vote.VoteCloseDateTime >= DateTime.Now)
+            if (model.vote != null && model.vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
             {
                 if (model.vote.PrivateVote == true)
                 {
                     if (!User.Identity.IsAuthenticated)
                     {
+                        _appLogRepository.LogError(
+                            "redirected unlogged in user trying to access private vote to /Identity/Account/Login");
                         return Redirect("~/Identity/Account/Login");
                     }
                     else
@@ -185,6 +201,9 @@ namespace VotingApp.Controllers
                                 return View("SubmitVote", model);
                             }
                         }
+
+                        _appLogRepository.LogError("Unauthorized user tried accessing private vote with id: " +
+                                                   model.vote.Id);
                         ViewBag.ErrorMessage = $"You are not authorized for this vote.";
                         return View("Index");
                     }
@@ -203,13 +222,14 @@ namespace VotingApp.Controllers
                 }
                 return View("SubmitVote", model);
             }
-            else if (model.vote != null && model.vote.VoteCloseDateTime < DateTime.Now)
+            else if (model.vote != null && model.vote.VoteCloseDateTime < TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
             {
                 ViewBag.ErrorMessage = $"The Voting Window Has Closed\nVoting Closed on {model.vote.VoteCloseDateTime.Value.Month}/{model.vote.VoteCloseDateTime.Value.Day}/{model.vote.VoteCloseDateTime.Value.Year} at {model.vote.VoteCloseDateTime.Value.TimeOfDay}";
                 return View("Index");
             }
             else
             {
+                _appLogRepository.LogError("invalid access code on access page");
                 ViewBag.ErrorMessage = "Invalid Access Code";
                 return View("Index");
             }
@@ -241,7 +261,7 @@ namespace VotingApp.Controllers
             {
                 user = null;
             }
-            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice, DateCast=DateTime.Now};
+            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice, DateCast= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
             var model = new SubmitConfirmationModel {OptionId=subvote.VoteChoice, CreateId=vote.Id};

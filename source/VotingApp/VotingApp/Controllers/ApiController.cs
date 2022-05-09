@@ -31,6 +31,7 @@ namespace VotingApp.Controllers
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly EmailService.IEmailSender _emailSender;
         private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IAppLogRepository _appLogRepository;
 
         public ApiController(ILogger<HomeController> logger,
             ICreatedVoteRepository createdVoteRepo,
@@ -42,7 +43,8 @@ namespace VotingApp.Controllers
             CreationService creationService,
             ISubmittedVoteRepository submittedVoteRepository,
             IUserStore<IdentityUser> userStore,
-            EmailService.IEmailSender emailSender)
+            EmailService.IEmailSender emailSender,
+            IAppLogRepository appLogRepository)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -56,6 +58,7 @@ namespace VotingApp.Controllers
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _emailSender = emailSender;
+            _appLogRepository = appLogRepository;
         }
 
         [HttpGet("novac/all")]
@@ -71,6 +74,7 @@ namespace VotingApp.Controllers
                 CreatedVoteModel cvVM = new CreatedVoteModel();
                 cvVM.Id = noVACvotes[i].Id;
                 cvVM.VoteOpenDateTime = noVACvotes[i].VoteOpenDateTime;
+                cvVM.TimeZone = noVACvotes[i].TimeZone.TimeName;
                 vmNoVACvotes.Add(cvVM);
             }
 
@@ -209,16 +213,40 @@ namespace VotingApp.Controllers
             mrVoteResultsSorted = mrVoteResults.OrderByDescending(p => p.VoteOptCount).ToList();
 
             CreatedVote currRound = _createdVoteRepository.GetById(id);
+            string roundDuration = _createdVoteRepository.GetMultiRoundVoteDuration(id);
+            int roundDays = 0;
+            int roundHours = 0;
+            int roundMinutes = 0;
+            if(roundDuration.Length > 0)
+            {
+                string[] duration = roundDuration.Split(',');
+                if (duration[0].Length > 0)
+                    roundDays = int.Parse(duration[0]);
+                if (duration[1].Length > 0)
+                    roundHours = int.Parse(duration[1]);
+                if (duration[2].Length > 0)
+                    roundMinutes = int.Parse(duration[2]);
+            }
             CreatedVote nextRound = new CreatedVote();
 
             nextRound.UserId = currRound.UserId;
             nextRound.RoundNumber = currRound.RoundNumber + 1;
-            nextRound.VoteTitle = currRound.VoteTitle + " - round " + ((int)currRound.RoundNumber + 1).ToString();
+            nextRound.RoundDays = roundDays;
+            nextRound.RoundHours = roundHours;
+            nextRound.RoundMinutes = roundMinutes;
+            if (currRound.VoteTitle.Contains("- round") )
+            {
+                nextRound.VoteTitle = currRound.VoteTitle.Replace(("- round " + ((int)currRound.RoundNumber).ToString()), ("- round " + ((int)currRound.RoundNumber + 1).ToString()));
+            } else
+            {
+                nextRound.VoteTitle = currRound.VoteTitle + " - round " + ((int)currRound.RoundNumber + 1).ToString();
+            }
             nextRound.VoteDiscription = currRound.VoteDiscription;
             nextRound.AnonymousVote = currRound.AnonymousVote;
             nextRound.VoteTypeId = currRound.VoteTypeId;
-            nextRound.VoteOpenDateTime = DateTime.Now;
-            nextRound.VoteCloseDateTime = DateTime.Now.AddDays(1);
+            nextRound.TimeZone = currRound.TimeZone;
+            nextRound.VoteOpenDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, currRound.TimeZone.TimeName);
+            nextRound.VoteCloseDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, currRound.TimeZone.TimeName).AddDays(roundDays).AddHours(roundHours).AddMinutes(roundMinutes);
             nextRound.PrivateVote = currRound.PrivateVote;
 
             nextRound = _createdVoteRepository.AddOrUpdate(nextRound);
@@ -385,6 +413,8 @@ namespace VotingApp.Controllers
     {
         public int Id { get; set; }
         public DateTime? VoteOpenDateTime { get; set; }
+
+        public string TimeZone { get; set; }
     }
 
     public class MultiRoundVoteModel

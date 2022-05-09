@@ -16,10 +16,12 @@ namespace VotingApp.Models
         {
         }
 
+        public virtual DbSet<AppLog> AppLogs { get; set; } = null!;
         public virtual DbSet<CreatedVote> CreatedVotes { get; set; } = null!;
         public virtual DbSet<SubmittedVote> SubmittedVotes { get; set; } = null!;
         public virtual DbSet<VoteAuthorizedUser> VoteAuthorizedUsers { get; set; } = null!;
         public virtual DbSet<VoteOption> VoteOptions { get; set; } = null!;
+        public virtual DbSet<VoteTimeZone> VoteTimeZones { get; set; } = null!;
         public virtual DbSet<VoteType> VoteTypes { get; set; } = null!;
         public virtual DbSet<VotingUser> VotingUsers { get; set; } = null!;
 
@@ -35,6 +37,12 @@ namespace VotingApp.Models
         {
             modelBuilder.Entity<CreatedVote>(entity =>
             {
+                entity.HasOne(d => d.TimeZone)
+                    .WithMany(p => p.CreatedVotes)
+                    .HasForeignKey(d => d.TimeZoneId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_TimeZone_ID");
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.CreatedVotes)
                     .HasForeignKey(d => d.UserId)

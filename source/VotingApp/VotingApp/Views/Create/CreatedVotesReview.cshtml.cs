@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using VotingApp.Models;
 
 namespace VotingApp.Views.Create
 {
@@ -9,9 +10,9 @@ namespace VotingApp.Views.Create
         {
         }
 
-        public TimeSpan RemainingTime(DateTime closetime)
+        public TimeSpan RemainingTime(DateTime closetime, CreatedVote vote)
         {
-            return closetime - DateTime.Now;
+            return closetime - TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName);
         }
     }
 }

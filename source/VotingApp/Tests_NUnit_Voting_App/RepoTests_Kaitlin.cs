@@ -21,12 +21,14 @@ namespace Tests_NUnit_Voting_App
         private Mock<DbSet<SubmittedVote>> _submittedVoteSet;
         private Mock<DbSet<VotingUser>> _votingUsersSet;
         private Mock<DbSet<VoteAuthorizedUser>> _authorizedUsersSet;
+        private Mock<DbSet<AppLog>> _appLogSet;
         private List<CreatedVote> _createdVotes;
         private List<VoteType> _voteTypes;
         private List<VoteOption> _voteOption;
         private List<SubmittedVote> _submittedVotes;
         private List<VotingUser> _votingUsers;
         private List<VoteAuthorizedUser> _authorizedUsers;
+        private List<AppLog> _appLogs;
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -51,7 +53,7 @@ namespace Tests_NUnit_Voting_App
             {
                 new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
                 new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null},
-                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption},
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption, TimeZone = new VoteTimeZone {Id = 1, TimeName = "Alaskan Standard Time"}},
                 new CreatedVote { Id = 4, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "123abc", PrivateVote = true, VoteAuthorizedUsers = _authorizedUsers},
                 new CreatedVote { Id = 5, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 2, VoteTitle = "open vote 1", VoteDiscription="description", VoteCloseDateTime = DateTime.Today.AddDays(5)},
                 new CreatedVote { Id = 6, VoteType = _voteTypes[0], AnonymousVote = false, UserId= 2, VoteTitle = "open vote 2", VoteDiscription="descript", VoteCloseDateTime = DateTime.Today.AddDays(1)},
@@ -85,12 +87,19 @@ namespace Tests_NUnit_Voting_App
                 new VoteAuthorizedUser { CreatedVoteId = 4, Id = 3, UserName = "user3@mail.com" }
             };
 
+            _appLogs = new List<AppLog>()
+            {
+                new AppLog { Id = 1, Date = new DateTime(2022, 5, 2, 5, 10, 20), LogLevel = "Error", LogMessage = "There was an error creating this page"},
+                new AppLog { Id = 2, Date = new DateTime(2022, 5, 3, 5, 10, 20), LogLevel = "Info", LogMessage = "Successfully created a vote"}
+            };
+
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
             _submittedVoteSet = GetMockDbSet(_submittedVotes.AsQueryable());
             _authorizedUsersSet = GetMockDbSet(_authorizedUsers.AsQueryable());
+            _appLogSet = GetMockDbSet(_appLogs.AsQueryable());
 
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
@@ -105,6 +114,82 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVoteSet.Object);
             _mockContext.Setup(ctx => ctx.VoteAuthorizedUsers).Returns(_authorizedUsersSet.Object);
             _mockContext.Setup(ctx => ctx.Set<VoteAuthorizedUser>()).Returns(_authorizedUsersSet.Object);
+            _mockContext.Setup(ctx => ctx.AppLogs).Returns(_appLogSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<AppLog>()).Returns(_appLogSet.Object);
+            _mockContext.Setup(x => x.Add(It.IsAny<AppLog>())).Callback<AppLog>((s) => _appLogs.Add(s));
+        }
+
+        [Test]
+        //VA111
+        public void AppLogRepo_LogError_ShouldLabelAsErrorWithCorrectMessage()
+        {
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+            var info = repo.LogError("Error message");
+
+            Assert.IsTrue(info.LogMessage == "Error message");
+            Assert.IsTrue(info.LogLevel == "Error");
+        }
+
+        [Test]
+        //VA111
+        public void AppLogRepo_LogInfo_ShouldLabelAsInfoWithCorrectMessage()
+        {
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+            var info = repo.LogInfo("Info message");
+
+            Assert.IsTrue(info.LogMessage == "Info message");
+            Assert.IsTrue(info.LogLevel == "Info");
+        }
+
+        [Test]
+        //VA111
+        public void AppLogRepo_AddOrUpdate_ShouldAddLog()
+        {
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+            var log = new AppLog
+            {
+                Id = 3,
+                Date = DateTime.Now,
+                LogLevel = "Error",
+                LogMessage = "There was an error"
+            };
+
+            repo.AddOrUpdate(log);
+            _mockContext.Object.Add(log);
+            var count = repo.GetAllAppLogs().Count;
+
+            Assert.IsTrue(count == 3);
+        }
+
+        [Test]
+        //VA111
+        public void AppLogRepo_AddOrUpdate_ShouldThrowException()
+        {
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+            var log = new AppLog();
+            log = null;
+
+            Assert.Throws<NullReferenceException>(() => repo.AddOrUpdate(log));
+        }
+
+        [Test]
+        //VA111
+        public void AppLogRepo_GetAllAppLogs_ShouldReturnByDescendingDate()
+        {
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+            var result = repo.GetAllAppLogs();
+
+            Assert.IsTrue(result[0].Date > result[1].Date);
+        }
+
+        [Test]
+        //VA111
+        public void AppLogRepo_GetAllAppLogs_ShouldReturn2Logs()
+        {
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+            var result = repo.GetAllAppLogs();
+
+            Assert.IsTrue(result.Count == 2);
         }
 
         [Test]

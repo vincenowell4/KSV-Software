@@ -27,7 +27,7 @@ namespace BDDTests.StepDefinitions
         [Given(@"I am on the '([^']*)' a vote page")]
         public void GivenIAmOnTheAVotePage(string access)
         {
-            _accessPage.Goto();
+            _accessPage.Goto(access);
         }
 
 

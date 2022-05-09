@@ -182,7 +182,7 @@ namespace VotingApp.DAL.Concrete
         public SubmittedVote EditCastVote(int voteId, int choiceId)
         {
             var vote = _context.SubmittedVotes.Where(a => a.Id == voteId).FirstOrDefault();
-            if (vote != null && vote.VoteChoice != choiceId && (vote.CreatedVote.VoteCloseDateTime >= DateTime.Now || vote.CreatedVote.VoteCloseDateTime == null) && vote.CreatedVote.VoteOptions.Select(c => c.Id).ToList().Contains(choiceId))
+            if (vote != null && vote.VoteChoice != choiceId && (vote.CreatedVote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.CreatedVote.TimeZone.TimeName) || vote.CreatedVote.VoteCloseDateTime == null) && vote.CreatedVote.VoteOptions.Select(c => c.Id).ToList().Contains(choiceId))
             {
                 vote.VoteChoice = choiceId;
                 _context.SubmittedVotes.Update(vote);

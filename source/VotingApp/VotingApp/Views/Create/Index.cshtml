@@ -49,7 +49,7 @@
 						<div class="row justify-content-md-center p-2">
 							<div class="col-md-6">
 								<label asp-for="VoteTypeId" class="control-label" id="VoteType">Vote Type: <span data-toggle="tooltip" data-placement="bottom" title="If you change your vote type from multiple choice to yes/no the vote options you created will be lost">&#8505;</span></label>
-								<select asp-for="VoteTypeId" class="form-control" id="VoteTypeSelect" asp-items="ViewBag.VoteTypeId"></select>
+								<select asp-for="VoteTypeId" class="form-control" id="VoteTypeSelect" asp-items="ViewBag.VoteTypeId" onchange="changeVoteType();"></select>
 								<span asp-validation-for="VoteTypeId" class="text-danger"></span>
 							</div>
 							<div class="col-md-4 mt-4">
@@ -74,26 +74,22 @@
 						<div class="d-flex flex-column justify-content-center">
 							<span class="p-2 border border-white">
 								<h3 style="text-decoration: underline" class="p-2">Times (optional):</h3>
-								
-								@if (User != null && User.Identity.IsAuthenticated)
+                                @if (User != null && User.Identity.IsAuthenticated)
 								{
 									<div class="form-row">
 										<div class="row p-2">
-											<div class="custom-control custom-checkbox text-center">
+											<div class="form-group">
+												<Label>Start Vote &nbsp;&nbsp;</Label>
 												<input type="radio" id="VoteStartNow" checked="checked" name="VoteStart" onclick="setVoteOpenDateTime(0);" />
-												<label class="control-label">Start Vote Immediately</label>
-											</div>
-										</div>
-										<div class="row p-2">
-											<div class="custom-control custom-checkbox text-center">
+												<label class="control-label">Immediately &nbsp;&nbsp;</label>
 												<input type="radio" id="VoteStartFuture" name="VoteStart" onclick="setVoteOpenDateTime(1);" />
-												<label class="control-label">Start Vote at a Future Time</label>
+												<label class="control-label">At a Future Time</label>
 											</div>
 										</div>
 										<div class="row p-2">
 											<div class="form-group">
 												<label class="control-label text-white">When does voting start? <span data-toggle="tooltip" data-placement="bottom" title="Enter a future date and time for when you want the voting to start">&#8505;</span></label>
-												<input asp-for="VoteOpenDateTime" type="text" id="VoteOpenDateTime" disabled/>
+												<input asp-for="VoteOpenDateTime" placeholder="YYYY-MM-DD HH:MM" type="text" id="VoteOpenDateTime" disabled/>
 											</div>
 										</div>
 									</div>
@@ -106,17 +102,40 @@
 										</div>
 									</div>
 								}
-								<div class="form-row mb-4">
+                                <div class="form-row mb-4">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label class="form-check-label" for="datetime">
+                                                When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
+                                            </label>
+                                            <input asp-for="VoteCloseDateTime" placeholder="YYYY-MM-DD HH:MM" type="text" id="VoteCloseDateTime" readonly/>
+                                        </div>
+				                        
+                                    </div>
+                                </div>
+
+								<div class="form-row mb-4" id="RoundLength" style="display:none">
 									<div class="row">
+										<h6>Multi-Round Voting - Time Length for Each Round After Round 1</h6>
 										<div class="form-group">
-											<label class="form-check-label" for="datetime">
-												When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
-											</label>
-											<input asp-for="VoteCloseDateTime" type="text" id="VoteCloseDateTime" readonly/>
+											<label class="form-check-label px-2" for="RoundDays">Days &nbsp;<label>
+											<input style="width:60px" min=0 max=999 asp-for="RoundDays" type="number" id="MRVoteDays"/>
+											<label class="form-check-label px-2" for="RoundHours">Hours &nbsp;<label>
+											<input style="width:60px" min=0 max=24 asp-for="RoundHours" type="number" id="MRVoteHours"/>
+											<label class="form-check-label px-2" for="RoundMinutes">Minutes &nbsp;<label>
+											<input style="width:60px" min=0 max=60  asp-for="RoundMinutes" type="number" id="MRVoteMins"/>
 										</div>
 				                        
 									</div>
 								</div>
+
+                                <div class="row mb-3 justify-content-center">
+                                <div class="col-md-6">
+                                    <label asp-for="TimeZoneId" class="control-label" id="TimeZone">TimeZone:<span data-toggle="tooltip" data-placement="bottom" title="Select the time zone you would like your vote to be in.">&#8505;</span></label>
+                                    <select asp-for="TimeZoneId" class="form-control" id="timeZoneList" asp-items="ViewBag.TimeZoneId"></select>
+                                    <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                                </div>
+                                </div>
 								<div class="row mb-3 justify-content-center">
 									@if (ViewBag.ErrorMessage == "Vote close date/time must be in the future. Please try again." || 
 									     ViewBag.ErrorMessage == "Vote close date/time must be after vote start date/time")
@@ -164,6 +183,39 @@
 {
 	<script>
 
+		function setRoundDurationDefaultValues() {
+			var voteType = document.getElementById('VoteTypeSelect').value;
+			if(voteType == 3) {
+				var roundDays = document.getElementById('MRVoteDays');
+				var roundHours = document.getElementById('MRVoteHours');
+				var roundMinutes = document.getElementById('MRVoteMins');
+				if (!roundDays.value)
+					roundDays.value = 0; 
+				if (!roundHours.value)
+					roundHours.value = 24; 
+				if (!roundMinutes.value)
+					roundMinutes.value = 0; 
+			}
+		}
+
+		$('document').ready(function(){
+			changeVoteType();
+			setRoundDurationDefaultValues();
+		});
+
+		function changeVoteType() {
+			var divMRVoteLength = document.getElementById('RoundLength');
+			var voteType = document.getElementById('VoteTypeSelect').value;
+
+			if (divMRVoteLength != null) {
+				if(voteType == 3)
+					divMRVoteLength.style.display = "block";	
+				else
+					divMRVoteLength.style.display = "none";	
+			}
+			setRoundDurationDefaultValues();
+		}
+
 		function setVoteOpenDateTime(flag) {
 			if (flag == 0) {
 				$("#VoteOpenDateTime").val('');
@@ -210,6 +262,18 @@
 			{
 				alert("The vote close date/time must be a future date/time");
 				return false;
+			}
+
+			var voteType = document.getElementById('VoteTypeSelect').value;
+			if (voteType == 3)
+			{
+				var roundDays = document.getElementById('MRVoteDays');
+				var roundHours = document.getElementById('MRVoteHours');
+				var roundMinutes = document.getElementById('MRVoteMins');
+				if((parseInt(roundDays.value) + parseInt(roundHours.value) + parseInt(roundMinutes.value)) == 0) {
+					alert("Multi-Round Voting Days, Hours and Minutes cannot all be zero");
+					return false;
+				}
 			}
 			return true;
 		}
