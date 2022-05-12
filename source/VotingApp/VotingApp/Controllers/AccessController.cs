@@ -84,7 +84,7 @@ namespace VotingApp.Controllers
                 {
                     _appLogRepository.LogError(
                         "Someone tried accessing private vote who is not part of authorized users list for vote id: " + vm.VoteId);
-                    ViewBag.ErrorMessage = $"You are not authorized to view vote results.";
+                    ViewBag.ErrorMessage = $"You are not authorized to view poll results.";
                     return View("Index");
                 }
             }

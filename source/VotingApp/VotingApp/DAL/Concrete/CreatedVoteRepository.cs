@@ -105,7 +105,7 @@ namespace VotingApp.DAL.Concrete
                 var email = user.UserName;
 
                 var message = new Message(new string[] { email }, "New Vote Authorization from Opiniony",
-                    "You have been authorized to submit your vote for: " + $"<br/><br/>Title: '{voteTitle}'<br/>Description: '{voteDescription}'<br/><br/>Click <a href='{accessCode}'>here</a> to go to submit a vote.");
+                    "You have been authorized to submit your vote for: " + $"<br/><br/>Title: '{voteTitle}'<br/>Description: '{voteDescription}'<br/><br/>Click <a href='{accessCode}'>here</a> to go to cast a vote.");
 
                 _emailSender.SendEmail(message);
             }

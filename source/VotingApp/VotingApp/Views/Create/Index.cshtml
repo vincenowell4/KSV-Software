@@ -17,7 +17,7 @@
 	                                                     width: 100vw;">
 
 	<div class="text-center text-white">
-		<h1 class="display-4">Create A New Vote</h1>
+		<h1 class="display-4">Create A New Poll</h1>
 		<hr class="mb-4"/>
 	</div>
 
@@ -37,33 +37,33 @@
 					<span class="p-2 border border-white">
 						<h3 style="text-decoration: underline" class="p-2" id="RequiredHeader">Required Fields:</h3>
 						<div class="form-row p-2">
-							<label asp-for="VoteTitle" id="VoteTitle">Vote Title: <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the vote you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this vote title.">&#8505;</span></label>
+							<label asp-for="VoteTitle" id="VoteTitle">Poll Title: <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the poll you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this poll title.">&#8505;</span></label>
 							<textarea asp-for="VoteTitle" class="form-control" type="text" rows="1" placeholder="Please enter title here" required > @if (Model != null){@Model.VoteTitle}</textarea>
 							<span asp-validation-for="VoteTitle" class="text-danger"></span>
 						</div>
 						<div class="form-row p-2">
-							<label asp-for="VoteDiscription" id="VoteDescription">Vote Description: <span data-toggle="tooltip" data-placement="bottom" title="The vote description is to give users a better idea about why/what they are voting about. If it's a yes/no vote you can use this description to explain to the user what the yes stands for and what the no stands for. Here you can let the users know if there will be a time limit on this vote as well, and more details such as if it will be completely anonymous for even the vote creator to see the results of how individuals voted.">&#8505;</span></label>
+							<label asp-for="VoteDiscription" id="VoteDescription">Poll Description: <span data-toggle="tooltip" data-placement="bottom" title="The poll description is to give users a better idea about why/what they are voting about. If it's a yes/no poll you can use this description to explain to the user what the yes stands for and what the no stands for. Here you can let the users know if there will be a time limit on this poll as well, and more details such as if it will be completely anonymous for even the poll creator to see the results of how individuals voted.">&#8505;</span></label>
 							<textarea asp-for="VoteDiscription" class="form-control" type="text" rows="4" placeholder="Please enter description here" required>@if (Model != null){@Model.VoteDiscription}</textarea>
 							<span asp-validation-for="VoteDiscription" class="text-danger"></span>
 						</div>
 						<div class="row justify-content-md-center p-2">
 							<div class="col-md-6">
-								<label asp-for="VoteTypeId" class="control-label" id="VoteType">Vote Type: <span data-toggle="tooltip" data-placement="bottom" title="If you change your vote type from multiple choice to yes/no the vote options you created will be lost">&#8505;</span></label>
+								<label asp-for="VoteTypeId" class="control-label" id="VoteType">Poll Type: <span data-toggle="tooltip" data-placement="bottom" title="If you change your poll type from multiple choice to yes/no the vote options you created will be lost">&#8505;</span></label>
 								<select asp-for="VoteTypeId" class="form-control" id="VoteTypeSelect" asp-items="ViewBag.VoteTypeId" onchange="changeVoteType();"></select>
 								<span asp-validation-for="VoteTypeId" class="text-danger"></span>
 							</div>
 							<div class="col-md-4 mt-4">
-								<button type="button" id="VoteCollapsible" class="btn btn-light bg-success btn-outline-primary" data-toggle="collapse" data-target="#descriptions">Vote Type Descriptions</button>
+								<button type="button" id="VoteCollapsible" class="btn btn-light bg-success btn-outline-primary" data-toggle="collapse" data-target="#descriptions">Poll Type Descriptions</button>
 								<div id="descriptions" class="collapse">
 									<br/>
-									<h5>Yes/No Vote:</h5>
+									<h5>Yes/No Poll:</h5>
 									<p>Voters will get to choose between two simple options: yes or no.</p>
 									<hr/>
-									<h5>Multiple Choice Vote:</h5>
-									<p>Vote creators will get to enter their own multiple choice voting options (2-10 options). Voters will then get to choose one option from those created voting options.</p>
+									<h5>Multiple Choice Poll:</h5>
+									<p>Poll creators will get to enter their own multiple choice voting options (2-10 options). Voters will then get to choose one option from those created voting options.</p>
                                     <hr/>
-                                    <h5>Multiple Choice Multi-Round Vote:</h5>
-									<p>Vote creators will get to enter their own multiple choice voting options (3-10 options). Voters will then get to choose one option from those created voting options. There can be multiple rounds of voting until one option has the majority of votes.</p>
+                                    <h5>Multiple Choice Multi-Round Poll:</h5>
+									<p>Only Available To Registered, Logged-In Users - Poll creators will get to enter their own multiple choice voting options (3-10 options). Voters will then get to choose one option from those created voting options. There can be multiple rounds of voting until one option has the majority of votes.</p>
                                 </div>
 							</div>
 						</div>
@@ -79,7 +79,7 @@
 									<div class="form-row">
 										<div class="row p-2">
 											<div class="form-group">
-												<Label>Start Vote &nbsp;&nbsp;</Label>
+												<Label>Start Poll &nbsp;&nbsp;</Label>
 												<input type="radio" id="VoteStartNow" checked="checked" name="VoteStart" onclick="setVoteOpenDateTime(0);" />
 												<label class="control-label">Immediately &nbsp;&nbsp;</label>
 												<input type="radio" id="VoteStartFuture" name="VoteStart" onclick="setVoteOpenDateTime(1);" />
@@ -94,7 +94,7 @@
 										</div>
 									</div>
 								}
-								@if (ViewBag.ErrorMessage == "Vote start date/time must be in the future. Please try again." )
+								@if (ViewBag.ErrorMessage == "Poll start date/time must be in the future. Please try again." )
 								{
 									<div class="row mb-3 justify-content-center">
 										<div class="alert alert-danger">
@@ -106,7 +106,7 @@
                                     <div class="row">
                                         <div class="form-group">
                                             <label class="form-check-label" for="datetime">
-                                                When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
+                                                When does the poll close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
                                             </label>
                                             <input asp-for="VoteCloseDateTime" placeholder="YYYY-MM-DD HH:MM" type="text" id="VoteCloseDateTime" readonly/>
                                         </div>
@@ -137,8 +137,8 @@
                                 </div>
                                 </div>
 								<div class="row mb-3 justify-content-center">
-									@if (ViewBag.ErrorMessage == "Vote close date/time must be in the future. Please try again." || 
-									     ViewBag.ErrorMessage == "Vote close date/time must be after vote start date/time")
+									@if (ViewBag.ErrorMessage == "Poll close date/time must be in the future. Please try again." || 
+									     ViewBag.ErrorMessage == "Poll close date/time must be after poll start date/time")
 									{
 										<div class="alert alert-danger">
 											<p>@ViewBag.ErrorMessage</p>
@@ -156,13 +156,13 @@
 									<div class="row p-2">
 										<div class="custom-control custom-checkbox text-center">
 											<input asp-for="AnonymousVote" type="checkbox" value="true" id="flexCheckDefault"/>
-											<label class="control-label" for="flexCheckDefault">Is this vote anonymous? <span data-toggle="tooltip" data-placement="bottom" title="Check this anonymous button if you just want the overall results of the vote where individual user votes will be kept anonymous.">&#8505;</span></label>
+											<label class="control-label" for="flexCheckDefault">Is this poll anonymous? <span data-toggle="tooltip" data-placement="bottom" title="Check this anonymous button if you just want the overall results of the poll where individual user votes will be kept anonymous.">&#8505;</span></label>
 										</div>
 									</div>
 									<div class="row p-2">
 										<div class="custom-control custom-checkbox text-center" >
 											<input asp-for="PrivateVote" type="checkbox" value="true" id="privatecheck"/>
-											<label class="control-label" for="privatecheck">Is this a private vote? <span data-toggle="tooltip" data-placement="bottom" title="Check this if you want to specify who can cast a vote for this given vote.">&#8505;</span></label>
+											<label class="control-label" for="privatecheck">Is this a private poll? <span data-toggle="tooltip" data-placement="bottom" title="Check this if you want to specify who can cast a vote for this poll.">&#8505;</span></label>
 										</div>
 									</div>
 								</div>
