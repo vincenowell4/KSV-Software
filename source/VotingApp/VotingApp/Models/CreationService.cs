@@ -79,7 +79,7 @@ namespace VotingApp.Models
             }
             catch (Exception ex)
             {
-                _appLogRepository.LogError("There was an error generating a vote access code for created vote id: " + createdVote.Id + ", Error message: " + ex);
+                _appLogRepository.LogError("There was an error generating a poll access code for created vote id: " + createdVote.Id + ", Error message: " + ex);
                 return ex.Message;
             }
 

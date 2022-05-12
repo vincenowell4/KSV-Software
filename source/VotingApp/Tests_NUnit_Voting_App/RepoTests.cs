@@ -38,15 +38,15 @@ namespace Tests_NUnit_Voting_App
         {
             _voteTypes = new List<VoteType>()
             {
-                new VoteType { Id = 1,VotingType ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
+                new VoteType { Id = 1,VotingType ="Yes/No Poll" ,VoteTypeDescription = "yes/no discription" },
                 new VoteType { Id = 2,VotingType =null ,VoteTypeDescription = "null discription" },
-                new VoteType { Id = 3,VotingType ="Multiple Choice Vote" ,VoteTypeDescription = "multiple choice description"}
+                new VoteType { Id = 3,VotingType ="Multiple Choice Poll" ,VoteTypeDescription = "multiple choice description"}
             };
             _createdVotes = new List<CreatedVote>()
             {
                 new CreatedVote { Id = 1, VoteType = _voteTypes[0], AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription="This is the description", VoteAccessCode = "abc123"},
                 new CreatedVote { Id = 2, VoteType = _voteTypes[0], AnonymousVote = true, UserId = 1, VoteTitle = null, VoteDiscription=null},
-                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Vote", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
+                new CreatedVote { Id = 3, VoteType = _voteTypes[2], AnonymousVote = false, UserId = 1, VoteTitle = "Mult Choice Poll", VoteDiscription="Mult choice description", VoteOptions = _voteOption}
             };
             _voteOption = new List<VoteOption>()
             {
@@ -350,7 +350,7 @@ namespace Tests_NUnit_Voting_App
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
             var result = repo.GetChosenVoteHeader(_voteTypes[0].VotingType);
-            Assert.IsTrue(result == "You have chosen to create a yes/no vote");
+            Assert.IsTrue(result == "You have chosen to create a yes/no poll");
         }
 
 
@@ -359,7 +359,7 @@ namespace Tests_NUnit_Voting_App
         {
             IVoteTypeRepository repo = new VoteTypeRepository(_mockContext.Object);
             var result = repo.GetChosenVoteHeader(_voteTypes[2].VotingType);
-            Assert.IsTrue(result == "You have chosen to create a multiple choice vote");
+            Assert.IsTrue(result == "You have chosen to create a multiple choice poll");
         }
 
         [Test]

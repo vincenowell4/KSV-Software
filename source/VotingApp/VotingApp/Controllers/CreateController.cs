@@ -62,6 +62,8 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress;
+            _appLogRepository.LogInfo("Client IP " + remoteIpAddress);
             SelectList selectListVoteType = null;
             SelectList timeZoneList = null;
             timeZoneList = new SelectList( _timeZoneRepo.GetAllTimeZones().Select(x => new {Text = $"{x.TimeName}", Value = x.Id}), "Value", "Text");
@@ -74,7 +76,7 @@ namespace VotingApp.Controllers
             else
             { //if user is not logged in, then Multi-Round voting is not available
                 selectListVoteType = new SelectList(
-                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
                     "Value", "Text");
             }
 
@@ -109,7 +111,7 @@ namespace VotingApp.Controllers
             else
             { //if user is not logged in, then Multi-Round voting is not available
                 selectListVoteType = new SelectList(
-                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
                     "Value", "Text");
             }
             ViewData["VoteTypeId"] = selectListVoteType;
@@ -188,7 +190,7 @@ namespace VotingApp.Controllers
             else
             { //if user is not logged in, then Multi-Round voting is not available
                 selectListVoteType = new SelectList(
-                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
                     "Value", "Text");
             }
             ViewData["VoteTypeId"] = selectListVoteType;
@@ -445,7 +447,7 @@ namespace VotingApp.Controllers
             else
             { //if user is not logged in, then Multi-Round voting is not available
                 selectListVoteType = new SelectList(
-                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
                     "Value", "Text");
             }
             ViewData["VoteTypeId"] = selectListVoteType;
