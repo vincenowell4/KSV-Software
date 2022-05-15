@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System.Reflection;
 
 namespace VotingApp.Controllers
 {
@@ -62,8 +63,11 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress;
-            _appLogRepository.LogInfo("Client IP " + remoteIpAddress);
+            string remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (remoteIpAddress == "::1") remoteIpAddress = "(localhost)";
+            MethodBase method = MethodBase.GetCurrentMethod();
+            _appLogRepository.LogInfo(method.ReflectedType.Name, method.Name, "Client IP: " + remoteIpAddress + ", for user "+ User.Identity.Name);
+            
             SelectList selectListVoteType = null;
             SelectList timeZoneList = null;
             timeZoneList = new SelectList( _timeZoneRepo.GetAllTimeZones().Select(x => new {Text = $"{x.TimeName}", Value = x.Id}), "Value", "Text");
@@ -90,7 +94,7 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote,RoundDays,RoundHours,RoundMinutes, TimeZoneId")]CreatedVote createdVote)
         {
-            
+            MethodBase method = MethodBase.GetCurrentMethod();
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
@@ -157,7 +161,7 @@ namespace VotingApp.Controllers
                     .Where(y => y.Count > 0)
                     .ToList();
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
-                _appLogRepository.LogError("An unknown error occurred while trying to create this vote with id: " + createdVote.Id);
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "An unknown error occurred while trying to create this vote with id: " + createdVote.Id);
                 return View(createdVote);
             }
         }
@@ -170,6 +174,7 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteOpenDateTime,VoteCloseDateTime,VoteAccessCode, PrivateVote,RoundDays,RoundHours,RoundMinutes, TimeZoneId")] CreatedVote createdVote, int oldVoteTypeId)
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
@@ -234,7 +239,7 @@ namespace VotingApp.Controllers
             else
             {
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
-                _appLogRepository.LogError("An unknown error occurred while trying to edit created vote id: " + createdVote.Id);
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "An unknown error occurred while trying to edit created vote id: " + createdVote.Id);
                 return View("Index",createdVote);
             }
         }
@@ -249,12 +254,13 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult AddMultipleChoiceOption(int id, string option)
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
             var vote = _createdVoteRepository.GetById(id);
             VoteOption voteOption = new VoteOption();
             voteOption.VoteOptionString = option;
             if (option == null)
             {
-                _appLogRepository.LogError("Error adding null vote option to created vote id: " + vote.Id);
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error adding null vote option to created vote id: " + vote.Id);
                 return RedirectToAction("MultipleChoice", vote);
             }
             else
@@ -481,7 +487,8 @@ namespace VotingApp.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            _appLogRepository.LogError("Error - RequestId = " + Activity.Current?.Id);
+            MethodBase method = MethodBase.GetCurrentMethod();
+            _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error - RequestId = " + Activity.Current?.Id);
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }

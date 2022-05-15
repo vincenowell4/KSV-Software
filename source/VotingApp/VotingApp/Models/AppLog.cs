@@ -15,6 +15,10 @@ namespace VotingApp.Models
         public DateTime Date { get; set; }
         [StringLength(10)]
         public string LogLevel { get; set; } = null!;
+        [StringLength(60)]
+        public string ClassName { get; set; } = null!;
+        [StringLength(60)]
+        public string MethodName { get; set; } = null!;
         [StringLength(500)]
         public string LogMessage { get; set; } = null!;
     }
