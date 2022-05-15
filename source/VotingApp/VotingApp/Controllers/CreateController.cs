@@ -258,17 +258,24 @@ namespace VotingApp.Controllers
             var vote = _createdVoteRepository.GetById(id);
             VoteOption voteOption = new VoteOption();
             voteOption.VoteOptionString = option;
-            if (option == null)
-            {
-                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error adding null vote option to created vote id: " + vote.Id);
-                return RedirectToAction("MultipleChoice", vote);
-            }
-            else
-            {
-                vote.VoteOptions.Add(voteOption);
-                _createdVoteRepository.AddOrUpdate(vote);
-                return RedirectToAction("MultipleChoice", vote);
-            }
+
+            //ERROR HERE FOR TESTING
+            vote.VoteOptions.Add(voteOption);
+            _createdVoteRepository.AddOrUpdate(vote);
+            return RedirectToAction("MultipleChoice", vote);
+
+           
+            //if (option == null)
+            //{
+            //    _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error adding null vote option to created vote id: " + vote.Id);
+            //    return RedirectToAction("MultipleChoice", vote);
+            //}
+            //else
+            //{
+            //    vote.VoteOptions.Add(voteOption);
+            //    _createdVoteRepository.AddOrUpdate(vote);
+            //    return RedirectToAction("MultipleChoice", vote);
+            //}
         }
         public ActionResult LoadAudio(int id)
         {

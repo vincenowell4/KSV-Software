@@ -27,7 +27,6 @@ namespace VotingApp.Controllers
         {
             MethodBase method = MethodBase.GetCurrentMethod();
             _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error - RequestId = " + Activity.Current?.Id ?? HttpContext.TraceIdentifier);
-
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
