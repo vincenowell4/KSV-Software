@@ -9,6 +9,7 @@ using EmailService;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
+using System.Reflection;
 
 namespace Tests_NUnit_Voting_App
 {
@@ -123,8 +124,9 @@ namespace Tests_NUnit_Voting_App
         //VA111
         public void AppLogRepo_LogError_ShouldLabelAsErrorWithCorrectMessage()
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
             IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
-            var info = repo.LogError("Error message");
+            var info = repo.LogError(method.ReflectedType.Name, method.Name, "Error message");
 
             Assert.IsTrue(info.LogMessage == "Error message");
             Assert.IsTrue(info.LogLevel == "Error");
@@ -134,8 +136,9 @@ namespace Tests_NUnit_Voting_App
         //VA111
         public void AppLogRepo_LogInfo_ShouldLabelAsInfoWithCorrectMessage()
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
             IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
-            var info = repo.LogInfo("Info message");
+            var info = repo.LogInfo(method.ReflectedType.Name, method.Name, "Info message");
 
             Assert.IsTrue(info.LogMessage == "Info message");
             Assert.IsTrue(info.LogLevel == "Info");
