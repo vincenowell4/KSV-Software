@@ -68,6 +68,8 @@ CREATE TABLE [AppLogs]
 [ID] int PRIMARY KEY IDENTITY(1, 1),
 [Date] DATETIME NOT NULL,
 [LogLevel] nvarchar(10) NOT NULL,
+[ClassName] nvarchar(60) NOT NULL,
+[MethodName] nvarchar(60) NOT NULL,
 [LogMessage] nvarchar(500) NOT NULL   
 );
 
