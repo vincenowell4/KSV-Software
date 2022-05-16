@@ -20,6 +20,9 @@ namespace VotingApp.Models
         public bool Validated { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? DateCast { get; set; }
+        [Column("UserIP")]
+        [StringLength(50)]
+        public string UserIp { get; set; } = null!;
 
         [ForeignKey(nameof(CreatedVoteId))]
         [InverseProperty("SubmittedVotes")]

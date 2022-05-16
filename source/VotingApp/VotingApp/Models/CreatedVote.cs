@@ -40,14 +40,11 @@ namespace VotingApp.Models
         public int RoundDays { get; set; }
         public int RoundHours { get; set; }
         public int RoundMinutes { get; set; }
-
         public int TimeZoneId { get; set; }
-
 
         [ForeignKey(nameof(TimeZoneId))]
         [InverseProperty(nameof(VoteTimeZone.CreatedVotes))]
         public virtual VoteTimeZone TimeZone { get; set; } = null!;
-
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(VotingUser.CreatedVotes))]
         public virtual VotingUser? User { get; set; }

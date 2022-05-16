@@ -166,8 +166,9 @@ namespace VotingApp.Controllers
         public IActionResult Access(string code)
         {
             SubmitVoteVM model = new SubmitVoteVM();
+            SubmittedVote subVote = null;
             model.vote = _createdVoteRepository.GetVoteByAccessCode(code);
-            
+            var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
             if (model.vote != null && model.vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
             {
                 if (model.vote.PrivateVote == true)
@@ -192,7 +193,7 @@ namespace VotingApp.Controllers
                             {
                                 if (user != null && user.Id != 0)
                                 {
-                                    SubmittedVote subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
+                                    subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
                                     if (subVote != null)
                                     {
                                         model.submittedVote = subVote; // user already submitted a vote - store it in View Model
@@ -208,17 +209,32 @@ namespace VotingApp.Controllers
                         return View("Index");
                     }
                 }
+                
                 if (User.Identity.IsAuthenticated) //if user is logged in, check to see if they've already submitted a vote
                 {
                     VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
                     if (user != null && user.Id != 0)
                     {
-                        SubmittedVote subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
+                        subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
                         if (subVote != null)
                         {
                             model.submittedVote = subVote; // user already submitted a vote - store it in View Model
                         }
+                        else
+                        {
+                            subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
+                            if (subVote != null)
+                            {
+                                model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                            }
+                        }
                     }
+                    return View("SubmitVote", model);
+                }
+                subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
+                if (subVote != null)
+                {
+                    model.submittedVote = subVote; // user already submitted a vote - store it in View Model
                 }
                 return View("SubmitVote", model);
             }
@@ -241,6 +257,7 @@ namespace VotingApp.Controllers
             
             var vote = _createdVoteRepository.GetById(voteID);
             var user = new VotingUser();
+            string remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
             if (choice == 0 || choice == null)
             {
                 SubmitVoteVM modelVM = new SubmitVoteVM();
@@ -261,7 +278,7 @@ namespace VotingApp.Controllers
             {
                 user = null;
             }
-            var subvote = new SubmittedVote{ User = user, CreatedVote = vote, VoteChoice = choice, DateCast= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
+            var subvote = new SubmittedVote{ UserIp=remoteIpAddress,User = user, CreatedVote = vote, VoteChoice = choice, DateCast= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
             var model = new SubmitConfirmationModel {OptionId=subvote.VoteChoice, CreateId=vote.Id};
