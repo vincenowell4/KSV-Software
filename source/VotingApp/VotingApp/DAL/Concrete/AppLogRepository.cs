@@ -22,12 +22,14 @@ namespace VotingApp.DAL.Concrete
             _context.SaveChanges();
             return log;
         }
-        public AppLog LogInfo(string message)
+        public AppLog LogInfo(string className, string methodName, string message)
         {
             var log = new AppLog
             {
                 Date = DateTime.Now,
                 LogLevel = "Info",
+                ClassName = className,
+                MethodName = methodName,
                 LogMessage = message
             };
 
@@ -35,12 +37,14 @@ namespace VotingApp.DAL.Concrete
             return log;
         }
 
-        public AppLog LogError(string message)
+        public AppLog LogError(string className, string methodName, string message)
         {
             var log = new AppLog
             {
                 Date = DateTime.Now,
                 LogLevel = "Error",
+                ClassName = className,
+                MethodName = methodName,
                 LogMessage = message
             };
 

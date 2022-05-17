@@ -9,6 +9,7 @@ using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
 using System.Threading;
+using System.Reflection;
 
 namespace Tests_NUnit_Voting_App
 {
@@ -29,7 +30,6 @@ namespace Tests_NUnit_Voting_App
         private List<AppLog> _appLogs;
         private List<VoteTimeZone> _voteTimeZones;
         private Mock<DbSet<VoteTimeZone>> _voteTimeZonesSet;
-
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -124,6 +124,38 @@ namespace Tests_NUnit_Voting_App
                 }
             });
 
+        }
+
+        [Test]
+        //VA-269 As an admin I would like more detail in the application's logs to help with troubleshooting and debugging of the application
+        public void VA269_Test_AppLogRepo_LogError_ShouldIncludeClassAndMethodInErrorLogEvent()
+        {
+            //arrange
+            MethodBase method = MethodBase.GetCurrentMethod();
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+
+            //act
+            var error = repo.LogError(method.ReflectedType.Name, method.Name, "Error message");
+
+            //assert that the class name and method names were passed to the error logging code
+            Assert.IsTrue(error.ClassName == "Tests_Vince");
+            Assert.IsTrue(error.MethodName == "VA269_Test_AppLogRepo_LogError_ShouldIncludeClassAndMethodInErrorLogEvent");
+        }
+
+        [Test]
+        //VA-269 As an admin I would like more detail in the application's logs to help with troubleshooting and debugging of the application
+        public void VA269_Test_AppLogRepo_LogInfo_ShouldIncludeClassAndMethodInInfoLogEvent()
+        {
+            //arrange
+            MethodBase method = MethodBase.GetCurrentMethod();
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+
+            //act
+            var info = repo.LogInfo(method.ReflectedType.Name, method.Name, "Info message");
+
+            //assert that the class name and method names were passed to the info logging code
+            Assert.IsTrue(info.ClassName == "Tests_Vince");
+            Assert.IsTrue(info.MethodName == "VA269_Test_AppLogRepo_LogInfo_ShouldIncludeClassAndMethodInInfoLogEvent");
         }
 
         [Test]
