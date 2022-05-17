@@ -25,7 +25,7 @@
                     <h2 class="accordion-header" id="@Html.Raw("HeadingA" + vote.subVote.Id)">
                         <button class="btn btn-lg btn-block collapsed" style="width: 100%" type="button" data-bs-toggle="collapse" data-bs-target="@Html.Raw("#collapseA" + vote.subVote.Id)" aria-expanded="false" aria-controls="@Html.Raw("collapseA" + vote.subVote.Id)">
                             <div class="row ">
-                                <div class="col-sm text-left">Vote Title: @vote.subVote.CreatedVote.VoteTitle</div>
+                                <div class="col-sm text-left">Poll Title: @vote.subVote.CreatedVote.VoteTitle</div>
                                 <div class="col-sm text-left"> Your Choice: @vote.voteOption.VoteOptionString</div>
                                 <div class="col-sm text-right">Date Voted: @vote.subVote.DateCast</div> 
                             </div>  
@@ -36,7 +36,7 @@
                         <div class="accordion-body text-black">
                             <div class="row">
                                 <div class="col">
-                                    <h4>Vote Discription:</h4>
+                                    <h4>Poll Description:</h4>
                                     @vote.subVote.CreatedVote.VoteDiscription
                                 </div>
                                 <div class="col">

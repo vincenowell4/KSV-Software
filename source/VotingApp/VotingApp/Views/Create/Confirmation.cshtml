@@ -21,7 +21,7 @@
         <div class="justify-content-center row"> 
             <div class="col-lg">
                 <div class="row mb-3 justify-content-center">
-                        <h3>Vote Title:</h3>
+                        <h3>Poll Title:</h3>
                         <h6>(If you would like to change your title press the edit button)</h6>
                         <div class="card col-md-6 mx-auto">
                             <div class="card-body">
@@ -32,7 +32,7 @@
 
 
                     <div class="row mb-4 justify-content-center">
-                        <h3>Vote Description:</h3>
+                        <h3>Poll Description:</h3>
                         <h6>(If you would like to change your description press the edit button)</h6>
                         <div class="card col-md-6 mx-auto">
                             <div class="card-body">
@@ -58,15 +58,15 @@
             </div>
             <div class="col-lg">
                 <div class="row mb-4 justify-content-center">
-                    <h3>Share Vote:</h3>
+                    <h3>Share Poll:</h3>
                     <div class="card col-md-6 mx-auto">
                         <div class="card-body">
                             @if (Model.VoteAccessCode != null)
                             {
-                                <h3 class="text-black">Vote Access Code:</h3>
+                                <h3 class="text-black">Poll Access Code:</h3>
                                 <p class="card-text text-black">@Model.VoteAccessCode</p>
                             }
-                            <h3 class="text-black">Vote Access Link: <button class="btn btn-light"><i onclick="copyAccessCode()" class="fa-solid fa-copy fa-2xs"></i></button></h3>
+                            <h3 class="text-black">Poll Access Link: <button class="btn btn-light"><i onclick="copyAccessCode()" class="fa-solid fa-copy fa-2xs"></i></button></h3>
                             <p id="accessLink" class="card-text text-black">@Model.ShareURL</p>
                         </div>
                     </div>

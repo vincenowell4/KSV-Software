@@ -42,13 +42,13 @@ namespace VotingApp.DAL.Concrete
 
         public string GetChosenVoteHeader(string voteType)
         {
-            if (voteType == "Yes/No Vote")
+            if (voteType == "Yes/No Poll")
             {
-                return "You have chosen to create a yes/no vote"; 
+                return "You have chosen to create a yes/no poll"; 
             }
-            if (voteType == "Multiple Choice Vote")
+            if (voteType == "Multiple Choice Poll")
             {
-                return "You have chosen to create a multiple choice vote";
+                return "You have chosen to create a multiple choice poll";
             }
             return null;
         }
@@ -59,7 +59,7 @@ namespace VotingApp.DAL.Concrete
             
             List<string> voteOptions = new List<string>();
             
-            if (voteType == "Yes/No Vote")
+            if (voteType == "Yes/No Poll")
             {
                 voteOptions.Add("Yes");
                 voteOptions.Add("No");

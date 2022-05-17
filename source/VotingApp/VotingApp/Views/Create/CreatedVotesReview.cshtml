@@ -2,7 +2,7 @@
 @using Microsoft.CodeAnalysis.VisualBasic.Syntax
 @model VotingApp.ViewModel.CreatedVotesVM;
 @{
-    ViewData["Title"] = "Vote Review Page";
+    ViewData["Title"] = "Poll Review Page";
 }
 
 <div class="jumbotron jumbotron-fluid full-width text-white" style="margin-bottom: 0px; 
@@ -16,8 +16,8 @@
     right: 50%;
     width: 100vw;"> 
     <div class="text-center text-white">
-        <h1 class="display-4">Vote Review</h1>
-        <h3>Review and/or Edit Votes You Have Created</h3>
+        <h1 class="display-4">Poll Review</h1>
+        <h3>Review and/or Edit Polls You Have Created</h3>
         <hr class="mb-4"/>
 
 	</div>
@@ -29,13 +29,13 @@
 		    @*opened votes table*@
 		    <div class="row text-center m-2">
 			    <div class="table-responsive">
-				    <h3>Open Votes:</h3>
+				    <h3>Open Polls:</h3>
 				    <table class="table table-borderless rounded bg-dark text-white table-striped" id="accessTable">
 					    <tr class="bg-secondary">
 						    <th class="text-center">#</th>
 						    <th>Title</th>
 						    <th>Description</th>
-						    <th>Voting Type</th>
+						    <th>Poll Type</th>
 						    <th>Anonymous</th>
 						    <th>Access Code</th>
 						    <th>Vote Open Date/Time</th>
@@ -88,7 +88,7 @@
 									    <button style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@createdVote.Id" disabled>Edit</button>
 								    }
 								    <form asp-action="VoteResultsButton" method="post">
-									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button>
+									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
 								    </form>
 								    <button type="button" style="width:140px" class="btn btn-light bg-success btn-outline-primary" data-toggle="modal" data-target="@Html.Raw("#modal" +createdVote.Id)">
 									    Audio
@@ -118,13 +118,13 @@
 		    @*closed votes table*@
 		    <div class="row text-center m-2">
 			    <div class="table-responsive">
-				    <h3>Closed Votes:</h3>
+				    <h3>Closed Polls:</h3>
 				    <table class="table table-borderless rounded bg-dark text-white table-striped" id="accessTable">
 					    <tr class="bg-secondary">
 						    <th class="text-center">#</th>
 						    <th>Title</th>
 						    <th>Description</th>
-						    <th>Voting Type</th>
+						    <th>Poll Type</th>
 						    <th>Anonymous</th>
 						    <th>Vote Close Date/Time</th>
 						    <th>&nbsp;</th>
@@ -155,7 +155,7 @@
 							    </td>
 							    <td>
 								    <form asp-action="VoteResultsButton" method="post">
-									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Vote Results</button>
+									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
 								    </form>
 							    </td>
 						    </tr>
@@ -172,17 +172,17 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content text-black">
                 <div class="modal-header bg-secondary">
-                    <h5 class="modal-title" id="editModalLabel">Edit Created Vote</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Created Poll</h5>
                 </div>
                 <div class="modal-body">
                     <input asp-for="Id" type="text" id="created-vote-id" hidden></input>
                     <div class="text-center">
-					    <label asp-for="VoteTitle">Vote Title (required): <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the vote you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this vote title.">&#8505;</span></label>
+					    <label asp-for="VoteTitle">Poll Title (required): <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the poll you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this poll title.">&#8505;</span></label>
 					    <textarea asp-for="VoteTitle" class="form-control" type="text" name="vote-title" id="vote-title" rows="1" required></textarea>
 					    <span asp-validation-for="VoteTitle" class="text-danger"></span>
 				    </div>
 				    <div class="text-center">
-					    <label asp-for="VoteDescription">Vote Description (required): <span data-toggle="tooltip" data-placement="bottom" title="The vote description is to give users a better idea about why/what they are voting about. If it's a yes/no vote you can use this description to explain to the user what the yes stands for and what the no stands for. Here you can let the users know if there will be a time limit on this vote as well, and more details such as if it will be completely anonymous for even the vote creator to see the results of how individuals voted.">&#8505;</span></label>
+					    <label asp-for="VoteDescription">Poll Description (required): <span data-toggle="tooltip" data-placement="bottom" title="The poll description is to give users a better idea about why/what they are voting about. If it's a yes/no poll you can use this description to explain to the user what the yes stands for and what the no stands for. Here you can let the users know if there will be a time limit on this vote as well, and more details such as if it will be completely anonymous for even the vote creator to see the results of how individuals voted.">&#8505;</span></label>
 					    <textarea asp-for="VoteDescription" class="form-control" type="text" name="vote-description" id="vote-description" rows="5" required></textarea>
 					    <span asp-validation-for="VoteDescription" class="text-danger"></span>
 				    </div>

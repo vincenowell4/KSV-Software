@@ -15,7 +15,7 @@ namespace VotingApp.Models
         {
             
             string voteAsString = "";
-            voteAsString += $"Vote Title, {vote.VoteTitle}. Vote Description, {vote.VoteDiscription}. Vote Options, ";
+            voteAsString += $"Poll Title, {vote.VoteTitle}. Poll Description, {vote.VoteDiscription}. Vote Options, ";
             foreach (var option in vote.VoteOptions)
             {
                 voteAsString += $"{option.VoteOptionString},";

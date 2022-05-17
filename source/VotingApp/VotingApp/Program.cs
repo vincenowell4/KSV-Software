@@ -28,7 +28,7 @@ var connectionStringIdentity = builder.Configuration.GetConnectionString("Voting
 //    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestIdentityVotingApp"));
 //if (connectionStringIdentity.Password.Length == 0)
-    //connectionStringIdentity.Password = builder.Configuration["SamAzureIdentityTestPW"];
+//connectionStringIdentity.Password = builder.Configuration["SamAzureIdentityTestPW"];
 //*******************************************************************************************************************************************
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
@@ -64,7 +64,7 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
 //    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestVotingApp"));
 //if (connectionString.Password.Length == 0)
-   // connectionString.Password = builder.Configuration["SamAzureTestPW"];
+// connectionString.Password = builder.Configuration["SamAzureTestPW"];
 //*******************************************************************************************************************************************
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
@@ -92,13 +92,28 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.Use(async (ctx, next) =>
+{
+    await next();
+
+    if (ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+    {
+        //Re-execute the request so the user gets the error page
+        string originalPath = ctx.Request.Path.Value;
+        ctx.Items["originalPath"] = originalPath;
+        ctx.Request.Path = "/error/404";
+        await next();
+    }
+});
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/error/500");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+       app.UseHsts();
 }
+
+
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

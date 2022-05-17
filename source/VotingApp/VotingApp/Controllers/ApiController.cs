@@ -317,7 +317,7 @@ namespace VotingApp.Controllers
                     var submitVoteUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/Results?code={createdVote.VoteAccessCode}";
 
                     var message = new Message(new string[] { userEmail }, AppStrings.EmailSubjectMultiRoundVoteResults,
-                        AppStrings.EmailMessageWinningVote + $"<br/><br/>Title: '{createdVote.VoteTitle}'<br/>Description: '{createdVote.VoteDiscription}'<br/>Access Code: {createdVote.VoteAccessCode}<br/><br/>Click <a href='{HtmlEncoder.Default.Encode(submitVoteUrl)}'>here</a> to go to the Vote Results page for this access code");
+                        AppStrings.EmailMessageWinningVote + $"<br/><br/>Title: '{createdVote.VoteTitle}'<br/>Description: '{createdVote.VoteDiscription}'<br/>Access Code: {createdVote.VoteAccessCode}<br/><br/>Click <a href='{HtmlEncoder.Default.Encode(submitVoteUrl)}'>here</a> to go to the Poll Results page for this access code");
 
                     _emailSender.SendEmail(message);
 
@@ -341,7 +341,7 @@ namespace VotingApp.Controllers
                     var submitVoteUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/Results?code={createdVote.VoteAccessCode}";
 
                     var message = new Message(new string[] { userEmail }, AppStrings.EmailSubjectMultiRoundVoteResults,
-                        AppStrings.EmailMessageTieVote + $"<br/><br/>Title: '{createdVote.VoteTitle}'<br/>Description: '{createdVote.VoteDiscription}'<br/>Access Code: {createdVote.VoteAccessCode}<br/><br/>Click <a href='{HtmlEncoder.Default.Encode(submitVoteUrl)}'>here</a> to go to the Vote Results page for this access code");
+                        AppStrings.EmailMessageTieVote + $"<br/><br/>Title: '{createdVote.VoteTitle}'<br/>Description: '{createdVote.VoteDiscription}'<br/>Access Code: {createdVote.VoteAccessCode}<br/><br/>Click <a href='{HtmlEncoder.Default.Encode(submitVoteUrl)}'>here</a> to go to the Poll Results page for this access code");
 
                     _emailSender.SendEmail(message);
 
@@ -365,7 +365,7 @@ namespace VotingApp.Controllers
                     var submitVoteUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/Results?code={createdVote.VoteAccessCode}";
 
                     var message = new Message(new string[] { userEmail }, AppStrings.EmailSubjectMultiRoundVoteResults,
-                        AppStrings.EmailMessageZeroVotes + $"<br/><br/>Title: '{createdVote.VoteTitle}'<br/>Description: '{createdVote.VoteDiscription}'<br/>Access Code: {createdVote.VoteAccessCode}<br/><br/>Click <a href='{HtmlEncoder.Default.Encode(submitVoteUrl)}'>here</a> to go to the Vote Results page for this access code");
+                        AppStrings.EmailMessageZeroVotes + $"<br/><br/>Title: '{createdVote.VoteTitle}'<br/>Description: '{createdVote.VoteDiscription}'<br/>Access Code: {createdVote.VoteAccessCode}<br/><br/>Click <a href='{HtmlEncoder.Default.Encode(submitVoteUrl)}'>here</a> to go to the Poll Results page for this access code");
 
                     _emailSender.SendEmail(message);
 
