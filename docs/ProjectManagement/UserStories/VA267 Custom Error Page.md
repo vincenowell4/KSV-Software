@@ -57,4 +57,4 @@ See error page UI MockUp under Modeling folder
 4. Create 500 error page (adding image, text, back to home button)
 5. Add back to home button method attached to home button on custom error pages 
 6. In program.cs add so that if a 404, or 500 error occus to redirect to the appropriate error page 
-7. 
+7. Create a 500 error to test and make sure 404 error works as well 
