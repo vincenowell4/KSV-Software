@@ -106,7 +106,8 @@ namespace Tests_NUnit_Voting_App
                     User = _votingUsers[1],
                     UserId = _votingUsers[1].Id,
                     VoteChoice = 1,
-                    DateCast = DateTime.Now.AddDays(-5)
+                    DateCast = DateTime.Now.AddDays(-5),
+                    UserIp = "1.1.1.1"
                 },
                 new SubmittedVote
                 {
@@ -214,6 +215,16 @@ namespace Tests_NUnit_Voting_App
             });
             //_createdVoteSet.Verify(m => m.Add(It.IsAny<CreatedVote>()), Times.Once());
             //_mockContext.Verify(ctx => ctx.SaveChanges(), Times.Once());
+        }
+
+        [Test]
+        //VA-266
+        public void Test_subvote_repo_GetbyIP_should_return_a_subvote()
+        {
+            ISubmittedVoteRepository submittedVoteRepository = new SubmittedVoteRepository(_mockContext.Object);
+            var result = submittedVoteRepository.GetVoteByIp("1.1.1.1", 2);
+            Assert.True(result.Id == 1);
+
         }
 
         [Test]

@@ -120,14 +120,14 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Logged in user will see Start Vote Now button and Start Vote Future button")]
+        [NUnit.Framework.DescriptionAttribute("Check that PST is default")]
         [NUnit.Framework.TestCaseAttribute("Create", null)]
-        public virtual void LoggedInUserWillSeeStartVoteNowButtonAndStartVoteFutureButton(string page, string[] exampleTags)
+        public virtual void CheckThatPSTIsDefault(string page, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("Page", page);
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Logged in user will see Start Vote Now button and Start Vote Future button", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check that PST is default", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 13
 this.ScenarioInitialize(scenarioInfo);
 #line hidden

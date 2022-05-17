@@ -40,7 +40,8 @@ CREATE TABLE [SubmittedVote]
 [VoteChoice] int NOT NULL,
 [UserID] int,
 [Validated] BIT NOT NULL,
-[DateCast] DATETIME
+[DateCast] DATETIME,
+[UserIP] NVARCHAR(50) NOT NULL
 );
 
 CREATE TABLE [VotingUser] 
