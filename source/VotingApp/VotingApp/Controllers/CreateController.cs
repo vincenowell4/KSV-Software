@@ -380,6 +380,7 @@ namespace VotingApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreatedVotesReview(string voteData)
         {
             if (User.Identity.IsAuthenticated != false && voteData.Length > 0)
