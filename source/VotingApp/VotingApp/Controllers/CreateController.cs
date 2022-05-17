@@ -29,6 +29,7 @@ namespace VotingApp.Controllers
         private readonly GoogleTtsService _googleTtsService;
         private readonly IAppLogRepository _appLogRepository;
         private readonly ITimeZoneRepo _timeZoneRepo;
+        private readonly QRCodeCreationService _qrCodeCreationService;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -42,7 +43,8 @@ namespace VotingApp.Controllers
             IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
             GoogleTtsService googleTtsService,
             IAppLogRepository appLogRepository,
-            ITimeZoneRepo timeZoneRepo)
+            ITimeZoneRepo timeZoneRepo,
+            QRCodeCreationService qrCodeCreationService)
 
         {
             _logger = logger;
@@ -58,6 +60,7 @@ namespace VotingApp.Controllers
             _googleTtsService = googleTtsService;
             _appLogRepository = appLogRepository;
             _timeZoneRepo = timeZoneRepo;
+            _qrCodeCreationService = qrCodeCreationService;
         }
 
         [HttpGet]
@@ -283,6 +286,19 @@ namespace VotingApp.Controllers
             return base.File(audioBytes, "audio/wav");
         }
 
+        public ActionResult LoadQR(int id)
+        {
+            var vote = _createdVoteRepository.GetById(id);
+            if (vote.QrcodeBytes == null)
+            {
+                vote.QrcodeBytes = _qrCodeCreationService.CreateQRCode($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
+                _createdVoteRepository.AddOrUpdate(vote);
+            }
+
+            var qrbytes = vote.QrcodeBytes;
+            return base.File(qrbytes, "image/png");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddOption()
@@ -315,6 +331,9 @@ namespace VotingApp.Controllers
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+            var qrcode = _qrCodeCreationService.CreateQRCode(
+               $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
+            createdVote.QrcodeBytes = qrcode;
             //_googleTtsService.CreateAudioFiles(createdVote);
             createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             if (createdVote.PrivateVote)

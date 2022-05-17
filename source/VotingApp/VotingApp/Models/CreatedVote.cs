@@ -35,6 +35,8 @@ namespace VotingApp.Models
         public DateTime? VoteCloseDateTime { get; set; }
         public bool PrivateVote { get; set; }
         public byte[]? VoteAudioBytes { get; set; }
+        [Column("QRCodeBytes")]
+        public byte[]? QrcodeBytes { get; set; }
         public int RoundNumber { get; set; }
         public int NextRoundId { get; set; }
         public int RoundDays { get; set; }
