@@ -31,8 +31,8 @@ namespace BDDTests.StepDefinitions
         [Then(@"Pacific Standard Time will be selected by default")]
         public void ThenPacificStandardTimeWillBeSelectedByDefault()
         {
-            var items = _createPage.GetTimeZoneItemsTexts();
-            items.First().Should().Be("Pacific Standard Time");
+            var items = _createPage.GetTimeZoneItems(0);
+            items.Should().Be("Pacific Standard Time");
         }
 
     }
