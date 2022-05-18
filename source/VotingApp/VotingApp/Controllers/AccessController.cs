@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Identity;
 using VotingApp.ViewModel;
 using VotingApp.Models;
 using System.Reflection;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -19,15 +23,17 @@ namespace VotingApp.Controllers
         private readonly IVoteOptionRepository _voteOptionRepository;
         private readonly ISubmittedVoteRepository _subVoteRepository;
         private readonly IAppLogRepository _appLogRepository;
+        private readonly IConfiguration _configuration;
 
-        public AccessController(ILogger<HomeController> logger, 
-            ICreatedVoteRepository createdVoteRepo, 
+        public AccessController(ILogger<HomeController> logger,
+            ICreatedVoteRepository createdVoteRepo,
             IVoteTypeRepository voteTypeRepository,
             UserManager<IdentityUser> userManager,
             IVotingUserRepositiory votingUserRepositiory,
             IVoteOptionRepository voteOptionRepository,
             ISubmittedVoteRepository subVoteRepository,
-            IAppLogRepository appLogRepository)
+            IAppLogRepository appLogRepository,
+            IConfiguration configuration)
         {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
@@ -37,6 +43,7 @@ namespace VotingApp.Controllers
             _voteOptionRepository = voteOptionRepository;
             _subVoteRepository = subVoteRepository;
             _appLogRepository = appLogRepository;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -45,9 +52,28 @@ namespace VotingApp.Controllers
             return View();
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Results(string code)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                string secretKey = this._configuration["RecaptchaKey"];
+                string userResponse = Request.Form["g-Recaptcha-Response"];
+                var webClient = new System.Net.WebClient();
+                string ver = webClient.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secretKey, userResponse));
+
+                var verJson = Newtonsoft.Json.Linq.JObject.Parse(ver);
+                if (verJson["success"].Value<bool>())
+                {
+                    _logger.LogInformation("User passed reCaptcha");
+                }
+                else
+                {
+                    // try again:
+                    return View("Index");
+                }
+            }
+
             MethodBase method = MethodBase.GetCurrentMethod();
             VoteResultsVM vm = new VoteResultsVM();
             vm.GetVoteByAccessCode = _createdVoteRepository.GetVoteByAccessCode(code);
@@ -118,16 +144,16 @@ namespace VotingApp.Controllers
                 var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
                 user = _votingUserRepository.AddOrUpdate(newUser);
             }
-            
+
             var voteList = _subVoteRepository.GetCastVotesById(user.Id);
             List<SubmittedVoteHistoryVM> voteListVM = new List<SubmittedVoteHistoryVM>();
-            foreach(var vote in voteList)
+            foreach (var vote in voteList)
             {
                 SubmittedVoteHistoryVM submittedVoteHistoryVM = new SubmittedVoteHistoryVM();
                 submittedVoteHistoryVM.subVote = vote;
                 submittedVoteHistoryVM.voteOption = vote.CreatedVote.VoteOptions.Where(a => a.Id == vote.VoteChoice).FirstOrDefault();
                 voteListVM.Add(submittedVoteHistoryVM);
-            } 
+            }
             return View(voteListVM);
 
         }
@@ -139,17 +165,17 @@ namespace VotingApp.Controllers
             var vote = subvote.CreatedVote;
             if (vote != null && (vote.VoteOpenDateTime == null || vote.VoteOpenDateTime <= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) && (vote.VoteCloseDateTime == null || vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName))))
             {
-                if(vote.PrivateVote == true)
+                if (vote.PrivateVote == true)
                 {
                     if (!User.Identity.IsAuthenticated)
                     {
-                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name, 
+                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name,
                             "redirected unlogged in user from editing vote for a private vote to /Identity/Account/Login");
                         return Redirect("~/Identity/Account/Login");
                     }
                     if (!vote.VoteAuthorizedUsers.Select(a => a.UserName).ToList().Contains(_userManager.GetUserName(User)))
                     {
-                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name, 
+                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name,
                             "unauthorized user tried to access private vote with id: " + vote.Id);
                         ViewBag.ErrorMessage = $"You are not authorized for this vote.";
                         return View("Index");
@@ -167,9 +193,28 @@ namespace VotingApp.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult Access(string code)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                string secretKey = this._configuration["RecaptchaKey"];
+                string userResponse = Request.Form["g-Recaptcha-Response"];
+                var webClient = new System.Net.WebClient();
+                string ver = webClient.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secretKey, userResponse));
+
+                var verJson = Newtonsoft.Json.Linq.JObject.Parse(ver);
+                if (verJson["success"].Value<bool>())
+                {
+                    _logger.LogInformation("User passed reCaptcha");
+                }
+                else
+                {
+                    // try again:
+                    return View("Index");
+                }
+            }
+
             MethodBase method = MethodBase.GetCurrentMethod();
             SubmitVoteVM model = new SubmitVoteVM();
             SubmittedVote subVote = null;
@@ -195,7 +240,7 @@ namespace VotingApp.Controllers
                         }
                         foreach (var users in model.vote.VoteAuthorizedUsers)
                         {
-                            if(users.UserName == user.UserName)
+                            if (users.UserName == user.UserName)
                             {
                                 if (user != null && user.Id != 0)
                                 {
@@ -209,13 +254,13 @@ namespace VotingApp.Controllers
                             }
                         }
 
-                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name, 
+                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name,
                             "Unauthorized user tried accessing private vote with id: " + model.vote.Id);
                         ViewBag.ErrorMessage = $"You are not authorized for this vote.";
                         return View("Index");
                     }
                 }
-                
+
                 if (User.Identity.IsAuthenticated) //if user is logged in, check to see if they've already submitted a vote
                 {
                     VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -260,7 +305,7 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult CastVote(int voteID, int choice)
         {
-            
+
             var vote = _createdVoteRepository.GetById(voteID);
             var user = new VotingUser();
             string remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -284,10 +329,10 @@ namespace VotingApp.Controllers
             {
                 user = null;
             }
-            var subvote = new SubmittedVote{ UserIp=remoteIpAddress,User = user, CreatedVote = vote, VoteChoice = choice, DateCast= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
+            var subvote = new SubmittedVote { UserIp = remoteIpAddress, User = user, CreatedVote = vote, VoteChoice = choice, DateCast = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
-            var model = new SubmitConfirmationModel {OptionId=subvote.VoteChoice, CreateId=vote.Id};
+            var model = new SubmitConfirmationModel { OptionId = subvote.VoteChoice, CreateId = vote.Id };
             return RedirectToAction("SubmitConfirmation", model);
         }
 
@@ -296,6 +341,20 @@ namespace VotingApp.Controllers
             model.votingOption = _voteOptionRepository.GetById(model.OptionId);
             model.createdVote = _createdVoteRepository.GetById(model.CreateId);
             return View(model);
+        }
+
+        [DataContract]
+        internal class RecaptchaResponse
+        {
+            [DataMember(Name = "success")]
+            public bool Success { get; set; }
+            [DataMember(Name = "challenge_ts")]
+            public DateTime ChallengeTimeStamp { get; set; }
+            [DataMember(Name = "hostname")]
+            public string Hostname { get; set; }
+            [DataMember(Name = "error-codes")]
+            public IEnumerable<string> ErrorCodes { get; set; }
+
         }
     }
 }

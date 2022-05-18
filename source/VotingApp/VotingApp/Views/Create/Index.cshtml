@@ -25,7 +25,7 @@
 
 	<div class="text-center text-white">
 		<div class="text-center col-md-8 mx-auto">
-			<form asp-action=@formValue method="post" onsubmit="return validateDate();">
+			<form asp-action=@formValue method="post" onsubmit="return validateForm();">
 				@if (Model != null)
 				{
 					<input asp-for="Id" type="number" value="@Model.Id" hidden></input>
@@ -171,6 +171,22 @@
 						</div>
 					</div>
 				</div>
+                @if (!(User != null && User.Identity.IsAuthenticated))
+				{
+					<div class="text-center">
+						<div  id="recap-el"	data-theme="dark" class="g-recaptcha" style="display:inline-block;">
+						</div>
+						<!-- Recaptcha Error -->
+						<div id="recaptcha-form-error" style="display: none" class="py-1 px-2" >
+							<div class="py-1 px-2" style="color: red">Please fill the reCaptcha checkbox</div>
+						</div>
+						<!-- Recaptcha Success -->
+						<div id="recaptcha-form-success" style="display: none" class="py-1 px-2" >
+							<div class="py-1 px-2" style="color: green">reCaptcha validated</div>
+							<a href="/" class="px-2 text-slate-800">Retry</a>
+						</div>
+					</div>
+				}
 				<div class="form-group p-2">
 					<button type="submit" class="btn btn-light btn-lg bg-success btn-outline-primary" >Review</button>
 				</div>
@@ -182,6 +198,11 @@
 @section Scripts
 {
 	<script>
+		var onloadCallback = function() {
+			var rc = document.getElementById('recap-el');
+			if (rc != null)
+				grecaptcha.render('recap-el', { 'sitekey' : '6LcUR58fAAAAAE_MfSR4lud-iBNANz89Bvvmyi7J' });
+		};
 
 		function setRoundDurationDefaultValues() {
 			var voteType = document.getElementById('VoteTypeSelect').value;
@@ -229,7 +250,7 @@
 			}
 		}
 
-		function validateDate() {
+		function validateForm() {
 			var currentDateTime = new Date($.now());
 			var openDateDisabled = ( $("#VoteOpenDateTime").prop('disabled') );
 			var noCloseDate = true;
@@ -275,7 +296,27 @@
 					return false;
 				}
 			}
-			return true;
+
+			var rc = document.getElementById('recap-el');
+			if (rc != null) 
+			{
+				document.getElementById('recaptcha-form-error').style.display = 'none';
+				var v = grecaptcha.getResponse();
+
+				if(v.length == 0)
+				{
+					document.getElementById('recaptcha-form-error').style.display = 'block';
+					return false;
+				}
+				else
+				{
+					document.getElementById('recaptcha-form-success').style.display = 'block';
+					return true; 
+				}
+			} else
+			{
+				return true;
+			}
 		}
 	</script>
 }
