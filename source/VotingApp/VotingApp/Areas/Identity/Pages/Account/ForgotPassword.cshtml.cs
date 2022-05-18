@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -20,11 +23,13 @@ namespace VotingApp.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IConfiguration _configuration;
 
-        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, IConfiguration configuration)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -51,6 +56,23 @@ namespace VotingApp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync()
         {
+            using (var client = new HttpClient { BaseAddress = new Uri("https://www.google.com") })
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("secret", this._configuration["RecaptchaKey"]),
+                    new KeyValuePair<string, string>("response", Request.Form["g-Recaptcha-Response"]),
+                    new KeyValuePair<string, string>("remoteip", Request.HttpContext.Connection.RemoteIpAddress.ToString())
+                });
+                var result = await client.PostAsync("/recaptcha/api/siteverify", content);
+                result.EnsureSuccessStatusCode();
+                string jsonString = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<RecaptchaResponse>(jsonString);
+                if (!response.Success)
+                    return Page();
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
@@ -79,6 +101,19 @@ namespace VotingApp.Areas.Identity.Pages.Account
             }
 
             return Page();
+        }
+
+        [DataContract]
+        internal class RecaptchaResponse
+        {
+            [DataMember(Name = "success")]
+            public bool Success { get; set; }
+            [DataMember(Name = "challenge_ts")]
+            public DateTime ChallengeTimeStamp { get; set; }
+            [DataMember(Name = "hostname")]
+            public string Hostname { get; set; }
+            [DataMember(Name = "error-codes")]
+            public IEnumerable<string> ErrorCodes { get; set; }
         }
     }
 }

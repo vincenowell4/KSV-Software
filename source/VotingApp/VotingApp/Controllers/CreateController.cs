@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -29,6 +30,7 @@ namespace VotingApp.Controllers
         private readonly GoogleTtsService _googleTtsService;
         private readonly IAppLogRepository _appLogRepository;
         private readonly ITimeZoneRepo _timeZoneRepo;
+        private readonly IConfiguration _configuration;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -42,7 +44,8 @@ namespace VotingApp.Controllers
             IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
             GoogleTtsService googleTtsService,
             IAppLogRepository appLogRepository,
-            ITimeZoneRepo timeZoneRepo)
+            ITimeZoneRepo timeZoneRepo,
+            IConfiguration configuration)
 
         {
             _logger = logger;
@@ -58,6 +61,7 @@ namespace VotingApp.Controllers
             _googleTtsService = googleTtsService;
             _appLogRepository = appLogRepository;
             _timeZoneRepo = timeZoneRepo;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -94,6 +98,26 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote,RoundDays,RoundHours,RoundMinutes, TimeZoneId")]CreatedVote createdVote)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                string secretKey = this._configuration["RecaptchaKey"];
+                string userResponse = Request.Form["g-Recaptcha-Response"];
+                var webClient = new System.Net.WebClient();
+                string ver = webClient.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secretKey, userResponse));
+
+                var verJson = Newtonsoft.Json.Linq.JObject.Parse(ver);
+                if (verJson["success"].Value<bool>())
+                {
+                    //Session["I_AM_NOT_A_ROBOT"] = "true";
+                    _logger.LogInformation("User passed reCaptcha");
+                }
+                else
+                {
+                    // try again:
+                    return View(createdVote);
+                }
+            }
+
             MethodBase method = MethodBase.GetCurrentMethod();
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");

@@ -22,11 +22,11 @@
         <hr class="mt-lg-5" style="border-top: 3px solid white; color: white; background-color: white;">
 
         <section>
-            <form id="account" method="post">
+            <form id="account" method="post" onsubmit="return get_action();">
                 <h2>Use a local account to log in</h2>
                 <hr />
 
-              <div class="w-25 text-black">
+              <div class="w-50 text-black">
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-floating mb-3">
@@ -46,6 +46,19 @@
                             @Html.DisplayNameFor(m => m.Input.RememberMe)
                         </label>
                     </div>
+                </div>
+                <div  id="recap-el"
+                    data-theme="dark" 
+                    class="g-recaptcha p-3" >
+                </div>
+                <!-- Recaptcha Error -->
+                <div id="recaptcha-form-error" style="display: none" class="py-1 px-2" >
+                    <div class="py-1 px-2" style="color: red">Please fill the reCaptcha checkbox</div>
+                </div>
+                <!-- Recaptcha Success -->
+                <div id="recaptcha-form-success" style="display: none" class="py-1 px-2" >
+                    <div class="py-1 px-2" style="color: green">reCaptcha validated</div>
+                    <a href="/" class="px-2 text-slate-800">Retry</a>
                 </div>
                 <div>
                     <button id="login-submit" type="submit" class="w-100 btn btn-light btn-lg bg-success btn-outline-primary mb-3">Log in</button>
@@ -99,4 +112,29 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+      var onloadCallback = function() {
+        grecaptcha.render('recap-el', {
+          'sitekey' : '6LcUR58fAAAAAE_MfSR4lud-iBNANz89Bvvmyi7J'
+        });
+      };
+
+    function get_action() 
+    {
+        document.getElementById('recaptcha-form-error').style.display = 'none';
+        var v = grecaptcha.getResponse();
+
+        if(v.length == 0)
+        {
+            document.getElementById('recaptcha-form-error').style.display = 'block';
+            return false;
+        }
+        else
+        {
+            document.getElementById('recaptcha-form-success').style.display = 'block';
+            return true; 
+        }
+    }
+    </script>
 }

@@ -21,38 +21,51 @@
         <h1 class="display-4">@ViewData["Title"]</h1>
         <hr class="mt-lg-5" style="border-top: 3px solid white; color: white; background-color: white;">
 
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" onsubmit="return get_action();">
             <h2>Create a new account</h2>
             <hr />
             <div class="w-25 text-black">
-            <div class="form-floating mb-3">
-                <input asp-for="Input.FirstName" class="form-control" autocomplete="new-name" aria-required="true" />
-                <label asp-for="Input.FirstName"></label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.LastName" class="form-control" autocomplete="new-name" aria-required="true" />
-                <label asp-for="Input.LastName"></label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.FirstName" class="form-control" autocomplete="new-name" aria-required="true" />
+                    <label asp-for="Input.FirstName"></label>
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.LastName" class="form-control" autocomplete="new-name" aria-required="true" />
+                    <label asp-for="Input.LastName"></label>
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                </div>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                <label asp-for="Input.Email" ></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
-                <label asp-for="Input.Password" ></label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
-                <label asp-for="Input.ConfirmPassword" ></label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-light btn-lg bg-success btn-outline-primary mb-3">Register</button>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                    <label asp-for="Input.Email" ></label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                    <label asp-for="Input.Password" ></label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                    <label asp-for="Input.ConfirmPassword" ></label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div  id="recap-el"
+                    data-theme="dark" 
+                    class="g-recaptcha p-3" >
+                </div>
+                <!-- Recaptcha Error -->
+                <div id="recaptcha-form-error" style="display: none" class="py-1 px-2" >
+                    <div class="py-1 px-2" style="color: red">Please fill the reCaptcha checkbox</div>
+                </div>
+                <!-- Recaptcha Success -->
+                <div id="recaptcha-form-success" style="display: none" class="py-1 px-2" >
+                    <div class="py-1 px-2" style="color: green">reCaptcha validated</div>
+                    <a href="/" class="px-2 text-slate-800">Retry</a>
+                </div>
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-light btn-lg bg-success btn-outline-primary mb-3">Register</button>
             </div>
         </form>
     </div>
@@ -90,4 +103,29 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+      var onloadCallback = function() {
+        grecaptcha.render('recap-el', {
+          'sitekey' : '6LcUR58fAAAAAE_MfSR4lud-iBNANz89Bvvmyi7J'
+        });
+      };
+
+    function get_action() 
+    {
+        document.getElementById('recaptcha-form-error').style.display = 'none';
+        var v = grecaptcha.getResponse();
+
+        if(v.length == 0)
+        {
+            document.getElementById('recaptcha-form-error').style.display = 'block';
+            return false;
+        }
+        else
+        {
+            document.getElementById('recaptcha-form-success').style.display = 'block';
+            return true; 
+        }
+    }
+    </script>
 }
