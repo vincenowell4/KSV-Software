@@ -122,12 +122,15 @@
 
     function get_action() 
     {
+		$('#login-submit').prop('disabled', true);
+
         document.getElementById('recaptcha-form-error').style.display = 'none';
         var v = grecaptcha.getResponse();
 
         if(v.length == 0)
         {
             document.getElementById('recaptcha-form-error').style.display = 'block';
+    		$('#login-submit').prop('disabled', false);
             return false;
         }
         else
