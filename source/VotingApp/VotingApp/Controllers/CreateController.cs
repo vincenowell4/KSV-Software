@@ -291,7 +291,7 @@ namespace VotingApp.Controllers
             var vote = _createdVoteRepository.GetById(id);
             if (vote.QrcodeBytes == null)
             {
-                vote.QrcodeBytes = _qrCodeCreationService.CreateQRCode($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
+                vote.QrcodeBytes = _qrCodeCreationService.CreateQRCode($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{vote.VoteAccessCode}").Result;
                 _createdVoteRepository.AddOrUpdate(vote);
             }
 
