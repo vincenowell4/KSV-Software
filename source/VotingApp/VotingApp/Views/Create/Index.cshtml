@@ -188,7 +188,7 @@
 					</div>
 				}
 				<div class="form-group p-2">
-					<button type="submit" class="btn btn-light btn-lg bg-success btn-outline-primary" >Review</button>
+					<button type="submit" id="btnReview" class="btn btn-light btn-lg bg-success btn-outline-primary" >Review</button>
 				</div>
 			</form>
 		</div>
@@ -251,6 +251,8 @@
 		}
 
 		function validateForm() {
+			$('#btnReview').prop('disabled', true);
+
 			var currentDateTime = new Date($.now());
 			var openDateDisabled = ( $("#VoteOpenDateTime").prop('disabled') );
 			var noCloseDate = true;
@@ -271,16 +273,19 @@
 
 			if (noCloseDate == false && closeDateTime < openDateTime )
 			{
+				$('#btnReview').prop('disabled', false);
 				alert("The vote start date/time must be before the vote close date/time");
 				return false;
 			}
 			else if (openDateTime < currentDateTime) 
 			{
+				$('#btnReview').prop('disabled', false);
 				alert("The vote start date/time must be a future date/time");
 				return false;
 			}
 			else if (noCloseDate == false && closeDateTime < currentDateTime )
 			{
+				$('#btnReview').prop('disabled', false);
 				alert("The vote close date/time must be a future date/time");
 				return false;
 			}
@@ -292,6 +297,7 @@
 				var roundHours = document.getElementById('MRVoteHours');
 				var roundMinutes = document.getElementById('MRVoteMins');
 				if((parseInt(roundDays.value) + parseInt(roundHours.value) + parseInt(roundMinutes.value)) == 0) {
+					$('#btnReview').prop('disabled', false);
 					alert("Multi-Round Voting Days, Hours and Minutes cannot all be zero");
 					return false;
 				}
@@ -306,6 +312,7 @@
 				if(v.length == 0)
 				{
 					document.getElementById('recaptcha-form-error').style.display = 'block';
+					$('#btnReview').prop('disabled', false);
 					return false;
 				}
 				else
