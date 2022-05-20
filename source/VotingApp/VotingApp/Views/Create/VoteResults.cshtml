@@ -1,4 +1,4 @@
-﻿@model VotingApp.ViewModel.VoteResultsVM;
+﻿@model VotingApp.ViewModel.VotesResultsVM;
 @{
 	ViewData["Title"] = "Poll Results Page";
 }
@@ -18,126 +18,140 @@
 		<hr class="mb-4"/>
 
 	</div>
-	@if (Model != null)
+	@if (Model != null && Model.VotingResults != null && Model.VotingResults.Count > 0)
 	{
-		<div class="text-center text-white mb-3">
-			<h5>Poll Title: @Model.VoteTitle</h5>
-			<h5>Poll Description: @Model.VoteDescription</h5>
-			@if (Model.AnonymousVote)
+		@for(int i = 0; i < Model.VotingResults.Count; i++) 
+		{
+			@if(i > 0)
 			{
-				<h5>This poll is anonymous</h5>
+				<br /><hr style="border-top: 2px solid white;"><br />
 			}
-			else
-			{
-				<h5>This poll is not anonymous</h5>
-			}
-			@if (Model.ChartVoteOptions.Count == 0)
-			{
-				<div class="text-center text-white mb-3">
-					<h5><mark>There are no submitted votes yet for this poll</mark></h5>
-				</div>
-			}
-		</div>
-		<div class="container text-center text-white">
-			<div class="row">
-				<div class="col-6 p-2 mr-2">
-					<div class="container d-flex justify-content-center">
-						<div id="piechart3d"></div>
-					</div>
-				</div>
-				<div class="col-6 p-2">
-					<div class="table-responsive">
-						<table class="table table-borderless rounded bg-dark text-white table-striped">
-							<tr class="bg-secondary">
-								<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote. The winning vote row is highlighted in red. If there is a tie the winning votes will be highlighted yellow.">&#8505;</span></th>
-								<th>Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
-							</tr>
-							@foreach (var vote in Model.TotalVotesForEachOption)
-							{
-								var winnerCheck = false;
-								foreach (var winner in Model.Winners)
-								{
-									if (winner.Key.Id == vote.Key.Id)
-									{
-										winnerCheck = true;
-									}
-								}
-								if (winnerCheck && Model.Winners.Count == 1)
-								{
-									<tr class="table-danger">
-										<td>@vote.Key.VoteOptionString</td>
-										<td>@vote.Value</td>
-									</tr>
-								}
-								else if (winnerCheck && Model.Winners.Count > 1)
-								{
-									<tr class="table-warning">
-										<td>@vote.Key.VoteOptionString</td>
-										<td>@vote.Value</td>
-									</tr>
-								}
-								else
-								{
-									<tr class="text-white-50">
-										<td>@vote.Key.VoteOptionString</td>
-										<td>@vote.Value</td>
-									</tr>
-								}
-							}
-							<tfoot>
-							<tr class="table-info">
-								<td>Total Votes: <span data-toggle="tooltip" data-placement="bottom" title="Here are the overall total votes for your created vote.">&#8505;</span></td>
-								<td>@Model.TotalVotesCount</td>
-							</tr>
-							</tfoot>
-						</table>
-					</div>
-				</div>
-				@if (!Model.AnonymousVote)
+			<div class="text-center text-white mb-3">
+				<h5>Poll Title: @Model.VotingResults[i].VoteTitle</h5>
+				<h5>Poll Description: @Model.VotingResults[i].VoteDescription</h5>
+				@if (Model.VotingResults[i].AnonymousVote)
 				{
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-6 p-2">
-								<h6 mb-2>Individual votes for user's who were logged in:</h6>
-								<div class="table-responsive">
-									<table class="table table-borderless rounded bg-dark text-white table-striped">
-										<tr class="bg-secondary">
-											<th>Vote Choice<span data-toggle="tooltip" data-placement="bottom" title="Here is the vote choice chosen by this user.">&#8505;</span></th>
-											<th>Voter's Email <span data-toggle="tooltip" data-placement="bottom" title="Here is the user's email who cast this vote.">&#8505;</span></th>
-										</tr>
-										@foreach (var vote in Model.VotesForLoggedInUsers)
-										{
-											<tr class="text-white-50">
-												<td>@vote.Value</td>
-												<td>@vote.Key</td>
-											</tr>
-										}
-									</table>
-								</div>
-							</div>
-							<div class="col-6 p-2">
-								<h6 mb-2>Votes for user's who were not logged in:</h6>
-								<div class="table-responsive">
-									<table class="table table-borderless rounded bg-dark text-white table-striped">
-										<tr class="bg-secondary">
-											<th>Vote Choice<span data-toggle="tooltip" data-placement="bottom" title="Here is the vote choice chosen by users not logged in.">&#8505;</span></th>
-											<th>Total Votes<span data-toggle="tooltip" data-placement="bottom" title="Here is the total votes for this option by user's not logged in.">&#8505;</span></th>
-										</tr>
-										@foreach (var vote in Model.VotesForUsersNotLoggedIn)
-										{
-											<tr class="text-white-50">
-												<td>@vote.Key.VoteOptionString</td>
-												<td>@vote.Value</td>
-											</tr>
-										}
-									</table>
-								</div>
-							</div>
-						</div>
+					<h5>This poll is anonymous</h5>
+				}
+				else
+				{
+					<h5>This poll is not anonymous</h5>
+				}
+				@if (Model.VotingResults[i].ChartVoteOptions.Count == 0)
+				{
+					<div class="text-center text-white mb-3">
+						<h5><mark>There are no submitted votes yet for this poll</mark></h5>
 					</div>
 				}
 			</div>
-		</div>
+			<div class="container text-center text-white">
+				<div class="row">
+					@{
+						var classCol = "col-12";
+					}
+					@if (Model.VotingResults.Count == 1) {
+						classCol = "col-6";
+
+						<div class="col-6 p-2 mr-2">
+							<div class="container d-flex justify-content-center">
+								<div id="piechart3d"></div>
+							</div>
+						</div>
+					}
+					<div class="@classCol p-2">
+						<div class="table-responsive">
+							<table class="table table-borderless rounded bg-dark text-white table-striped">
+								<tr class="bg-secondary">
+									<th>Vote Option <span data-toggle="tooltip" data-placement="bottom" title="Here are the vote options for this given vote. The winning vote row is highlighted in red. If there is a tie the winning votes will be highlighted yellow.">&#8505;</span></th>
+									<th>Votes <span data-toggle="tooltip" data-placement="bottom" title="Here are the total votes for each option. If there is a 0 it means no one has voted for this option.">&#8505;</span></th>
+								</tr>
+								@foreach (var vote in Model.VotingResults[i].TotalVotesForEachOption)
+								{
+									var winnerCheck = false;
+									foreach (var winner in Model.VotingResults[i].Winners)
+									{
+										if (winner.Key.Id == vote.Key.Id)
+										{
+											winnerCheck = true;
+										}
+									}
+									if (winnerCheck && Model.VotingResults[i].Winners.Count == 1)
+									{
+										<tr class="table-danger">
+											<td>@vote.Key.VoteOptionString</td>
+											<td>@vote.Value</td>
+										</tr>
+									}
+									else if (winnerCheck && Model.VotingResults[i].Winners.Count > 1)
+									{
+										<tr class="table-warning">
+											<td>@vote.Key.VoteOptionString</td>
+											<td>@vote.Value</td>
+										</tr>
+									}
+									else
+									{
+										<tr class="text-white-50">
+											<td>@vote.Key.VoteOptionString</td>
+											<td>@vote.Value</td>
+										</tr>
+									}
+								}
+								<tfoot>
+								<tr class="table-info">
+									<td>Total Votes: <span data-toggle="tooltip" data-placement="bottom" title="Here are the overall total votes for your created vote.">&#8505;</span></td>
+									<td>@Model.VotingResults[i].TotalVotesCount</td>
+								</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					@if (!Model.VotingResults[i].AnonymousVote)
+					{
+						<div class="container-fluid">
+							<div class="row">
+								<div class="col-6 p-2">
+									<h6 mb-2>Individual votes for user's who were logged in:</h6>
+									<div class="table-responsive">
+										<table class="table table-borderless rounded bg-dark text-white table-striped">
+											<tr class="bg-secondary">
+												<th>Vote Choice<span data-toggle="tooltip" data-placement="bottom" title="Here is the vote choice chosen by this user.">&#8505;</span></th>
+												<th>Voter's Email <span data-toggle="tooltip" data-placement="bottom" title="Here is the user's email who cast this vote.">&#8505;</span></th>
+											</tr>
+											@foreach (var vote in Model.VotingResults[i].VotesForLoggedInUsers)
+											{
+												<tr class="text-white-50">
+													<td>@vote.Value</td>
+													<td>@vote.Key</td>
+												</tr>
+											}
+										</table>
+									</div>
+								</div>
+								<div class="col-6 p-2">
+									<h6 mb-2>Votes for user's who were not logged in:</h6>
+									<div class="table-responsive">
+										<table class="table table-borderless rounded bg-dark text-white table-striped">
+											<tr class="bg-secondary">
+												<th>Vote Choice<span data-toggle="tooltip" data-placement="bottom" title="Here is the vote choice chosen by users not logged in.">&#8505;</span></th>
+												<th>Total Votes<span data-toggle="tooltip" data-placement="bottom" title="Here is the total votes for this option by user's not logged in.">&#8505;</span></th>
+											</tr>
+											@foreach (var vote in Model.VotingResults[i].VotesForUsersNotLoggedIn)
+											{
+												<tr class="text-white-50">
+													<td>@vote.Key.VoteOptionString</td>
+													<td>@vote.Value</td>
+												</tr>
+											}
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div> 
+		}
 	}
 	<div class="text-center mt-3 mb-2">
 		<form asp-action="CreatedVotesReview" method="get">
@@ -157,8 +171,8 @@
 
 			function drawChart() {
 
-				var optionsList = ['@Html.Raw(string.Join("', '",Model.ChartVoteOptions))'];
-				var countList = ['@Html.Raw(string.Join("', '",Model.ChartVoteTotals))'];
+				var optionsList = ['@Html.Raw(string.Join("', '",Model.VotingResults[0].ChartVoteOptions))'];
+				var countList = ['@Html.Raw(string.Join("', '",Model.VotingResults[0].ChartVoteTotals))'];
 
 
 				var data = new google.visualization.DataTable();
@@ -167,7 +181,7 @@
 
 				var voteData = [];
 
-				for (var i = 0; i < '@Model.ChartVoteOptions.Count'; i++) {
+				for (var i = 0; i < '@Model.VotingResults[0].ChartVoteOptions.Count'; i++) {
 					var voteRow = [optionsList[i], parseInt(countList[i])];
 					voteData.push(voteRow);
 				}
