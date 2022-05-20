@@ -14,7 +14,7 @@
     </div>
     @{string formValue = (Model.submittedVote == null ? "CastVote" : "EditCastVote" );}
   
-    <form asp-action=@formValue method="get" class="col-lg-6 offset-lg-3 ">
+    <form asp-action=@formValue method="get" class="col-lg-6 offset-lg-3" onsubmit="return get_action();">
    
         @if(Model.submittedVote != null)
         {
@@ -63,12 +63,24 @@
             <span class="input-group-btn">
                 @if (Model.submittedVote != null)
                 {
-                    <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+                    <button type="submit" id="edit-vote" class="mt-2 btn btn-primary">Submit</button>
                 } else
                 {
-                    <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+                    <button type="submit" id="cast-vote" class="mt-2 btn btn-primary">Submit</button>
                 }
             </span>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+    function get_action() 
+    {
+		$('#cast-vote').prop('disabled', true);
+		$('#edit-vote').prop('disabled', true);
+        return true;
+    }
+    </script>
+}

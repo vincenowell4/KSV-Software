@@ -22,6 +22,9 @@ using Microsoft.Extensions.Logging;
 using VotingApp.DAL.Abstract;
 using VotingApp.Models;
 using VotingApp.Data;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace VotingApp.Areas.Identity.Pages.Account
 {
@@ -34,6 +37,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IVotingUserRepositiory _votingUserRepository;
         private readonly EmailService.IEmailSender _emailSender;
+        private readonly IConfiguration _configuration;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -41,7 +45,8 @@ namespace VotingApp.Areas.Identity.Pages.Account
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             EmailService.IEmailSender emailSender,
-            IVotingUserRepositiory votingUserRepositiory)
+            IVotingUserRepositiory votingUserRepositiory, 
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -50,6 +55,7 @@ namespace VotingApp.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _votingUserRepository = votingUserRepositiory;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -78,10 +84,12 @@ namespace VotingApp.Areas.Identity.Pages.Account
         public class InputModel
         {
             [StringLength(100)]
+            [Required]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
 
             [StringLength(100)]
+            [Required]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
@@ -125,6 +133,24 @@ namespace VotingApp.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            using (var client = new HttpClient { BaseAddress = new Uri("https://www.google.com") })
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("secret", this._configuration["RecaptchaKey"]),
+                    new KeyValuePair<string, string>("response", Request.Form["g-Recaptcha-Response"]),
+                    new KeyValuePair<string, string>("remoteip", Request.HttpContext.Connection.RemoteIpAddress.ToString())
+                });
+                var result = await client.PostAsync("/recaptcha/api/siteverify", content);
+                result.EnsureSuccessStatusCode();
+                string jsonString = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<RecaptchaResponse>(jsonString);
+                if (!response.Success)
+                    return Page();
+            }
+
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
@@ -193,6 +219,19 @@ namespace VotingApp.Areas.Identity.Pages.Account
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
+        }
+
+        [DataContract]
+        internal class RecaptchaResponse
+        {
+            [DataMember(Name = "success")]
+            public bool Success { get; set; }
+            [DataMember(Name = "challenge_ts")]
+            public DateTime ChallengeTimeStamp { get; set; }
+            [DataMember(Name = "hostname")]
+            public string Hostname { get; set; }
+            [DataMember(Name = "error-codes")]
+            public IEnumerable<string> ErrorCodes { get; set; }
         }
     }
 }
