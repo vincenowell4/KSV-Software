@@ -24,7 +24,7 @@
                 <div class="row mb-3 justify-content-center">
                         <h3>Poll Title:</h3>
                         <h6>(If you would like to change your title press the edit button)</h6>
-                        <div class="card col-md-6 mx-auto">
+                        <div class="card col-md-8 mx-auto">
                             <div class="card-body">
                                 <p class="card-text text-black">@Model.VoteTitle</p>
                             </div>
@@ -32,18 +32,18 @@
                     </div>
 
 
-            <div class="row mb-4 justify-content-center">
+            <div class="row mb-3 justify-content-center">
                 <h3>Poll Description:</h3>
                 <h6>(If you would like to change your description press the edit button)</h6>
-                <div class="card col-md-6 mx-auto">
+                <div class="card col-md-8 mx-auto">
                     <div class="card-body">
                         <p class="card-text text-black">@Model.VoteDescription</p>
                     </div>
                 </div>
             </div>
         </form>
-               <div class="row mb-4 justify-content-center">
-                    <div class="card col-md-6 mx-auto">
+               <div class="row mb-1 justify-content-center">
+                    <div class="card col-md-8 mx-auto">
                         <div class="card-body">
                             <h5 class="card-title text-black-50">Voting Options:</h5>
                         </div>
@@ -57,10 +57,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg">
-                <div class="row mb-4 justify-content-center">
+            <div class="col-sm-auto">
+                <div class="row mb-1 justify-content-center">
                     <h3>Share Poll:</h3>
-                    <div class="card col-md-6 mx-auto">
+                    <div class="card col-md-8 mx-auto">
                         <div class="card-body">
                             @if (Model.VoteAccessCode != null)
                             {
@@ -77,23 +77,23 @@
                 </div>
                 </div>
                 <div class="col-lg">
-                    <div class="row mb-4 justify-content-center">
+                    <div class="row mb-1 justify-content-center">
                         @if (Model.VoteOpenDateTime != null)
                         {
-                            <div class="row mb-4 justify-content-center">
+                            <div class="row mb-3 justify-content-center">
                                 <h3>Voting Opens At:</h3>
-                                <div class="card col-md-6 mx-auto">
+                                <div class="card col-md-8 mx-auto">
                                     <div class="card-body">
                                         <p class="card-text text-black">@Html.Raw($"{Model.VoteOpenDateTime.Value.Month}/{Model.VoteOpenDateTime.Value.Day}/{Model.VoteOpenDateTime.Value.Year} { Model.VoteOpenDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")</p>
                                     </div>
                                 </div>
                             </div>
                         }
-                        <div class="row mb-4 justify-content-center">
+                        <div class="row mb-3 justify-content-center">
 
 
                             <h3>Voting Closes At:</h3>
-                            <div class="card col-md-6 mx-auto">
+                            <div class="card col-md-8 mx-auto">
                                 <div class="card-body">
                                     <p class="card-text text-black">@Html.Raw($"{Model.VoteCloseDateTime.Month}/{Model.VoteCloseDateTime.Day}/{Model.VoteCloseDateTime.Year} { Model.VoteCloseDateTime.TimeOfDay.ToString("hh\\:mm")}")</p>
                                 </div>
@@ -101,9 +101,9 @@
                         </div>
                         @if(Model.VotingAuthorizedUsers.Count > 0)
                         {
-                            <div class="row mb-4 justify-content-center">
+                            <div class="row mb-3 justify-content-center">
                             
-                                <div class="card col-md-6 mx-auto">
+                                <div class="card col-md-8 mx-auto">
                                     <div class="card-body">
                                         <h5 class="card-title text-black-50">Users Authorized to Vote:</h5>
                                     </div>
@@ -117,8 +117,8 @@
                                 </div>
                             </div>
                         }
-                
-                        <audio controls src="@Url.Action("LoadAudio", new { id = Model.ID })")></audio>
+                        <div class="col-md-12"><audio controls src="@Url.Action("LoadAudio", new { id = Model.ID })")></audio></div>
+                        
                     </div>
                     </div>
 
