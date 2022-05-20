@@ -316,6 +316,14 @@ namespace VotingApp.Controllers
                 ViewBag.ErrorMessage = "Please make a selection.";
                 return View("SubmitVote", modelVM);
             }
+
+            if (!_voteOptionRepository.GetAllByVoteID(voteID).Any(item => item.Id == choice))
+            {
+                SubmitVoteVM modelVM = new SubmitVoteVM();
+                modelVM.vote = _createdVoteRepository.GetById(voteID);
+                ViewBag.ErrorMessage = "That vote option has been removed.";
+                return View("SubmitVote", modelVM);
+            }
             if (User.Identity.IsAuthenticated)
             {
                 user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));

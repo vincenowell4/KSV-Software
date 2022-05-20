@@ -49,7 +49,7 @@
 					    }
 					    @foreach (CreatedVote createdVote in Model.OpenVotes)
 					    {
-							@if(createdVote.VoteTypeId != 3) {
+					        @if(createdVote.VoteTypeId != 3) {
 								<tr class="text-white-50">
 									<td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
 									@if (createdVote.VoteDiscription.Length > 5)
@@ -63,8 +63,27 @@
 									<td >@createdVote.VoteType.VotingType</td>
 									<td>@createdVote.AnonymousVote</td>
 									<td>@createdVote.VoteAccessCode
-										<button class="btn btn-light accessBtn" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
-											<i class="fa-solid fa-copy fa-2xs"></i></button></td>
+										<div class="row justify-content-center">
+                                    <button class="btn btn-light bg-success btn-outline-primary accessBtn"  style="width: 50px" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
+                                            <i class="fa-solid fa-copy fa-2xs"></i></button>
+                                    
+                                    <button type="button" style="width: 50px" class="btn btn-light bg-success btn-outline-primary pl-1" data-toggle="modal" data-target="@Html.Raw("#modal2" + createdVote.Id)">
+                                        QR
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="@Html.Raw("modal2" + createdVote.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <div class="row justify-content-center"><img class="rounded" style="max-width: 300px;" src="@Url.Action("LoadQR", new {id = createdVote.Id})" alt="test")><img/>
+                                                        <button style="max-width: 300px;" type="button" class="btn btn-secondary mt-2" data-dismiss="modal">Close</button></div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
 
 									<td>
 										@if (createdVote.VoteOpenDateTime != null)
@@ -110,7 +129,7 @@
 									</td>
 								</tr> 
 							}
-						    {
+					        {
 							    i++;
 						    }
 					    }
