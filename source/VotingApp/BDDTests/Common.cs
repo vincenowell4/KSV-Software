@@ -18,6 +18,7 @@ namespace BDDTests
         public const string CreatePageName = "Create";
         public const string VoteReviewPage = "VoteReview";
         public const string AdminPageName = "Admin";
+        public const string AboutPageName = "About Opiniony";
         public const string HelpPageName = "Help";
 
         // A handy way to look these up
@@ -30,6 +31,7 @@ namespace BDDTests
             { CreatePageName, "/Create" },
             { VoteReviewPage, "/Create/CreatedVotesReview" },
             { AdminPageName, "/Admin" },
+            { AboutPageName, "/Help/About" }
             { HelpPageName, "/Help" },
         };
 
