@@ -40,6 +40,7 @@ builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSql
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
 
+/*
 var binDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase);
 string fullPath = Path.Combine(binDirectory, "credentials.json").Replace("file:\\", "");
 
@@ -50,7 +51,7 @@ using (StreamWriter outputFile = new StreamWriter(fullPath, false))
 
 // Set environment variabel to the full file path
 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", fullPath);
-
+*/
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
 var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
 //*******************************************************************************************************************************************
@@ -86,7 +87,7 @@ builder.Services.AddScoped<IVoteAuthorizedUsersRepo, VoteAuthorizedUsersRepo>();
 builder.Services.AddScoped<GoogleTtsService,GoogleTtsService>();
 builder.Services.AddScoped<IAppLogRepository, AppLogRepository>();
 builder.Services.AddScoped<ITimeZoneRepo, TimeZoneRepo>();
-
+builder.Services.AddScoped<QRCodeCreationService, QRCodeCreationService>();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
        o.TokenLifespan = TimeSpan.FromSeconds(06400)); //email confirmation token will expire after exactly 24 hours (86400 seconds)
 

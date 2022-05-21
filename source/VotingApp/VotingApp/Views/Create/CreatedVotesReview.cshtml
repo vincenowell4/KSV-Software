@@ -49,66 +49,87 @@
 					    }
 					    @foreach (CreatedVote createdVote in Model.OpenVotes)
 					    {
-						    <tr class="text-white-50">
-							    <td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
-							    @if (createdVote.VoteDiscription.Length > 5)
-							    {
-								    <td id="Desc-@createdVote.Id"><span data-toggle="tooltip" data-placement="bottom" title="@createdVote.VoteDiscription"> @createdVote.VoteDiscription.Substring(0, 5)...</span></td>
-							    }
-							    else
-							    {
-								    <td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
-							    }
-							    <td >@createdVote.VoteType.VotingType</td>
-							    <td>@createdVote.AnonymousVote</td>
-							    <td>@createdVote.VoteAccessCode
-								    <button class="btn btn-light accessBtn" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
-									    <i class="fa-solid fa-copy fa-2xs"></i></button></td>
+					        @if(createdVote.VoteTypeId != 3) {
+								<tr class="text-white-50">
+									<td>@i</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
+									@if (createdVote.VoteDiscription.Length > 5)
+									{
+										<td id="Desc-@createdVote.Id"><span data-toggle="tooltip" data-placement="bottom" title="@createdVote.VoteDiscription"> @createdVote.VoteDiscription.Substring(0, 5)...</span></td>
+									}
+									else
+									{
+										<td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
+									}
+									<td >@createdVote.VoteType.VotingType</td>
+									<td>@createdVote.AnonymousVote</td>
+									<td>@createdVote.VoteAccessCode
+										<div class="row justify-content-center">
+                                    <button class="btn btn-light bg-success btn-outline-primary accessBtn"  style="width: 50px" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
+                                            <i class="fa-solid fa-copy fa-2xs"></i></button>
+                                    
+                                    <button type="button" style="width: 50px" class="btn btn-light bg-success btn-outline-primary pl-1" data-toggle="modal" data-target="@Html.Raw("#modal2" + createdVote.Id)">
+                                        QR
+                                    </button>
 
-							    <td>
-								    @if (createdVote.VoteOpenDateTime != null)
-								    {@Html.Raw($"{createdVote.VoteOpenDateTime.Value.Month}/{createdVote.VoteOpenDateTime.Value.Day}/{createdVote.VoteOpenDateTime.Value.Year} {createdVote.VoteOpenDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
-								    }
-							    </td>
-							    <td>
-								    @if (createdVote.VoteCloseDateTime != null)
-								    {@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
-								    }
-							    </td>
-							    <!--<td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>-->
-							    <td>
-								    @if ((createdVote.VoteOpenDateTime == null || createdVote.VoteOpenDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName)) && createdVote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName))
-								    {
-									    <form asp-action="BackToIndexPage" method="post">
-										    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@createdVote.Id">Edit</button>
-									    </form>
-								    }
-								    else
-								    {
-									    <button style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@createdVote.Id" disabled>Edit</button>
-								    }
-								    <form asp-action="VoteResultsButton" method="post">
-									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
-								    </form>
-								    <button type="button" style="width:140px" class="btn btn-light bg-success btn-outline-primary" data-toggle="modal" data-target="@Html.Raw("#modal" +createdVote.Id)">
-									    Audio
-								    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="@Html.Raw("modal2" + createdVote.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <div class="row justify-content-center"><img class="rounded" style="max-width: 300px;" src="@Url.Action("LoadQR", new {id = createdVote.Id})" alt="test")><img/>
+                                                        <button style="max-width: 300px;" type="button" class="btn btn-secondary mt-2" data-dismiss="modal">Close</button></div>
 
-								    <!-- Modal -->
-								    <div class="modal fade" id="@Html.Raw("modal" + createdVote.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-									    <div class="modal-dialog" role="document">
-										    <div class="modal-content">
-											    <div class="modal-body">
-												    <div class="row justify-content-center"><audio id="VoteAudio" controls src="@Url.Action("LoadAudio", "Create", new { id = createdVote.Id })"></audio>
-													    <button style="max-width: 300px;" type="button" class="btn btn-secondary mt-2" data-dismiss="modal">Close</button></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+									<td>
+										@if (createdVote.VoteOpenDateTime != null)
+										{@Html.Raw($"{createdVote.VoteOpenDateTime.Value.Month}/{createdVote.VoteOpenDateTime.Value.Day}/{createdVote.VoteOpenDateTime.Value.Year} {createdVote.VoteOpenDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
+										}
+									</td>
+									<td>
+										@if (createdVote.VoteCloseDateTime != null)
+										{@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
+										}
+									</td>
+									<!--<td ><button type="button" data-toggle="modal" data-target="#editModal" style="width:70px !important" class="btn btn-light bg-success btn-outline-primary" name="edit-button" value=@createdVote.Id onclick="FillValues('@createdVote.Id')">Edit</button></td>-->
+									<td>
+										@if ((createdVote.VoteOpenDateTime == null || createdVote.VoteOpenDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName)) && createdVote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone.TimeName))
+										{
+											<form asp-action="BackToIndexPage" method="post">
+												<button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="ID" value="@createdVote.Id">Edit</button>
+											</form>
+										}
+										else
+										{
+											<button style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary disabled" name="id" value="@createdVote.Id" disabled>Edit</button>
+										}
+										<form asp-action="VoteResultsButton" method="post">
+											<button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
+										</form>
+										<button type="button" style="width:140px" class="btn btn-light bg-success btn-outline-primary" data-toggle="modal" data-target="@Html.Raw("#modal" +createdVote.Id)">
+											Audio
+										</button>
+
+										<!-- Modal -->
+										<div class="modal fade" id="@Html.Raw("modal" + createdVote.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-body">
+														<div class="row justify-content-center"><audio id="VoteAudio" controls src="@Url.Action("LoadAudio", "Create", new { id = createdVote.Id })"></audio>
+															<button style="max-width: 300px;" type="button" class="btn btn-secondary mt-2" data-dismiss="modal">Close</button></div>
                                             
-											    </div>
-										    </div>
-									    </div>
-								    </div>
-							    </td>
-						    </tr>
-						    {
+													</div>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr> 
+							}
+					        {
 							    i++;
 						    }
 					    }
@@ -136,36 +157,96 @@
 					    }
 					    @foreach (CreatedVote createdVote in Model.ClosedVotes)
 					    {
-						    <tr class="text-white-50">
-							    <td>@j</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
-							    @if (createdVote.VoteDiscription.Length > 5)
-							    {
-								    <td id="Desc-@createdVote.Id"><span data-toggle="tooltip" data-placement="bottom" title="@createdVote.VoteDiscription"> @createdVote.VoteDiscription.Substring(0, 5)...</span></td>
-							    }
-							    else
-							    {
-								    <td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
-							    }
-							    <td >@createdVote.VoteType.VotingType</td>
-							    <td>@createdVote.AnonymousVote</td>
-							    <td>
-								    @if (createdVote.VoteCloseDateTime != null)
-								    {@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
-								    }
-							    </td>
-							    <td>
-								    <form asp-action="VoteResultsButton" method="post">
-									    <button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
-								    </form>
-							    </td>
-						    </tr>
-						    {
+							@if (createdVote.VoteTypeId != 3)
+							{
+								<tr class="text-white-50">
+									<td>@j</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
+									@if (createdVote.VoteDiscription.Length > 5)
+									{
+										<td id="Desc-@createdVote.Id"><span data-toggle="tooltip" data-placement="bottom" title="@createdVote.VoteDiscription"> @createdVote.VoteDiscription.Substring(0, 5)...</span></td>
+									}
+									else
+									{
+										<td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
+									}
+									<td >@createdVote.VoteType.VotingType</td>
+									<td>@createdVote.AnonymousVote</td>
+									<td>
+										@if (createdVote.VoteCloseDateTime != null)
+										{
+											@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
+										}
+									</td>
+									<td>
+										<form asp-action="VoteResultsButton" method="post">
+											<button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
+										</form>
+									</td>
+								</tr>
+							}
+							{
 							    j++;
 						    }
 					    }
 				    </table>
 			    </div>
 		    </div>
+		    @*multi-round votes table*@
+		    <div class="row text-center m-2">
+			    <div class="table-responsive">
+				    <h3>Multi-Round Polls:</h3>
+				    <table class="table table-borderless rounded bg-dark text-white table-striped" id="accessTable">
+					    <tr class="bg-secondary">
+						    <th class="text-center">#</th>
+						    <th>Title</th>
+						    <th>Description</th>
+						    <th>Poll Type</th>
+						    <th>Anonymous</th>
+						    <th>Vote Close Date/Time</th>
+						    <th>&nbsp;</th>
+						    <th>&nbsp</th>
+						    <th>&nbsp</th>
+					    </tr>
+					    @{
+						    int k = 1;
+					    }
+					    @foreach (CreatedVote createdVote in Model.CreatedVotes)
+					    {
+							@if (createdVote.VoteTypeId == 3 && createdVote.RoundNumber == 1)
+							{
+								<tr class="text-white-50">
+									<td>@k</td><td id="Title-@createdVote.Id">@createdVote.VoteTitle</td>
+									@if (createdVote.VoteDiscription.Length > 5)
+									{
+										<td id="Desc-@createdVote.Id"><span data-toggle="tooltip" data-placement="bottom" title="@createdVote.VoteDiscription"> @createdVote.VoteDiscription.Substring(0, 5)...</span></td>
+									}
+									else
+									{
+										<td id="Desc-@createdVote.Id">@createdVote.VoteDiscription</td>
+									}
+									<td >@createdVote.VoteType.VotingType</td>
+									<td>@createdVote.AnonymousVote</td>
+									<td>
+										@if (createdVote.VoteCloseDateTime != null)
+										{
+											@Html.Raw($"{createdVote.VoteCloseDateTime.Value.Month}/{createdVote.VoteCloseDateTime.Value.Day}/{createdVote.VoteCloseDateTime.Value.Year} {createdVote.VoteCloseDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")
+										}
+									</td>
+									<td>
+										<form asp-action="VoteResultsButton" method="post">
+											<button type="submit" style="width: 140px !important" class="btn btn-light bg-success btn-outline-primary" name="id" value="@createdVote.Id">Poll Results</button>
+										</form>
+									</td>
+								</tr>
+							}
+							{
+							    k++;
+						    }
+					    }
+				    </table>
+			    </div>
+		    </div>
+
 	    </div>
     }
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">

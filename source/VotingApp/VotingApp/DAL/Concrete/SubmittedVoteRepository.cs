@@ -35,6 +35,11 @@ namespace VotingApp.DAL.Concrete
             }
             return votesWithUsers;
         }
+
+        public SubmittedVote GetVoteByIp(string ip, int voteId)
+        {
+            return _context.SubmittedVotes.Where(a => a.Id == voteId && a.UserIp == ip).FirstOrDefault();
+        }
         //public Dictionary<string, string> GetAllSubmittedVotesWithLoggedInUsers(int id, IList<VoteOption> options)
         //{
         //    var submittedVotes = _context.SubmittedVotes.Where(a => a.CreatedVoteId == id && a.User != null).ToList();
@@ -149,18 +154,21 @@ namespace VotingApp.DAL.Concrete
                 throw new ArgumentNullException(nameof(submittedVotes));
             }
 
-            var max = submittedVotes.Max(a => a.Value);
 
             Dictionary<VoteOption, int> winners = new Dictionary<VoteOption, int>();
 
-            foreach (var vote in submittedVotes)
+            if (submittedVotes.Count > 0)
             {
-                if (vote.Value == max)
+                var max = submittedVotes.Max(a => a.Value);
+
+                foreach (var vote in submittedVotes)
                 {
-                    winners.Add(vote.Key, vote.Value);
+                    if (vote.Value == max)
+                    {
+                        winners.Add(vote.Key, vote.Value);
+                    }
                 }
             }
-
             return winners;
         }
 

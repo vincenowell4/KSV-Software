@@ -11,6 +11,7 @@ CREATE TABLE [CreatedVote]
 [VoteCloseDateTime] DATETIME,
 [PrivateVote] BIT NOT NULL,
 [VoteAudioBytes] VARBINARY(max),
+[QRCodeBytes] VARBINARY(max),
 [RoundNumber] int NOT NULL,
 [NextRoundId] int NOT NULL,
 [RoundDays] int NOT NULL,
@@ -40,7 +41,8 @@ CREATE TABLE [SubmittedVote]
 [VoteChoice] int NOT NULL,
 [UserID] int,
 [Validated] BIT NOT NULL,
-[DateCast] DATETIME
+[DateCast] DATETIME,
+[UserIP] NVARCHAR(50) NOT NULL
 );
 
 CREATE TABLE [VotingUser] 

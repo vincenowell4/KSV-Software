@@ -10,7 +10,7 @@ Scenario Outline: Create a vote page has a select list for timezones
 	| Page   |
 	| Create |
 
-Scenario Outline: Logged in user will see Start Vote Now button and Start Vote Future button
+Scenario Outline: Check that PST is default
 	Given I am on the '<Page>' a vote page
 	Then I will see a select list for timezones
 		And Pacific Standard Time will be selected by default

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -29,6 +30,8 @@ namespace VotingApp.Controllers
         private readonly GoogleTtsService _googleTtsService;
         private readonly IAppLogRepository _appLogRepository;
         private readonly ITimeZoneRepo _timeZoneRepo;
+        private readonly QRCodeCreationService _qrCodeCreationService;
+        private readonly IConfiguration _configuration;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -42,9 +45,11 @@ namespace VotingApp.Controllers
             IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
             GoogleTtsService googleTtsService,
             IAppLogRepository appLogRepository,
-            ITimeZoneRepo timeZoneRepo)
+            ITimeZoneRepo timeZoneRepo,
+            QRCodeCreationService qrCodeCreationService,
+        IConfiguration configuration)
 
-        {
+            {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
             _voteTypeRepository = voteTypeRepository;
@@ -58,6 +63,8 @@ namespace VotingApp.Controllers
             _googleTtsService = googleTtsService;
             _appLogRepository = appLogRepository;
             _timeZoneRepo = timeZoneRepo;
+            _qrCodeCreationService = qrCodeCreationService;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -94,6 +101,26 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote,RoundDays,RoundHours,RoundMinutes, TimeZoneId")]CreatedVote createdVote)
         {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                string secretKey = this._configuration["RecaptchaKey"];
+                string userResponse = Request.Form["g-Recaptcha-Response"];
+                var webClient = new System.Net.WebClient();
+                string ver = webClient.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secretKey, userResponse));
+
+                var verJson = Newtonsoft.Json.Linq.JObject.Parse(ver);
+                if (verJson["success"].Value<bool>())
+                {
+                    //Session["I_AM_NOT_A_ROBOT"] = "true";
+                    _logger.LogInformation("User passed reCaptcha");
+                }
+                else
+                {
+                    // try again:
+                    return View(createdVote);
+                }
+            }
+
             MethodBase method = MethodBase.GetCurrentMethod();
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
@@ -283,6 +310,19 @@ namespace VotingApp.Controllers
             return base.File(audioBytes, "audio/wav");
         }
 
+        public ActionResult LoadQR(int id)
+        {
+            var vote = _createdVoteRepository.GetById(id);
+            if (vote.QrcodeBytes == null)
+            {
+                vote.QrcodeBytes = _qrCodeCreationService.CreateQRCode($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{vote.VoteAccessCode}").Result;
+                _createdVoteRepository.AddOrUpdate(vote);
+            }
+
+            var qrbytes = vote.QrcodeBytes;
+            return base.File(qrbytes, "image/png");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddOption()
@@ -315,6 +355,9 @@ namespace VotingApp.Controllers
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+            var qrcode = _qrCodeCreationService.CreateQRCode(
+               $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
+            createdVote.QrcodeBytes = qrcode;
             //_googleTtsService.CreateAudioFiles(createdVote);
             createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             if (createdVote.PrivateVote)
@@ -374,6 +417,7 @@ namespace VotingApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreatedVotesReview(string voteData)
         {
             if (User.Identity.IsAuthenticated != false && voteData.Length > 0)
@@ -415,20 +459,62 @@ namespace VotingApp.Controllers
         public IActionResult VoteResults(int id)
         {
             var createdVote = _createdVoteRepository.GetById(id);
-            var vm = new VoteResultsVM();
-            vm.VoteTitle = createdVote.VoteTitle;
-            vm.VoteDescription = createdVote.VoteDiscription;
-            vm.AnonymousVote = createdVote.AnonymousVote;
-            vm.VoteId = createdVote.Id;
-            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
-            vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
-            vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
-            vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
-            vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
-            vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
-            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
-            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
-            return View(vm);
+            var vmMR = new VotesResultsVM();
+            vmMR.VotingResults = new List<VoteResultsVM>();
+            int nextRound = 0;
+            if (createdVote != null)
+            {
+                if (createdVote.VoteTypeId == 3 && createdVote.RoundNumber == 1)
+                {
+                    do
+                    {
+                        if (createdVote != null)
+                        {
+                            var vm = new VoteResultsVM();
+                            vm.VoteTitle = createdVote.VoteTitle;
+                            vm.VoteDescription = createdVote.VoteDiscription;
+                            vm.AnonymousVote = createdVote.AnonymousVote;
+                            vm.VoteId = createdVote.Id;
+                            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+                            vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+                            vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
+                            vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
+                            vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
+                            vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+                            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+                            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
+                            vmMR.VotingResults.Add(vm);
+                            nextRound = createdVote.NextRoundId;
+                            if(nextRound > 0)
+                                createdVote = _createdVoteRepository.GetById(createdVote.NextRoundId);
+                        }
+                    } while (createdVote != null && nextRound > 0);
+
+                    return View(vmMR);
+                }
+                else
+                {
+                    var vm = new VoteResultsVM();
+                    vm.VoteTitle = createdVote.VoteTitle;
+                    vm.VoteDescription = createdVote.VoteDiscription;
+                    vm.AnonymousVote = createdVote.AnonymousVote;
+                    vm.VoteId = createdVote.Id;
+                    vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+                    vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+                    vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
+                    vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
+                    vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
+                    vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+                    vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+                    vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
+                    vmMR.VotingResults.Add(vm);
+
+                    return View(vmMR);
+                }
+            } else
+            {
+                return View(vmMR);
+            }
         }
 
         [HttpPost]
