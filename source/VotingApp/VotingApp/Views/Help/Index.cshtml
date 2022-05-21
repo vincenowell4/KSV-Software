@@ -1,7 +1,7 @@
 ﻿@{
 	ViewData["Title"] = "Help Page";
 }
-<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px; height: 50vh; background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(/Images/helpPageBannerImage.jpg); background-size: cover; left: 50%;
+<div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px; height: 40vh; background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)), url(/Images/helpPageBannerImage.jpg); background-size: cover; left: 50%;
 		                                                     margin-left: -50vw;
 		                                                     margin-right: -50vw;
 		                                                     max-width: 100vw;
@@ -10,59 +10,169 @@
 		                                                     width: 100vw;">
 		<div class="container text-white">
 			<h1 class="display-4 pt-5">Help Page</h1>
-			<p class="lead">Here are some examples of the poll types we provide</p>
 			<hr class="mt-lg-5" style="border-top: 3px solid white; color: white; background-color: white;">
 		</div>
 	</div>
 
-
-<div class="container-fluid mb-5 full-width">
-	<div class="row">
-		<div class="col mt-3 mb-5">
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title"><u>Yes/No Poll</u></h5>
-					<p class="card-text">
-						Let's say I want to create a simple yes/no poll to ask my friends if they want to go to the movies on Friday or not. To first start I will go to the create a poll page
-						and fill everything out: 
+<div class="container-fluid mb-3 full-width">
+	<h3 class="text-white text-center">Here are some examples of the poll types we provide:</h3>
+	<div class="accordion" id="accordionHelp">
+		  <div class="accordion-item">
+			<h2 class="accordion-header" id="headingOne">
+			  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+				Yes/No Poll
+			  </button>
+			</h2>
+			<div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionHelp">
+			  <div class="accordion-body">
+				<strong> Let's say I want to create a simple yes/no poll to ask my friends if they want to go to the movies on Friday or not. </strong>
 						<ol>
-							<li>First I will pick a title (This can be something simple and short to give an idea what this is about), so I enter "Movies with friends" for my title.</li>
-							<li>Then I fill out a description (For this I want to give my friends more information about what they are voting on and when the vote will end), so I enter "I want everyone to go to the movies
-								this Friday at 8pm. Choose yes if you can and want to go. Choose no if you don't want to. The vote will end this Thursday so make sure to answer before then." </li>
-							<li>Next I choose the vote option yes/no.</li>
-							<li>Then I will choose if I would like it to be anonymous. For this I want to know who answers what so that I know who is 
-								coming to the movie and who can't. So I don't check the anonymous box because then I won't be able to see who said no. </li>
+							<li>First I will pick a title (this can be something simple and short to give an idea what this is about), so I enter "Movies with friends" for my title.</li>
+							<li>Then I fill out a description (For this I want to give my friends more information about what they are voting on and when the vote will end), so I enter: "I want everyone to go to the movies
+								this Friday at 8pm. Choose yes if you can make it. Choose no if you can't come. The vote will end this Thursday at 8pm so make sure to answer before then." </li>
+							<li>Next I choose the poll type: yes/no.</li>
+							<li>Then I will choose if I would like it to be anonymous. For this poll I want to know who is coming to the movies on Friday.
+						        So I don't check the anonymous box because then I won't be able to see who said no and who said yes. </li>
+							<li>Since I am quickly trying to create a poll, I don't check the private option because I don't care who see's the poll.</li>
+							<li>I want the poll to close on Thursday at 8pm, so I will choose that for the poll closing time (and pick my time zone - PST).</li>
 							<li>I'll then hit the "Review" button so I am able to make sure everything I picked looks good. If I need to make changes on anything I'll hit the "Edit" button which will bring me back to the previous screen to make changes.</li>
-							<li>I will now see the voting options that my users will pick from (since it's a yes/no poll I should just see yes and no as the options).If everything looks good and I am ready to send out my vote I'll hit the submit button.</li>
+							<li>I will now see the voting options that my users will pick from (since it's a yes/no poll I should just see yes and no as the options). If everything looks good and I am ready to send out my vote I'll hit the submit button.</li>
 						</ol>
-					</p>
-					<a asp-area="" asp-controller="Create" asp-action="Index"><button type="button" class="btn btn-primary">Create A Poll</button></a>
-				</div>
+						<br />
+						<div class="d-flex justify-content-center"> 
+							<a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index"><button class="btn btn-light btn-lg bg-success btn-outline-primary" type="button">Create A Poll</button></a>
+						</div>
+			  </div>
 			</div>
-		</div>
-		<div class="col mt-3 mb-5">
-			<div class="card">
-				<div class="card-body">
-					<h5 class="card-title"><u>Multiple Selection Poll</u></h5>
-					<p class="card-text">
-						Let's say I want to create a multiple selection poll so that I can enter (up to 10) options for a staff meeting that I want my staff to vote on. To first start I will go to the create a poll page
-						and fill everything out: 
+		  </div>
+		  <div class="accordion-item">
+			<h2 class="accordion-header" id="headingTwo">
+			  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+				Multiple Choice Poll
+			  </button>
+			</h2>
+			<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionHelp">
+			  <div class="accordion-body">
+				<strong> Let's say I want to create a multiple selection poll for a staff meeting that I want my staff to vote on. </strong>
 						<ol>
 							<li>First I will pick a title (This can be something simple and short to give an idea what this is about), so I enter "What goal we want to strive for next" for my title.</li>
-							<li>Then I fill out a description (For this I want to give my staff more information about what they are voting on and when the vote will end), so I enter "I want you to choose what goal you think we as a team
+							<li>Then I fill out a description (For this I want to give my staff more information about what they are voting on and when the poll will end), so I enter "I want you to choose what goal you think we as a team
 								should work towards next. This vote will be anonymous so I will not know how individuals voted, just the overall results. Please vote on one of these four goals before next Tuesdays meeting (November 8)." </li>
-							<li>Next I will want to choose the multiple selection voting option.</li>
+							<li>Next I choose the multiple selection poll option.</li>
 							<li>Then I choose if I would like it to be anonymous. For this I told my staff it would be anonymous so I will check the anonymous button. This way I can still see the results, but not how individuals voted. </li>
+							<li>I will then choose to have the vote close on Tues. Nov 8 at 3pm since that is right before our next meeting. I will choose PST as well. </li>
 							<li>After hitting the "Review" button I will be taken to another page to enter my options for the voters.</li>
-							<li>Once on this page I enter the goals that I want my staff to choose from. If I mess up on any options I am able to hit the delete button next to the option I wish to delete. The edit button will bring me back to the create a poll page if I discovered I would like to change my poll type, title, description, or the anonymous field. Then I hit the "Review" button once I'm finished entering options</li>
+							<li>Once on this page I enter the goals that I want my staff to choose from. If I mess up on any options I am able to hit the delete button next to the option I wish to delete. The edit button will bring me back to the create a poll page if I discovered I would like to change anything for my poll. Then I hit the "Review" button once I'm finished entering options.</li>
 							<li>I'm then brought to the confirmation page so I am able to make sure everything I entered looks good. If I need to make changes on anything I'll hit the "Edit" button which will bring me back to the previous screens to make changes.</li>
-							<li>I can now see the voting options that my users will pick from (since it's a multiple selection poll I will see everything I put down as options).If everything looks good and I am ready to send out my vote I'll hit the submit button.</li>
+							<li>I can now see the voting options that my users will pick from. If everything looks good and I am ready to send out my vote I'll hit the submit button.</li>
 						</ol>
-					</p>
-					<a asp-area="" asp-controller="Create" asp-action="Index"><button type="button" class="btn btn-primary">Create A Poll</button></a>
-				</div>
+						<br />
+						<div class="d-flex justify-content-center"> 
+							<a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index"><button class="btn btn-light btn-lg bg-success btn-outline-primary" type="button">Create A Poll</button></a>
+						</div>
+			  </div>
 			</div>
-		</div>
+		  </div>
+		  <div class="accordion-item">
+			<h2 class="accordion-header" id="headingThree">
+			  <button id="accord-three" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+				Multi-Round Poll
+			  </button>
+			</h2>
+			<div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionHelp">
+			  <div class="accordion-body" id="multi-round-descrption">
+				<strong>Multi-round polls are polls that have three or more vote options; the idea behind a multi-round poll is that it should be used in cases where the winning option needs to have a clear majority of the vote. After each round of a multi-round poll closes, the app will analyze the distribution of votes; there are five possible outcomes:</strong> 
+					<ol>
+						<li>No votes were submitted, in which case the vote creator will be notified by email.</li>
+						<li>There was a tie between all the vote options (they all received the same number of votes), in which case, the vote creator will be notified of the tie.</li>
+						<li>There was one option that had a clear majority of the votes (greater than 50%), in which case the vote creator will be notified of the winner.</li>
+						<li>No option had the majority, but the two options with the least number of votes were tied with the same number of votes, in which case the vote creator will be notified that there isn’t a clear vote option that can be dropped.</li>
+						<li>No option had the majority, but there was one option that had a smaller percentage of the votes than all the others. In this case, another round of voting will automatically be generated, with the same vote options as the previous round minus the vote option with the least number of votes from the previous round.</li>
+					</ol>
+					<br />
+					<div class="d-flex justify-content-center"> 
+							<a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index"><button class="btn btn-light btn-lg bg-success btn-outline-primary" type="button" id="multi-round-button">Create A Poll</button></a>
+					</div>
+			  </div>
+			</div>
+		  </div>
+	</div>
+</div>
+
+<div class="container-fluid mb-3">
+	<h3 class="text-white text-center" id="faq-title">FAQ's:</h3>
+	<div class="row row-cols-1 row-cols-md-3 g-6">
+		  <div class="col p-3">
+			<div class="card h-100 text-white bg-primary" id="faq-cards">
+			  <div class="card-body">
+				<h5 class="card-title">If I'm not logged in how do I see my poll results?</h5>
+				<hr />
+				<p class="card-text">You must have the access code in order to access a poll result (from the "Confirmation" page). Once upon the “Access” page you can enter the access code under poll results. </p>
+			  </div>
+			</div>
+		  </div>
+		  <div class="col p-3">
+			<div class="card h-100 text-white bg-primary">
+			  <div class="card-body">
+				<h5 class="card-title">What does a "private poll" mean?</h5>
+				<hr />
+				<p class="card-text">A private poll is one where only specified authorized people are allowed to vote. The creator will enter which emails they want to vote on this poll. Users will have to create an account to vote on this poll. </p>
+			  </div>
+			</div>
+		  </div>
+		   <div class="col p-3">
+			<div class="card h-100 text-white bg-primary">
+			  <div class="card-body">
+				<h5 class="card-title">What does an "anonymous poll" mean?</h5>
+				<hr />
+				<p class="card-text">An anonymous poll is one where the poll creator cannot see who voted on what option. This way the results remain anonymous in situations where voters can feel protected from coercion or repercussions. </p>
+			  </div>
+			</div>
+		  </div>
+		   <div class="col p-3">
+			<div class="card h-100 text-white bg-primary">
+			  <div class="card-body">
+				<h5 class="card-title">How do I send my poll to others? </h5>
+				<hr />
+				<p class="card-text">
+					Logged in Users: 
+					<ul>
+						<li>On the “Confirmation” page copy the poll access link to send to them, or send them the poll access code so they can enter it on the “Access” page. There will also be a QR code on this page. </li>
+						<li>On the “Poll Review” page find the poll you wish to send, then copy the poll access link or poll access code to send to your voters. There will also be a QR code on this page. </li>
+					</ul>
+					Non Logged in Users:
+					<ul>
+						<li>On the “Confirmation” page copy the poll access link to send to them, or send them the poll access code so they can enter it on the “Access” page. There will also be a QR code on this page. </li>
+					</ul>
+					</p>
+			  </div>
+			</div>
+		  </div>
+		  <div class="col p-3">
+			<div class="card h-100 text-white bg-primary">
+			  <div class="card-body">
+				<h5 class="card-title">What are the benefits of being a registered user?</h5>
+				<hr />
+				<p class="card-text">
+					<ul>
+						<li>You have the option to start the vote immediately, or a later time of your choice. </li>
+						<li>There is a “Vote History” page where you can see all the polls you have voted on and the choice you have chosen. </li>
+						<li>There is a “Poll Review” page which shows all the current and past polls you have created. You are able to send the poll out, edit it, or see the poll results on this page. </li>
+						<li>If a vote is not anonymous you are able to see who voted for what on the “Poll Review” page after clicking the results button. </li>
+					</ul>
+				</p>
+			  </div>
+			</div>
+		  </div>
+		   @*<div class="col p-3">
+			<div class="card h-100 text-white bg-primary">
+			  <div class="card-body">
+				<h5 class="card-title">How are multi-round polls processed?</h5>
+				<hr />
+				<p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+			  </div>
+			</div>
+		  </div>*@
 	</div>
 </div>
 

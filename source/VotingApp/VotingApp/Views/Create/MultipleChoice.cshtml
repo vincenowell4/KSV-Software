@@ -53,7 +53,7 @@
 				<div class="col-md-8 mx-auto justify-content-center"> 
 					<form asp-action="AddMultipleChoiceOption" method="get">
 						<input name="id" type="number" value="@Model.Id" hidden></input>
-						<label class="text-center text-white">Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options. To add more hit the add button.">&#8505;</span></label>
+						<label class="text-center text-white">Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options for a multiple choice poll and 3 options for a multi-round poll. To add more hit the add button.">&#8505;</span></label>
 						<div class="input-group">
 							<textarea name="option" class="form-control" type="text" rows="1" required></textarea>
 						
