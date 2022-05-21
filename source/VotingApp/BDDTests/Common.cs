@@ -19,6 +19,7 @@ namespace BDDTests
         public const string VoteReviewPage = "VoteReview";
         public const string AdminPageName = "Admin";
         public const string AboutPageName = "About Opiniony";
+        public const string HelpPageName = "Help";
 
         // A handy way to look these up
         public static readonly Dictionary<string, string> Paths = new()
@@ -31,6 +32,7 @@ namespace BDDTests
             { VoteReviewPage, "/Create/CreatedVotesReview" },
             { AdminPageName, "/Admin" },
             { AboutPageName, "/Help/About" }
+            { HelpPageName, "/Help" },
         };
 
         public static string PathFor(string pathName) => Paths[pathName];
