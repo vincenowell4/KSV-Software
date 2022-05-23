@@ -38,7 +38,7 @@ namespace VotingApp.DAL.Concrete
 
         public SubmittedVote GetVoteByIp(string ip, int voteId)
         {
-            return _context.SubmittedVotes.Where(a => a.Id == voteId && a.UserIp == ip).FirstOrDefault();
+            return _context.SubmittedVotes.Where(a => a.CreatedVoteId == voteId && a.UserIp == ip).FirstOrDefault();
         }
         //public Dictionary<string, string> GetAllSubmittedVotesWithLoggedInUsers(int id, IList<VoteOption> options)
         //{

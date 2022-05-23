@@ -193,7 +193,98 @@ namespace VotingApp.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult AccessGet(string code)
+        {
+            MethodBase method = MethodBase.GetCurrentMethod();
+            SubmitVoteVM model = new SubmitVoteVM();
+            SubmittedVote subVote = null;
+            model.vote = _createdVoteRepository.GetVoteByAccessCode(code);
+            var remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            if (model.vote != null && model.vote.VoteCloseDateTime >= TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
+            {
+                if (model.vote.PrivateVote == true)
+                {
+                    if (!User.Identity.IsAuthenticated)
+                    {
+                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name,
+                            "redirected unlogged in user trying to access private vote to /Identity/Account/Login");
+                        return Redirect("~/Identity/Account/Login");
+                    }
+                    else
+                    {
+                        VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                        if (user == null)
+                        {
+                            var newUser = new VotingUser { NetUserId = _userManager.GetUserId(User), UserName = _userManager.GetUserName(User) };
+                            user = _votingUserRepository.AddOrUpdate(newUser);
+                        }
+                        foreach (var users in model.vote.VoteAuthorizedUsers)
+                        {
+                            if (users.UserName == user.UserName)
+                            {
+                                if (user != null && user.Id != 0)
+                                {
+                                    subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
+                                    if (subVote != null)
+                                    {
+                                        model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                                    }
+                                }
+                                return View("SubmitVote", model);
+                            }
+                        }
+
+                        _appLogRepository.LogError(method.ReflectedType.Name, method.Name,
+                            "Unauthorized user tried accessing private vote with id: " + model.vote.Id);
+                        ViewBag.ErrorMessage = $"You are not authorized for this vote.";
+                        return View("Index");
+                    }
+                }
+
+                if (User.Identity.IsAuthenticated) //if user is logged in, check to see if they've already submitted a vote
+                {
+                    VotingUser user = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
+                    if (user != null && user.Id != 0)
+                    {
+                        subVote = _subVoteRepository.GetByUserIdAndVoteId(user.Id, model.vote.Id);
+                        if (subVote != null)
+                        {
+                            model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                        }
+                        else
+                        {
+                            subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
+                            if (subVote != null)
+                            {
+                                model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                            }
+                        }
+                    }
+                    return View("SubmitVote", model);
+                }
+                subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
+                if (subVote != null)
+                {
+                    model.submittedVote = subVote; // user already submitted a vote - store it in View Model
+                }
+                return View("SubmitVote", model);
+            }
+            else if (model.vote != null && model.vote.VoteCloseDateTime < TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, model.vote.TimeZone.TimeName))
+            {
+                ViewBag.ErrorMessage = $"The Voting Window Has Closed\nVoting Closed on {model.vote.VoteCloseDateTime.Value.Month}/{model.vote.VoteCloseDateTime.Value.Day}/{model.vote.VoteCloseDateTime.Value.Year} at {model.vote.VoteCloseDateTime.Value.TimeOfDay}";
+                return View("Index");
+            }
+            else
+            {
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Invalid access code on access page: " + code);
+                ViewBag.ErrorMessage = "Invalid Access Code";
+                return View("Index");
+            }
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Access(string code)
         {
             if (User.Identity.IsAuthenticated == false)
