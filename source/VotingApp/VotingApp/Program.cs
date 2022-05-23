@@ -40,7 +40,7 @@ builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSql
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
 
-/*
+
 var binDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase);
 string fullPath = Path.Combine(binDirectory, "credentials.json").Replace("file:\\", "");
 
@@ -51,7 +51,7 @@ using (StreamWriter outputFile = new StreamWriter(fullPath, false))
 
 // Set environment variabel to the full file path
 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", fullPath);
-*/
+
 // WHEN RUNNING LOCALLY AGAINST A LOCAL DATABASE, USE THIS
 var connectionString = builder.Configuration.GetConnectionString("VotingAppConnection");
 //*******************************************************************************************************************************************

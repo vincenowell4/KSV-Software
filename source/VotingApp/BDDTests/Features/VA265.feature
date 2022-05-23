@@ -14,3 +14,12 @@ Scenario Outline: When a poll has been voted on by the user, they will see a mes
 	Examples: 
 	| AccessCode |
 	| b14dac    |
+
+Scenario Outline: Audio Available On Vote Review Page
+	Given I am a user with first name '<FirstName>'
+		And I login
+	When I navigate to the 'VoteReview' page 
+	Then I will see qr code available for each vote
+	Examples:
+	| FirstName |
+	| sam   |

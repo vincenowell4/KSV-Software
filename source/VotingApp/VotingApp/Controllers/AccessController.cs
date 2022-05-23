@@ -252,19 +252,11 @@ namespace VotingApp.Controllers
                         {
                             model.submittedVote = subVote; // user already submitted a vote - store it in View Model
                         }
-                        else
-                        {
-                            subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
-                            if (subVote != null)
-                            {
-                                model.submittedVote = subVote; // user already submitted a vote - store it in View Model
-                            }
-                        }
                     }
                     return View("SubmitVote", model);
                 }
                 subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
-                if (subVote != null)
+                if (subVote != null && subVote.UserId == null)
                 {
                     model.submittedVote = subVote; // user already submitted a vote - store it in View Model
                 }
