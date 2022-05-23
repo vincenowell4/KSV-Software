@@ -352,8 +352,6 @@ namespace VotingApp.Controllers
         {
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
-
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
             var qrcode = _qrCodeCreationService.CreateQRCode(
                $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
