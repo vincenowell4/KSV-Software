@@ -158,6 +158,6 @@ app.MapControllerRoute(
 app.MapControllerRoute(
         name: "Access Vote Share Link",
         pattern: "Access/{code?}",
-        defaults: new { controller = "Access", action = "Access" });
+        defaults: new { controller = "Access", action = "AccessGet" });
     
 app.Run();
