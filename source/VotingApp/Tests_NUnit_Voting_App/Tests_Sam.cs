@@ -218,6 +218,15 @@ namespace Tests_NUnit_Voting_App
         }
 
         [Test]
+        //VA-265
+        public void Test_subvote_repo_GetQRCode_should_return_byteArray()
+        {
+            QRCodeCreationService qr = new QRCodeCreationService();
+            var result = qr.CreateQRCode("test/test");
+            Assert.True(result != null);
+        }
+
+        [Test]
         //VA-266
         public void Test_subvote_repo_GetbyIP_should_return_a_subvote()
         {
