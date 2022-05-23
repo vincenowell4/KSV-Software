@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 
@@ -71,9 +72,11 @@ namespace VotingApp.Controllers
         public IActionResult Index()
         {
             string remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            var test = Dns.GetHostEntry(remoteIpAddress);
             if (remoteIpAddress == "::1") remoteIpAddress = "(localhost)";
             MethodBase method = MethodBase.GetCurrentMethod();
-            _appLogRepository.LogInfo(method.ReflectedType.Name, method.Name, "Client IP: " + remoteIpAddress + ", for user "+ User.Identity.Name);
+            _appLogRepository.LogInfo(method.ReflectedType.Name, method.Name,
+                "Client IP: " + remoteIpAddress + ", for user " + User.Identity.Name + "extra: ");// + test.HostName);// + ","+test.AddressList[0] + "," + test.AddressList[1]);
             
             SelectList selectListVoteType = null;
             SelectList timeZoneList = null;
@@ -352,6 +355,7 @@ namespace VotingApp.Controllers
         {
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
+
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
             var qrcode = _qrCodeCreationService.CreateQRCode(
                $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
