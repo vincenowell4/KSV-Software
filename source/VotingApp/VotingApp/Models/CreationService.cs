@@ -42,23 +42,20 @@ namespace VotingApp.Models
             {
                 createdVote.RoundNumber = 1;
             }
+            if (createdVote.VoteOpenDateTime == null)
+                createdVote.VoteOpenDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, _timeZoneRepository.GetById(createdVote.TimeZoneId).TimeName);
 
             if (createdVote.VoteCloseDateTime == null)
             {
-                if (createdVote.VoteOpenDateTime == null)
-
-                    createdVote.VoteCloseDateTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, _timeZoneRepository.GetById(createdVote.TimeZoneId).TimeName).AddHours(24);
-                else
-                    createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
-
+                createdVote.VoteCloseDateTime = createdVote.VoteOpenDateTime.Value.AddHours(24);
             }
             try
             {
-                if (createdVote.VoteOpenDateTime == null)
+                if(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, _timeZoneRepository.GetById(createdVote.TimeZoneId).TimeName) >= createdVote.VoteOpenDateTime) 
+                {
                     createdVote.VoteAccessCode = _voteCreationService.generateCode();
-               // createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+                }
                 _createdVoteRepository.AddOrUpdate(createdVote);
-
             }
             catch (Exception ex)
             {
