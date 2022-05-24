@@ -491,6 +491,9 @@ namespace VotingApp.Controllers
                             var vm = new VoteResultsVM();
                             vm.VoteTitle = createdVote.VoteTitle;
                             vm.VoteDescription = createdVote.VoteDiscription;
+                            vm.VoteAccessCode = createdVote.VoteAccessCode;
+                            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime;
+                            vm.TimeZone = createdVote.TimeZone;
                             vm.AnonymousVote = createdVote.AnonymousVote;
                             vm.VoteId = createdVote.Id;
                             vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
@@ -515,6 +518,9 @@ namespace VotingApp.Controllers
                     var vm = new VoteResultsVM();
                     vm.VoteTitle = createdVote.VoteTitle;
                     vm.VoteDescription = createdVote.VoteDiscription;
+                    vm.VoteAccessCode = createdVote.VoteAccessCode;
+                    vm.VoteCloseDateTime = createdVote.VoteCloseDateTime;
+                    vm.TimeZone = createdVote.TimeZone;
                     vm.AnonymousVote = createdVote.AnonymousVote;
                     vm.VoteId = createdVote.Id;
                     vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);

@@ -5,7 +5,9 @@ namespace VotingApp.ViewModel
     {
         public string VoteTitle { get; set; }
         public string VoteDescription { get; set; }
-
+        public string VoteAccessCode { get; set; }
+        public DateTime? VoteCloseDateTime { get; set; }
+        public virtual VoteTimeZone TimeZone { get; set; } = null!;
         public int VoteId { get; set; }
         public IList<VoteOption> VoteOptions { get; set; }
 

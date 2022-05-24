@@ -113,20 +113,38 @@ namespace VotingApp.DAL.Concrete
 
         public IList<CreatedVote> GetOpenCreatedVotes(IList<CreatedVote> createdVotes)
         {
-            var currentDate = DateTime.Today;
-
-            var openVotes = createdVotes.Where(a => a.VoteCloseDateTime > currentDate).ToList();
-            var correctOrder = openVotes.OrderBy(a => a.VoteCloseDateTime).ToList();
-            return correctOrder;
+            IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote2 = new List<CreatedVote>();
+            if (createdVote != null)
+            {
+                foreach (CreatedVote cv in createdVote)
+                {
+                    if (DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, cv.TimeZone.TimeName), cv.VoteCloseDateTime.Value) < 0)
+                    {
+                        createdVote2.Add(cv);
+                    }
+                }
+            }
+            return createdVote2;
         }
 
         public IList<CreatedVote> GetClosedCreatedVotes(IList<CreatedVote> createdVotes)
         {
-            var currentDate = DateTime.Today;
-            var closedVotes = createdVotes.Where(a => a.VoteCloseDateTime < currentDate).ToList();
-            var correctOrder = closedVotes.OrderByDescending(a => a.VoteCloseDateTime).ToList();
-            return correctOrder;
+            IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote2 = new List<CreatedVote>();
+            if (createdVote != null)
+            {
+                foreach (CreatedVote cv in createdVote)
+                {
+                    if (DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, cv.TimeZone.TimeName), cv.VoteCloseDateTime.Value) > 0)
+                    {
+                        createdVote2.Add(cv);
+                    }
+                }
+            }
+            return createdVote2;
         }
+
         public IList<CreatedVote> GetAllClosedMultiRoundVotes()
         {
             IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null).ToList();

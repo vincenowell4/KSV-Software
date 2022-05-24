@@ -43,6 +43,15 @@
 						<h5><mark>There are no submitted votes yet for this poll</mark></h5>
 					</div>
 				}
+				@{
+					var rightNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, Model.VotingResults[i].TimeZone.TimeName);
+				}
+				@if (Model.VotingResults[i].VoteAccessCode != null && Model.VotingResults[i].VoteCloseDateTime > rightNow)
+				{				
+					<div class="text-center text-white mb-3">
+						<h5>Access code: <a href=@(String.Format("/Access/{0}", Model.VotingResults[i].VoteAccessCode))>@Model.VotingResults[i].VoteAccessCode</a></h5>
+					</div> 
+				}
 			</div>
 			<div class="container text-center text-white">
 				<div class="row">
