@@ -72,11 +72,17 @@ namespace VotingApp.Controllers
         public IActionResult Index()
         {
             string remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-            var test = Dns.GetHostEntry(remoteIpAddress);
+
+            var cookieKey = Request.Cookies;
+            var key = Request.Cookies["ClientId"];
+            if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
+            {
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+            }
             if (remoteIpAddress == "::1") remoteIpAddress = "(localhost)";
             MethodBase method = MethodBase.GetCurrentMethod();
             _appLogRepository.LogInfo(method.ReflectedType.Name, method.Name,
-                "Client IP: " + remoteIpAddress + ", for user " + User.Identity.Name + "extra: ");// + test.HostName);// + ","+test.AddressList[0] + "," + test.AddressList[1]);
+                "Client IP: " + remoteIpAddress + ", for user " + User.Identity.Name + "CookieID: "+key);// + test.HostName);// + ","+test.AddressList[0] + "," + test.AddressList[1]);
             
             SelectList selectListVoteType = null;
             SelectList timeZoneList = null;
