@@ -196,6 +196,12 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult AccessGet(string code)
         {
+            var key = Request.Cookies["ClientId"];
+            if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
+            {
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+                key = Request.Cookies["ClientId"];
+            }
             MethodBase method = MethodBase.GetCurrentMethod();
             SubmitVoteVM model = new SubmitVoteVM();
             SubmittedVote subVote = null;
@@ -255,7 +261,7 @@ namespace VotingApp.Controllers
                     }
                     return View("SubmitVote", model);
                 }
-                subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
+                subVote = _subVoteRepository.GetVoteByIp(key, model.vote.Id);
                 if (subVote != null && subVote.UserId == null)
                 {
                     model.submittedVote = subVote; // user already submitted a vote - store it in View Model
@@ -279,6 +285,12 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Access(string code)
         {
+            var key = Request.Cookies["ClientId"];
+            if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
+            {
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+                key = Request.Cookies["ClientId"];
+            }
             if (User.Identity.IsAuthenticated == false)
             {
                 string secretKey = this._configuration["RecaptchaKey"];
@@ -365,7 +377,7 @@ namespace VotingApp.Controllers
                     }
                     return View("SubmitVote", model);
                 }
-                subVote = _subVoteRepository.GetVoteByIp(remoteIpAddress, model.vote.Id);
+                subVote = _subVoteRepository.GetVoteByIp(key, model.vote.Id);
                 if (subVote != null)
                 {
                     model.submittedVote = subVote; // user already submitted a vote - store it in View Model
@@ -388,6 +400,12 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult CastVote(int voteID, int choice)
         {
+            var key = Request.Cookies["ClientId"];
+            if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
+            {
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+                key = Request.Cookies["ClientId"];
+            }
 
             var vote = _createdVoteRepository.GetById(voteID);
             var user = new VotingUser();
@@ -420,7 +438,7 @@ namespace VotingApp.Controllers
             {
                 user = null;
             }
-            var subvote = new SubmittedVote { UserIp = remoteIpAddress, User = user, CreatedVote = vote, VoteChoice = choice, DateCast = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
+            var subvote = new SubmittedVote { UserIp = key, User = user, CreatedVote = vote, VoteChoice = choice, DateCast = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, vote.TimeZone.TimeName) };
             vote.SubmittedVotes.Add(subvote);
             _createdVoteRepository.AddOrUpdate(vote);
             var model = new SubmitConfirmationModel { OptionId = subvote.VoteChoice, CreateId = vote.Id };
