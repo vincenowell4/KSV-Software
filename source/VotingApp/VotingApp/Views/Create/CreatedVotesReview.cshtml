@@ -62,7 +62,7 @@
 									}
 									<td >@createdVote.VoteType.VotingType</td>
 									<td>@createdVote.AnonymousVote</td>
-									<td>@createdVote.VoteAccessCode
+									<td><a href=@(String.Format("/Access/{0}",@createdVote.VoteAccessCode))>@createdVote.VoteAccessCode</a>
 										<div class="row justify-content-center">
                                     <button class="btn btn-light bg-success btn-outline-primary accessBtn"  style="width: 50px" id="accessBtn" data-url="@Html.Raw($"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}/Access/{createdVote.VoteAccessCode}")">
                                             <i class="fa-solid fa-copy fa-2xs"></i></button>
