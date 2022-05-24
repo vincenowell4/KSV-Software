@@ -199,7 +199,16 @@ namespace VotingApp.Controllers
             var key = Request.Cookies["ClientId"];
             if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
             {
-                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+                var cookieOptions = new CookieOptions()
+                {
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Secure = false,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(14)
+                };
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString(), cookieOptions);
+                
                 key = Request.Cookies["ClientId"];
             }
             MethodBase method = MethodBase.GetCurrentMethod();
@@ -288,7 +297,16 @@ namespace VotingApp.Controllers
             var key = Request.Cookies["ClientId"];
             if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
             {
-                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+                var cookieOptions = new CookieOptions()
+                {
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Secure = false,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(14)
+                };
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString(), cookieOptions);
+
                 key = Request.Cookies["ClientId"];
             }
             if (User.Identity.IsAuthenticated == false)
@@ -403,7 +421,16 @@ namespace VotingApp.Controllers
             var key = Request.Cookies["ClientId"];
             if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
             {
-                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString());
+                var cookieOptions = new CookieOptions()
+                {
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Secure = false,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(14)
+                };
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString(), cookieOptions);
+
                 key = Request.Cookies["ClientId"];
             }
 
