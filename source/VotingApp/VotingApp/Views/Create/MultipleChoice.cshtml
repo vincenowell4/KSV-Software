@@ -53,9 +53,9 @@
 				<div class="col-md-8 mx-auto justify-content-center"> 
 					<form asp-action="AddMultipleChoiceOption" method="get">
 						<input name="id" type="number" value="@Model.Id" hidden></input>
-						<label class="text-center text-white">Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options for a multiple choice poll and 3 options for a multi-round poll. To add more hit the add button.">&#8505;</span></label>
+						<label class="text-center text-white mt-2">Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options for a multiple choice poll and 3 options for a multi-round poll. To add more hit the add button.">&#8505;</span></label>
 						<div class="input-group">
-							<textarea name="option" class="form-control" type="text" rows="1" required></textarea>
+							<textarea name="option" class="h-25 form-control mt-3" type="text" rows="1" required></textarea>
 						
 							<div class="input-group-append p-3">
 								@if (Model.VoteOptions.Count() > 9)
@@ -75,16 +75,16 @@
 		<div class="row mb-2">
 			<div class="col justify-content-center btn-group">
 				<form asp-action="BackToIndexPage">
-					<button type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-info btn-outline-primary" value="@Model.Id" name="ID">Edit</button>
+					<button type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-info btn-outline-primary mb-2" value="@Model.Id" name="ID">Edit</button>
 				</form>
 				&nbsp;&nbsp;
 				<form asp-action="MultipleChoiceToConfirmation" method="post">
 					@if (@Model.VoteOptions.Count() >= ((Model.VoteTypeId == 3) ? 3 : 2 ) )
 					{
-						<button name="id" type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-secondary btn-outline-primary" value="@Model.Id">Submit</button>
+						<button name="id" type="submit" style="width: 100px !important" class="btn btn-light btn-lg bg-secondary btn-outline-primary mb-2" value="@Model.Id">Submit</button>
 					}
 					else {
-						<button style="width: 100px !important" class="btn btn-light btn-lg bg-secondary btn-outline-primary disabled">Submit</button>
+						<button style="width: 100px !important" class="btn btn-light btn-lg bg-secondary btn-outline-primary disabled mb-2">Submit</button>
 					}
 				</form>
 			</div>
