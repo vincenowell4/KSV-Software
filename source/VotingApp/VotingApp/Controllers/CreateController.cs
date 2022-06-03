@@ -297,7 +297,8 @@ namespace VotingApp.Controllers
             return View(vote);
         }
 
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddMultipleChoiceOption(int id, string option)
         {
             MethodBase method = MethodBase.GetCurrentMethod();
@@ -571,6 +572,8 @@ namespace VotingApp.Controllers
             ViewData["TimeZoneId"] = timeZoneList;
             return View("Index",result);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult GetUsers(int id, string userListString)
         {
             var createdVote = _createdVoteRepository.GetById(id);
