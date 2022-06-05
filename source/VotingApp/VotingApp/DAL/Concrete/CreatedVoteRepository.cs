@@ -113,7 +113,7 @@ namespace VotingApp.DAL.Concrete
 
         public IList<CreatedVote> GetOpenCreatedVotes(IList<CreatedVote> createdVotes)
         {
-            IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote = createdVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
             IList<CreatedVote> createdVote2 = new List<CreatedVote>();
             if (createdVote != null)
             {
@@ -130,7 +130,7 @@ namespace VotingApp.DAL.Concrete
 
         public IList<CreatedVote> GetClosedCreatedVotes(IList<CreatedVote> createdVotes)
         {
-            IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote = createdVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
             IList<CreatedVote> createdVote2 = new List<CreatedVote>();
             if (createdVote != null)
             {
