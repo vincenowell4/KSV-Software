@@ -25,6 +25,11 @@ namespace VotingAppService
             _logger.LogInformation("VotingAppApiUrl: " + apiClientConfig.VotingAppApiUrl);
 
             string apiKey = ApiKey.voteAppApiKey;
+            int runInterval = 3600000;
+            if (ApiKey.voteSvcRunInterval != null)
+            {
+                runInterval = Convert.ToInt32(ApiKey.voteSvcRunInterval);
+            }
 
             client.BaseAddress = new Uri(apiClientConfig.VotingAppApiUrl);
             client.DefaultRequestHeaders.Accept.Clear();
@@ -50,7 +55,7 @@ namespace VotingAppService
 
                             foreach (CreatedVoteViewModel createdVote in createdVotes)
                             {
-                                if (createdVote.VoteOpenDateTime != null && DateTime.Compare(createdVote.VoteOpenDateTime.Value, DateTime.Now) < 0 )
+                                if (createdVote.VoteOpenDateTime != null && DateTime.Compare(createdVote.VoteOpenDateTime.Value, TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote.TimeZone)) < 0 )
                                 {
                                     // The vote open date/time for this vote is in the past - create an access code
                                     _logger.LogInformation("Created Vote ID: " + createdVote.Id + " opened " + createdVote.VoteOpenDateTime);
@@ -270,7 +275,7 @@ namespace VotingAppService
                 }
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 //await Task.Delay(3600000, stoppingToken);
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(runInterval, stoppingToken);
             }
         }
     }
@@ -279,6 +284,8 @@ namespace VotingAppService
     {
         public int Id { get; set; }
         public DateTime? VoteOpenDateTime { get; set; }
+
+        public string TimeZone { get; set; }
     }
 
     public class CreatedMultiRoundVoteViewModel

@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using SpecFlow.Actions.Selenium;
+using VotingApp.Models;
 
 namespace BDDTests.PageObjects
 {
@@ -9,11 +10,26 @@ namespace BDDTests.PageObjects
         private IWebElement VoteStartNow => _browserInteractions.WaitAndReturnElement(By.Id("VoteStartNow"));
         private IWebElement VoteStartFuture => _browserInteractions.WaitAndReturnElement(By.Id("VoteStartFuture"));
         private IWebElement VoteOpenDateTime => _browserInteractions.WaitAndReturnElement(By.Id("VoteOpenDateTime"));
+        private IWebElement VoteTypeCollapsible => _browserInteractions.WaitAndReturnElement(By.Id("VoteCollapsible"));
+        private IWebElement VoteRequiredFieldsHeader => _browserInteractions.WaitAndReturnElement(By.Id("RequiredHeader"));
+        private IWebElement VoteTitleField => _browserInteractions.WaitAndReturnElement(By.Id("VoteTitle"));
+        private IWebElement VoteDescriptionField => _browserInteractions.WaitAndReturnElement(By.Id("VoteDescription"));
+        private IWebElement VoteTypeDropDown => _browserInteractions.WaitAndReturnElement(By.Id("VoteType"));
+        private IWebElement TimeZoneDropDown => _browserInteractions.WaitAndReturnElement(By.Id("timeZoneList"));
 
+        private IEnumerable<IWebElement> TimeZoneOptions => _browserInteractions.WaitAndReturnElements(By.CssSelector("#timeZonesList option"));
+
+        public string GetTimeZoneItems(int index) => TimeZoneOptions.ElementAt(index).Text;
+        public IEnumerable<string> GetTimeZoneItemsTexts() => TimeZoneOptions.Select(x => x.Text);
         public Boolean GetVoteStartNowDisplayed => VoteStartNow.Displayed;
         public Boolean GetVoteStartFutureDisplayed => VoteStartFuture.Displayed;
         public Boolean GetVoteOpenDateTimeEnabled => VoteOpenDateTime.Enabled;
-
+        public Boolean GetVoteTypeCollapsibleDisplayed => VoteTypeCollapsible.Displayed;
+        public Boolean GetVoteRequiredHeader => VoteRequiredFieldsHeader.Displayed;
+        public Boolean GetVoteTitleArea => VoteTitleField.Displayed;
+        public Boolean GetVoteDescriptionArea => VoteDescriptionField.Displayed;
+        public Boolean GetVoteTypeDropDown => VoteTypeDropDown.Displayed;
+        public Boolean GetTimeZoneDropDown => TimeZoneDropDown.Displayed;
         public string GetFutureDateText => VoteOpenDateTime.Text;
 
 
@@ -31,7 +47,12 @@ namespace BDDTests.PageObjects
 
         public void StartVoteFutureClick()
         {
-            VoteStartFuture.Click();
+            VoteStartFuture.ClickWithRetry();
+        }
+
+        public void SetVoteTypeDropDown()
+        {
+            VoteTypeDropDown.SelectDropdownOptionByValue("Multiple Choice Multi-Round Vote");
         }
 
         public void EnterFutureDate(string date)

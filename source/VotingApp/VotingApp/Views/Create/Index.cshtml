@@ -5,193 +5,325 @@
 
 
 <div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px;
-    height: 90vh; 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage3b.jpg); 
-    background-size: cover; 
-    left: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    max-width: 100vw;
-    position: relative;
-    right: 50%;
-    width: 100vw;">
+	                                                     height: 90vh; 
+	                                                     background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage3b.jpg); 
+	                                                     background-size: cover; 
+	                                                     left: 50%;
+	                                                     margin-left: -50vw;
+	                                                     margin-right: -50vw;
+	                                                     max-width: 100vw;
+	                                                     position: relative;
+	                                                     right: 50%;
+	                                                     width: 100vw;">
 
-    <div class="text-center text-white">
-        <h1 class="display-4">Create A New Vote</h1>
-        <hr class="mb-4"/>
-    </div>
+	<div class="text-center text-white">
+		<h1 class="display-4">Create A New Poll</h1>
+		<hr class="mb-4"/>
+	</div>
 
-    @{string formValue = (Model == null ? "Index" : "edit" );}
+	@{string formValue = (Model == null ? "Index" : "edit" );}
 
-    <div class="text-center text-white">
-        <div class="text-center col-md-8 mx-auto">
-            <form asp-action=@formValue method="post" onsubmit="return validateDate();">
-                @if (Model != null)
-                {
-	                <input asp-for="Id" type="number" value="@Model.Id" hidden></input>
-                    <input name="oldVoteTypeId" value="@Model.VoteTypeId" hidden></input>
-                    <input asp-for="Id" type="text" value="@Model.VoteAccessCode" hidden></input>
-                    <input asp-for="VoteAccessCode" value="@Model.VoteAccessCode" hidden></input>
-                }
-                <div class="form-row mb-4 text-center">
-					<label asp-for="VoteTitle">Please enter your vote title in the box below (required): <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the vote you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this vote title.">&#8505;</span></label>
-					<textarea asp-for="VoteTitle" class="form-control" type="text" rows="1" required > @if (Model != null) { @Model.VoteTitle }</textarea>
-					<span asp-validation-for="VoteTitle" class="text-danger"></span>
-				</div>
-				<div class="form-row mb-4">
-					<label asp-for="VoteDiscription">Please enter your vote description in the box below (required): <span data-toggle="tooltip" data-placement="bottom" title="The vote description is to give users a better idea about why/what they are voting about. If it's a yes/no vote you can use this description to explain to the user what the yes stands for and what the no stands for. Here you can let the users know if there will be a time limit on this vote as well, and more details such as if it will be completely anonymous for even the vote creator to see the results of how individuals voted.">&#8505;</span></label>
-					<textarea asp-for="VoteDiscription" class="form-control" type="text" rows="5" required>@if (Model != null) { @Model.VoteDiscription }</textarea>
-					<span asp-validation-for="VoteDiscription" class="text-danger"></span>
-				</div>
-                <div class="form-row mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <label asp-for="VoteTypeId" class="control-label">Please choose which type of vote you would like to create:</label>
-                            <select asp-for="VoteTypeId" class="form-control" asp-items="ViewBag.VoteTypeId"></select>
-                            <span asp-validation-for="VoteTypeId" class="text-danger"></span>
-                        </div>
-                        <div class="col align-self-center">
-
-                            <input asp-for="AnonymousVote" class="form-check-input" type="checkbox" value="true" id="flexCheckDefault">
-                            <label class="form-check-label" for="flexCheckDefault">
-                                Is this vote anonymous? <span data-toggle="tooltip" data-placement="bottom" title="Check this anonymous button if you just want the overall results of the vote where individual user votes will be kept anonymous.">&#8505;</span>
-                            </label>
-                            </div>
-                            <div class="col align-self-center">
-                            <input asp-for="PrivateVote" class="form-check-input" type="checkbox" value="true" id="privatecheck">
-                            <label class="form-check-label" for="privatecheck">
-                                Is this a private vote? <span data-toggle="tooltip" data-placement="bottom" title="Check this if you want to specify who can cast a vote for this given vote.">&#8505;</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                @if (User != null && User.Identity.IsAuthenticated)
-                {
-                    <div class="form-row mb-4">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label class="control-label">Start Vote Immediately</label>
-                                <input type="radio" id="VoteStartNow" checked="checked" name="VoteStart" onclick="setVoteOpenDateTime(0);" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="control-label">Start Vote at a Future Time</label>
-                                <input type="radio" id="VoteStartFuture" name="VoteStart" onclick="setVoteOpenDateTime(1);" />
-                            </div>
-                            <div class="col-md-6 align-self-center">
-                                <label class="control-label text-white">When does voting start? <span data-toggle="tooltip" data-placement="bottom" title="Enter a future date and time for when you want the voting to start">&#8505;</span></label>
-                                <input asp-for="VoteOpenDateTime" type="text" id="VoteOpenDateTime" disabled />
-
-                            </div>
-                        </div>
-                    </div>
-                }
-                <div class="row mb-3 justify-content-center">
-                    @if (ViewBag.ErrorMessage == "Vote start date/time must be in the future. Please try again." )
-                    {
-                        <div class="alert alert-danger">
-                            <p>@ViewBag.ErrorMessage</p>
-                        </div>
-                    }
-                </div>
-
-                <div class="form-row mb-4">
-                    <div class="row">
-                        <div class="form-group">
-                            <label class="form-check-label" for="datetime">
-                                When does the voting close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to never close.">&#8505;</span>
-                            </label>
-                            <input asp-for="VoteCloseDateTime" type="text" id="VoteCloseDateTime" readonly/>
-
-                        </div>
-                        
-                    </div>
-                </div>
-                <div class="row mb-3 justify-content-center">
-                    @if (ViewBag.ErrorMessage == "Vote close date/time must be in the future. Please try again." || 
-                         ViewBag.ErrorMessage == "Vote close date/time must be after vote start date/time")
-                    {
-                        <div class="alert alert-danger">
-                            <p>@ViewBag.ErrorMessage</p>
-                        </div>
-                    }
-                </div>
-				<div class="row mb-3 justify-content-center">
-					<h4><u>Voting Type Descriptions:</u></h4>
-					<div class="col-3 justify-content-center">
-						<div class="card justify-content-center">
-							<div class="card-body justify-content-center">
-								<h5 class="card-title text-black">Yes/No Vote:</h5>
-								<p class="card-text text-black">Voters will get to choose between two simple options: yes or no.</p>
+	<div class="text-center text-white">
+		<div class="text-center col-md-8 mx-auto">
+			<form asp-action=@formValue method="post" onsubmit="return validateForm();">
+				@if (Model != null)
+				{
+					<input asp-for="Id" type="number" value="@Model.Id" hidden></input>
+					<input name="oldVoteTypeId" value="@Model.VoteTypeId" hidden></input>
+					<input asp-for="Id" type="text" value="@Model.VoteAccessCode" hidden></input>
+					<input asp-for="VoteAccessCode" value="@Model.VoteAccessCode" hidden></input>
+				}
+				<div class="d-flex flex-column justify-content-center">
+					<span class="p-2 border border-white">
+						<h3 style="text-decoration: underline" class="p-2" id="RequiredHeader">Required Fields:</h3>
+						<div class="form-row p-2">
+							<label asp-for="VoteTitle" id="VoteTitle">Poll Title: <span data-toggle="tooltip" data-placement="bottom" title="This will be the title of the poll you are going to create. It will give voters a general idea about what they are voting on. If you have an account you will also be able to see a list of previous voting results organized by this poll title.">&#8505;</span></label>
+							<textarea asp-for="VoteTitle" class="form-control" type="text" rows="1" placeholder="Please enter title here" required > @if (Model != null){@Model.VoteTitle}</textarea>
+							<span asp-validation-for="VoteTitle" class="text-danger"></span>
+						</div>
+						<div class="form-row p-2">
+							<label asp-for="VoteDiscription" id="VoteDescription">Poll Description: <span data-toggle="tooltip" data-placement="bottom" title="The poll description is to give users a better idea about why/what they are voting about. If it's a yes/no poll you can use this description to explain to the user what the yes stands for and what the no stands for. Here you can let the users know if there will be a time limit on this poll as well, and more details such as if it will be completely anonymous for even the poll creator to see the results of how individuals voted.">&#8505;</span></label>
+							<textarea asp-for="VoteDiscription" class="form-control" type="text" rows="4" placeholder="Please enter description here" required>@if (Model != null){@Model.VoteDiscription}</textarea>
+							<span asp-validation-for="VoteDiscription" class="text-danger"></span>
+						</div>
+						<div class="row justify-content-md-center p-2">
+							<div class="col-md-6">
+								<label asp-for="VoteTypeId" class="control-label" id="VoteType">Poll Type: <span data-toggle="tooltip" data-placement="bottom" title="If you change your poll type from multiple choice to yes/no the vote options you created will be lost">&#8505;</span></label>
+								<select asp-for="VoteTypeId" class="form-control" id="VoteTypeSelect" asp-items="ViewBag.VoteTypeId" onchange="changeVoteType();"></select>
+								<span asp-validation-for="VoteTypeId" class="text-danger"></span>
+							</div>
+							<div class="col-md-4 mt-4">
+								<button type="button" id="VoteCollapsible" class="btn btn-light bg-success btn-outline-primary" data-toggle="collapse" data-target="#descriptions">Poll Type Descriptions</button>
+								<div id="descriptions" class="collapse">
+									<br/>
+									<h5>Yes/No Poll:</h5>
+									<p>Voters will get to choose between two simple options: yes or no.</p>
+									<hr/>
+									<h5>Multiple Choice Poll:</h5>
+									<p>Poll creators will get to enter their own multiple choice voting options (2-25 options). Voters will then get to choose one option from those created voting options.</p>
+                                    <hr/>
+                                    <h5>Multiple Choice Multi-Round Poll:</h5>
+									<p>Only Available To Registered, Logged-In Users - Poll creators will get to enter their own multiple choice voting options (3-25 options). Voters will then get to choose one option from those created voting options. There can be multiple rounds of voting until one option has the majority of votes.</p>
+                                </div>
 							</div>
 						</div>
+					</span>
+				</div>
+				<div class="row mt-2 mb-2">
+					<div class="col">
+						<div class="d-flex flex-column justify-content-center">
+							<span class="p-2 border border-white">
+								<h3 style="text-decoration: underline" class="p-2">Times (optional):</h3>
+                                @if (User != null && User.Identity.IsAuthenticated)
+								{
+									<div class="form-row">
+										<div class="row p-2">
+											<div class="form-group">
+												<Label>Start Poll &nbsp;&nbsp;</Label>
+												<input type="radio" id="VoteStartNow" checked="checked" name="VoteStart" onclick="setVoteOpenDateTime(0);" />
+												<label class="control-label">Immediately &nbsp;&nbsp;</label>
+												<input type="radio" id="VoteStartFuture" name="VoteStart" onclick="setVoteOpenDateTime(1);" />
+												<label class="control-label">At a Future Time</label>
+											</div>
+										</div>
+										<div class="row p-2">
+											<div class="form-group">
+												<label class="control-label text-white">When does voting start? <span data-toggle="tooltip" data-placement="bottom" title="Enter a future date and time for when you want the voting to start">&#8505;</span></label>
+												<input asp-for="VoteOpenDateTime" placeholder="YYYY-MM-DD HH:MM" type="text" id="VoteOpenDateTime" disabled/>
+											</div>
+										</div>
+									</div>
+								}
+								@if (ViewBag.ErrorMessage == "Poll start date/time must be in the future. Please try again." )
+								{
+									<div class="row mb-3 justify-content-center">
+										<div class="alert alert-danger">
+											<p>@ViewBag.ErrorMessage</p>
+										</div>
+									</div>
+								}
+                                <div class="form-row mb-4">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label class="form-check-label" for="datetime">
+                                                When does the poll close?<span data-toggle="tooltip" data-placement="bottom" title="Enter the date and time for when you want the voting to stop, leave empty for the voting to close in 24 hours.">&#8505;</span>
+                                            </label>
+                                            <input asp-for="VoteCloseDateTime" placeholder="YYYY-MM-DD HH:MM" type="text" id="VoteCloseDateTime" readonly/>
+                                        </div>
+				                        
+                                    </div>
+                                </div>
+
+								<div class="form-row mb-4" id="RoundLength" style="display:none">
+									<div class="row">
+										<h6>Multi-Round Voting - Time Length for Each Round After Round 1</h6>
+										<div class="form-group">
+											<label class="form-check-label px-2" for="RoundDays">Days &nbsp;<label>
+											<input style="width:60px" min=0 max=999 asp-for="RoundDays" type="number" id="MRVoteDays"/>
+											<label class="form-check-label px-2" for="RoundHours">Hours &nbsp;<label>
+											<input style="width:60px" min=0 max=24 asp-for="RoundHours" type="number" id="MRVoteHours"/>
+											<label class="form-check-label px-2" for="RoundMinutes">Minutes &nbsp;<label>
+											<input style="width:60px" min=0 max=60  asp-for="RoundMinutes" type="number" id="MRVoteMins"/>
+										</div>
+				                        
+									</div>
+								</div>
+
+                                <div class="row mb-3 justify-content-center">
+                                <div class="col-md-6">
+                                    <label asp-for="TimeZoneId" class="control-label" id="TimeZone">TimeZone:<span data-toggle="tooltip" data-placement="bottom" title="Select the time zone you would like your vote to be in.">&#8505;</span></label>
+                                    <select asp-for="TimeZoneId" class="form-control" id="timeZoneList" asp-items="ViewBag.TimeZoneId"></select>
+                                    <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                                </div>
+                                </div>
+								<div class="row mb-3 justify-content-center">
+									@if (ViewBag.ErrorMessage == "Poll close date/time must be in the future. Please try again." || 
+									     ViewBag.ErrorMessage == "Poll close date/time must be after poll start date/time")
+									{
+										<div class="alert alert-danger">
+											<p>@ViewBag.ErrorMessage</p>
+										</div>
+									}
+								</div>
+							</span>
+						</div>
 					</div>
-					<div class="col-3 justify-content-center">
-						<div class="card justify-content-center">
-							<div class="card-body justify-content-center">
-								<h5 class="card-title text-black">Multiple Choice Vote:</h5>
-								<p class="card-text text-black">Vote creators will get to enter their own multiple choice voting options (2-10 options). Voters will then get to choose one option from those created voting options.</p>
-							</div>
+					<div class="col">
+						<div class="d-flex flex-column">
+							<span class="p-2 border border-white">
+								<h3 style="text-decoration: underline" class="p-2">Privacy (optional):</h3>
+								<div class="form-row mb-4">
+									<div class="row p-2">
+										<div class="custom-control custom-checkbox text-center">
+											<input asp-for="AnonymousVote" type="checkbox" value="true" id="flexCheckDefault"/>
+											<label class="control-label" for="flexCheckDefault">Is this poll anonymous? <span data-toggle="tooltip" data-placement="bottom" title="Check this anonymous button if you just want the overall results of the poll where individual user votes will be kept anonymous.">&#8505;</span></label>
+										</div>
+									</div>
+									<div class="row p-2">
+										<div class="custom-control custom-checkbox text-center" >
+											<input asp-for="PrivateVote" type="checkbox" value="true" id="privatecheck"/>
+											<label class="control-label" for="privatecheck">Is this a private poll? <span data-toggle="tooltip" data-placement="bottom" title="Check this if you want to specify who can cast a vote for this poll.">&#8505;</span></label>
+										</div>
+									</div>
+								</div>
+								@*<br/><br/><br/><br/><br/><br/>*@
+							</span>
 						</div>
 					</div>
 				</div>
-				<div class="form-group">
-					<button type="submit" class="btn btn-light btn-lg bg-success btn-outline-primary" >Review</button>
+                @if (!(User != null && User.Identity.IsAuthenticated))
+				{
+					<div class="text-center">
+						<div  id="recap-el"	data-theme="dark" class="g-recaptcha" style="display:inline-block;">
+						</div>
+						<!-- Recaptcha Error -->
+						<div id="recaptcha-form-error" style="display: none" class="py-1 px-2" >
+							<div class="py-1 px-2" style="color: red">Please fill the reCaptcha checkbox</div>
+						</div>
+						<!-- Recaptcha Success -->
+						<div id="recaptcha-form-success" style="display: none" class="py-1 px-2" >
+							<div class="py-1 px-2" style="color: green">reCaptcha validated</div>
+							<a href="/" class="px-2 text-slate-800">Retry</a>
+						</div>
+					</div>
+				}
+				<div class="form-group p-2">
+					<button type="submit" id="btnReview" class="btn btn-light btn-lg bg-success btn-outline-primary" >Review</button>
 				</div>
-            </form>
+			</form>
 		</div>
 	</div>
 </div>
+
 @section Scripts
 {
-  <script>
-      function setVoteOpenDateTime(flag) {
-          if (flag == 0) {
-              $("#VoteOpenDateTime").val('');
-              $("#VoteOpenDateTime").attr("disabled",true);
-              $("#VoteOpenDateTime").attr("required",false);
+	<script>
+		var onloadCallback = function() {
+			var rc = document.getElementById('recap-el');
+			if (rc != null)
+				grecaptcha.render('recap-el', { 'sitekey' : '6LcUR58fAAAAAE_MfSR4lud-iBNANz89Bvvmyi7J' });
+		};
 
-          }
-          else {
-              $("#VoteOpenDateTime").attr("disabled",false);
-              $("#VoteOpenDateTime").attr("required",true);
-          }
-      }
+		function setRoundDurationDefaultValues() {
+			var voteType = document.getElementById('VoteTypeSelect').value;
+			if(voteType == 3) {
+				var roundDays = document.getElementById('MRVoteDays');
+				var roundHours = document.getElementById('MRVoteHours');
+				var roundMinutes = document.getElementById('MRVoteMins');
+				if (!roundDays.value)
+					roundDays.value = 0; 
+				if (!roundHours.value)
+					roundHours.value = 24; 
+				if (!roundMinutes.value)
+					roundMinutes.value = 0; 
+			}
+		}
 
-      function validateDate() {
-          var currentDateTime = new Date($.now());
-          var openDateDisabled = ( $("#VoteOpenDateTime").prop('disabled') );
-          var noCloseDate = true;
+		$('document').ready(function(){
+			changeVoteType();
+			setRoundDurationDefaultValues();
+		});
 
-          var openDateTime;
-          if (openDateDisabled == false) {
-              openDateTime = new Date($("#VoteOpenDateTime").val());
-          } 
+		function changeVoteType() {
+			var divMRVoteLength = document.getElementById('RoundLength');
+			var voteType = document.getElementById('VoteTypeSelect').value;
 
-          var closeDateTime;
-          if ( $("#VoteCloseDateTime").val().length > 0 )
-          {
-              closeDateTime = new Date($("#VoteCloseDateTime").val());
-              noCloseDate = false;
-          } else {
-              noCloseDate = true;
-          }
+			if (divMRVoteLength != null) {
+				if(voteType == 3)
+					divMRVoteLength.style.display = "block";	
+				else
+					divMRVoteLength.style.display = "none";	
+			}
+			setRoundDurationDefaultValues();
+		}
 
-          if (noCloseDate == false && closeDateTime < openDateTime )
-          {
-              alert("The vote start date/time must be before the vote close date/time");
-              return false;
-          }
-          else if (openDateTime < currentDateTime) 
-          {
-              alert("The vote start date/time must be a future date/time");
-              return false;
-          }
-          else if (noCloseDate == false && closeDateTime < currentDateTime )
-          {
-              alert("The vote close date/time must be a future date/time");
-              return false;
-          }
-          return true;
-      }
-  </script>
+		function setVoteOpenDateTime(flag) {
+			if (flag == 0) {
+				$("#VoteOpenDateTime").val('');
+				$("#VoteOpenDateTime").attr("disabled",true);
+				$("#VoteOpenDateTime").attr("required",false);
+
+			}
+			else {
+				$("#VoteOpenDateTime").attr("disabled",false);
+				$("#VoteOpenDateTime").attr("required",true);
+			}
+		}
+
+		function validateForm() {
+			$('#btnReview').prop('disabled', true);
+
+			var currentDateTime = new Date($.now());
+			var openDateDisabled = ( $("#VoteOpenDateTime").prop('disabled') );
+			var noCloseDate = true;
+
+			var openDateTime;
+			if (openDateDisabled == false) {
+				openDateTime = new Date($("#VoteOpenDateTime").val());
+			} 
+
+			var closeDateTime;
+			if ( $("#VoteCloseDateTime").val().length > 0 )
+			{
+				closeDateTime = new Date($("#VoteCloseDateTime").val());
+				noCloseDate = false;
+			} else {
+				noCloseDate = true;
+			}
+
+			if (noCloseDate == false && closeDateTime < openDateTime )
+			{
+				$('#btnReview').prop('disabled', false);
+				alert("The vote start date/time must be before the vote close date/time");
+				return false;
+			}
+			else if (openDateTime < currentDateTime) 
+			{
+				$('#btnReview').prop('disabled', false);
+				alert("The vote start date/time must be a future date/time");
+				return false;
+			}
+			else if (noCloseDate == false && closeDateTime < currentDateTime )
+			{
+				$('#btnReview').prop('disabled', false);
+				alert("The vote close date/time must be a future date/time");
+				return false;
+			}
+
+			var voteType = document.getElementById('VoteTypeSelect').value;
+			if (voteType == 3)
+			{
+				var roundDays = document.getElementById('MRVoteDays');
+				var roundHours = document.getElementById('MRVoteHours');
+				var roundMinutes = document.getElementById('MRVoteMins');
+				if((parseInt(roundDays.value) + parseInt(roundHours.value) + parseInt(roundMinutes.value)) == 0) {
+					$('#btnReview').prop('disabled', false);
+					alert("Multi-Round Voting Days, Hours and Minutes cannot all be zero");
+					return false;
+				}
+			}
+
+			var rc = document.getElementById('recap-el');
+			if (rc != null) 
+			{
+				document.getElementById('recaptcha-form-error').style.display = 'none';
+				var v = grecaptcha.getResponse();
+
+				if(v.length == 0)
+				{
+					document.getElementById('recaptcha-form-error').style.display = 'block';
+					$('#btnReview').prop('disabled', false);
+					return false;
+				}
+				else
+				{
+					document.getElementById('recaptcha-form-success').style.display = 'block';
+					return true; 
+				}
+			} else
+			{
+				return true;
+			}
+		}
+	</script>
 }

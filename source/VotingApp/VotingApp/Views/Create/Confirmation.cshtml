@@ -17,13 +17,14 @@
         <h1 class="display-4">Vote Creation Confirmation</h1>
         <h3>@Model.ChosenVoteDescriptionHeader</h3>
         <hr class="mb-4"/>
-        <form asp-action="Confirmation" method="get">
+        
         <div class="justify-content-center row"> 
             <div class="col-lg">
+                <form asp-action="Confirmation" method="get">
                 <div class="row mb-3 justify-content-center">
-                        <h3>Vote Title:</h3>
+                        <h3>Poll Title:</h3>
                         <h6>(If you would like to change your title press the edit button)</h6>
-                        <div class="card col-md-6 mx-auto">
+                        <div class="card col-md-8 mx-auto">
                             <div class="card-body">
                                 <p class="card-text text-black">@Model.VoteTitle</p>
                             </div>
@@ -31,18 +32,18 @@
                     </div>
 
 
-                    <div class="row mb-4 justify-content-center">
-                        <h3>Vote Description:</h3>
-                        <h6>(If you would like to change your description press the edit button)</h6>
-                        <div class="card col-md-6 mx-auto">
-                            <div class="card-body">
-                                <p class="card-text text-black">@Model.VoteDescription</p>
-                            </div>
-                        </div>
+            <div class="row mb-3 justify-content-center">
+                <h3>Poll Description:</h3>
+                <h6>(If you would like to change your description press the edit button)</h6>
+                <div class="card col-md-8 mx-auto">
+                    <div class="card-body">
+                        <p class="card-text text-black">@Model.VoteDescription</p>
                     </div>
-                </form>
-               <div class="row mb-4 justify-content-center">
-                    <div class="card col-md-6 mx-auto">
+                </div>
+            </div>
+        </form>
+               <div class="row mb-1 justify-content-center">
+                    <div class="card col-md-8 mx-auto">
                         <div class="card-body">
                             <h5 class="card-title text-black-50">Voting Options:</h5>
                         </div>
@@ -56,81 +57,86 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg">
-                <div class="row mb-4 justify-content-center">
-                    <h3>Share Vote:</h3>
-                    <div class="card col-md-6 mx-auto">
+            <div class="col-sm-auto">
+                <div class="row mb-1 justify-content-center">
+                    <h3>Share Poll:</h3>
+                    <div class="card col-md-8 mx-auto">
                         <div class="card-body">
                             @if (Model.VoteAccessCode != null)
                             {
-                                <h3 class="text-black">Vote Access Code:</h3>
+                                <h3 class="text-black">Poll Access Code:</h3>
                                 <p class="card-text text-black">@Model.VoteAccessCode</p>
                             }
-                            <h3 class="text-black">Vote Access Link: <button><i onclick="copyAccessCode()" class="fa-solid fa-copy fa-2xs"></i></button></h3>
+                            <div class="justify-content-center row">
+                                <h3 class="text-black">Poll Access Link: <button class="btn btn-light"><i onclick="copyAccessCode()" class="fa-solid fa-copy fa-2xs"></i></button></h3>
+                            </div>
                             <p id="accessLink" class="card-text text-black">@Model.ShareURL</p>
+                            <img class="rounded" src="@Url.Action("LoadQR", new { id = Model.ID })" alt="test")><img/>
                         </div>
                     </div>
                 </div>
-                @if (Model.VoteOpenDateTime != null)
-                {
-                    <div class="row mb-4 justify-content-center">
-                        <h3>Voting Opens At:</h3>
-                        <div class="card col-md-6 mx-auto">
-                            <div class="card-body">
-                                <p class="card-text text-black">@Html.Raw($"{Model.VoteOpenDateTime.Value.Month}/{Model.VoteOpenDateTime.Value.Day}/{Model.VoteOpenDateTime.Value.Year} { Model.VoteOpenDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")</p>
+                </div>
+                <div class="col-lg">
+                    <div class="row mb-1 justify-content-center">
+                        @if (Model.VoteOpenDateTime != null)
+                        {
+                            <div class="row mb-3 justify-content-center">
+                                <h3>Voting Opens At:</h3>
+                                <div class="card col-md-8 mx-auto">
+                                    <div class="card-body">
+                                        <p class="card-text text-black">@Html.Raw($"{Model.VoteOpenDateTime.Value.Month}/{Model.VoteOpenDateTime.Value.Day}/{Model.VoteOpenDateTime.Value.Year} { Model.VoteOpenDateTime.Value.TimeOfDay.ToString("hh\\:mm")}")</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="row mb-3 justify-content-center">
+
+
+                            <h3>Voting Closes At:</h3>
+                            <div class="card col-md-8 mx-auto">
+                                <div class="card-body">
+                                    <p class="card-text text-black">@Html.Raw($"{Model.VoteCloseDateTime.Month}/{Model.VoteCloseDateTime.Day}/{Model.VoteCloseDateTime.Year} { Model.VoteCloseDateTime.TimeOfDay.ToString("hh\\:mm")}")</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-                <div class="row mb-4 justify-content-center">
-
-
-                    <h3>Voting Closes At:</h3>
-                    <div class="card col-md-6 mx-auto">
-                        <div class="card-body">
-                            <p class="card-text text-black">@Html.Raw($"{Model.VoteCloseDateTime.Month}/{Model.VoteCloseDateTime.Day}/{Model.VoteCloseDateTime.Year} { Model.VoteCloseDateTime.TimeOfDay.ToString("hh\\:mm")}")</p>
-                        </div>
-                    </div>
-                </div>
-                @if(Model.VotingAuthorizedUsers.Count > 0)
-                    {
-                        <div class="row mb-4 justify-content-center">
+                        @if(Model.VotingAuthorizedUsers.Count > 0)
+                        {
+                            <div class="row mb-3 justify-content-center">
                             
-                            <div class="card col-md-6 mx-auto">
-                                <div class="card-body">
-                                    <h5 class="card-title text-black-50">Users Authorized to Vote:</h5>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    @foreach (var user in Model.VotingAuthorizedUsers)
+                                <div class="card col-md-8 mx-auto">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-black-50">Users Authorized to Vote:</h5>
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var user in Model.VotingAuthorizedUsers)
                                         {
                                             <li class="list-group-item">@user.UserName</li>
 																					
                                         }
-                                </ul>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                    }
-                
-                    <audio controls src="@Url.Action("LoadAudio", new { id = Model.ID })") />
-                
-                    
-            </div>
-        </div>
+                        }
+                        <div class="col-md-12"><audio controls src="@Url.Action("LoadAudio", new { id = Model.ID })")></audio></div>
+                        
+                    </div>
+                    </div>
+
+        
 		<div class="text-center text-white">
 			<div class="text-center col-md-8 mx-auto"> 
 				   <div class="col justify-content-center btn-group">
 						<form asp-action="BackToIndexPage">
-							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary" value="@Model.ID" name="ID">Edit</button>
+							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary mb-2" value="@Model.ID" name="ID">Edit</button>
 						</form>
 						&nbsp;&nbsp;
 						<form asp-action="Confirmation" method="post">
-							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary">Submit</button>
+							<button type="submit" style="width:100px !important" class="btn btn-light btn-lg bg-success btn-outline-primary mb-2">Submit</button>
 						</form>
 					</div>
 			</div>
 		</div>
 	</div>
-</div>
 
 @section Scripts
 {

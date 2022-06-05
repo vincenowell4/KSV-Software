@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="google-site-verification" content="dz1dK60y3QJv14u0mGXPs7RrR7H1PkWoeWyhA_xCuU8" />
+    
     <title>@ViewData["Title"] - VotingApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-va.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/VotingApp.styles.css" asp-append-version="true" />
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://kit.fontawesome.com/f939bccf94.js" crossorigin="anonymous"></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
 </head>
 <body class="m-0" style="height: 100%; bottom: 0; background-color: black">
     <header>
@@ -28,15 +29,17 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index">Create A Vote</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Create" asp-action="Index">Create A Poll</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Access" asp-action="Index">Access A Vote</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Access" asp-action="Index">Access A Poll</a>
                         </li>
                         <li>
 		                    <a class="nav-link text-dark" asp-area="" asp-controller="Help" asp-action="Index">Help</a>
 	                    </li>
-                        
+                        <li>
+		                    <a class="nav-link text-dark" asp-area="" asp-controller="Help" asp-action="About">About</a>
+	                    </li>
 
                         @if(User.IsInRole("admin"))
                         {
@@ -65,12 +68,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script>
     $("#datetime").datetimepicker({
+        startDate: 'now()',
         format: 'yyyy-mm-dd hh:ii'
     });
     $("#VoteCloseDateTime").datetimepicker({
+        startDate: 'now()',
         format: 'yyyy-mm-dd hh:ii'
     });
     $("#VoteOpenDateTime").datetimepicker({
+        startDate: 'now()',
         format: 'yyyy-mm-dd hh:ii'
     });
 </script>

@@ -11,8 +11,13 @@ CREATE TABLE [CreatedVote]
 [VoteCloseDateTime] DATETIME,
 [PrivateVote] BIT NOT NULL,
 [VoteAudioBytes] VARBINARY(max),
+[QRCodeBytes] VARBINARY(max),
 [RoundNumber] int NOT NULL,
-[NextRoundId] int NOT NULL
+[NextRoundId] int NOT NULL,
+[RoundDays] int NOT NULL,
+[RoundHours] int NOT NULL,
+[RoundMinutes] int NOT NULL,
+[TimeZoneId] int NOT NULL
 );
 
 CREATE TABLE [VoteType]
@@ -36,7 +41,8 @@ CREATE TABLE [SubmittedVote]
 [VoteChoice] int NOT NULL,
 [UserID] int,
 [Validated] BIT NOT NULL,
-[DateCast] DATETIME
+[DateCast] DATETIME,
+[UserIP] NVARCHAR(50) NOT NULL
 );
 
 CREATE TABLE [VotingUser] 
@@ -53,6 +59,21 @@ CREATE TABLE [VoteAuthorizedUsers]
 [UserName] nvarchar(250) NOT NULL
 );
 
+CREATE TABLE [VoteTimeZones] 
+(
+[ID] int PRIMARY KEY IDENTITY(1, 1),
+[TimeName] nvarchar(250) NOT NULL
+);
+
+CREATE TABLE [AppLogs]
+(
+[ID] int PRIMARY KEY IDENTITY(1, 1),
+[Date] DATETIME NOT NULL,
+[LogLevel] nvarchar(10) NOT NULL,
+[ClassName] nvarchar(60) NOT NULL,
+[MethodName] nvarchar(60) NOT NULL,
+[LogMessage] nvarchar(500) NOT NULL   
+);
 
 ALTER TABLE [VoteOptions] ADD CONSTRAINT [Fk_Options_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -64,5 +85,7 @@ ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_Created_Vote_User_ID]
  FOREIGN KEY ([UserID]) REFERENCES [VotingUser] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_Vote_Type_ID]
  FOREIGN KEY ([VoteTypeId]) REFERENCES [VoteType] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ ALTER TABLE [CreatedVote] ADD CONSTRAINT [Fk_TimeZone_ID]
+ FOREIGN KEY ([TimeZoneId]) REFERENCES [VoteTimeZones] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;
  ALTER TABLE [VoteAuthorizedUsers] ADD CONSTRAINT [Fk_AuthorizedUsers_Created_Vote_ID]
  FOREIGN KEY ([CreatedVoteID]) REFERENCES [CreatedVote] ([ID]) ON DELETE NO ACTION ON UPDATE NO ACTION;

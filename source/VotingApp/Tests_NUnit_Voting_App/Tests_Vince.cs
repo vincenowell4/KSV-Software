@@ -8,6 +8,8 @@ using EmailService;
 using VotingApp.DAL.Abstract;
 using VotingApp.DAL.Concrete;
 using VotingApp.Models;
+using System.Threading;
+using System.Reflection;
 
 namespace Tests_NUnit_Voting_App
 {
@@ -19,11 +21,15 @@ namespace Tests_NUnit_Voting_App
         private Mock<DbSet<VoteOption>> _voteOptionSet;
         private Mock<DbSet<SubmittedVote>> _submittedVoteSet;
         private Mock<DbSet<VotingUser>> _votingUsersSet;
+        private Mock<DbSet<AppLog>> _appLogSet;
         private List<CreatedVote> _createdVotes;
         private List<VoteType> _voteTypes;
         private List<VoteOption> _voteOption;
         private List<SubmittedVote> _submittedVotes;
         private List<VotingUser> _votingUsers;
+        private List<AppLog> _appLogs;
+        private List<VoteTimeZone> _voteTimeZones;
+        private Mock<DbSet<VoteTimeZone>> _voteTimeZonesSet;
 
 
         private Mock<DbSet<T>> GetMockDbSet<T>(IQueryable<T> entities) where T : class
@@ -38,6 +44,13 @@ namespace Tests_NUnit_Voting_App
         [SetUp]
         public void Setup()
         {
+            _voteTimeZones = new List<VoteTimeZone>()
+            {
+                new VoteTimeZone { Id = 1, TimeName = "Pacific Standard Time" },
+                new VoteTimeZone { Id = 2, TimeName = "Dateline Standard Time" },
+                new VoteTimeZone { Id = 3, TimeName = "UTC-11" },
+            };
+
             _voteTypes = new List<VoteType>()
             {
                 new VoteType { Id = 1,VotingType ="Yes/No Vote" ,VoteTypeDescription = "yes/no discription" },
@@ -69,12 +82,18 @@ namespace Tests_NUnit_Voting_App
             {
                 new SubmittedVote { CreatedVote = _createdVotes[2], CreatedVoteId = 3, Id = 1, VoteChoice = 1, UserId = 1},
             };
+            _appLogs = new List<AppLog>()
+            {
+                new AppLog { Id = 1, Date = DateTime.Today, LogLevel = "Error", LogMessage = "There was an error creating this page"},
+                new AppLog { Id = 2, Date = DateTime.Today, LogLevel = "Info", LogMessage = "Successfully created a vote"}
+            };
 
             _voteTypesSet = GetMockDbSet(_voteTypes.AsQueryable());
             _createdVoteSet = GetMockDbSet(_createdVotes.AsQueryable());
             _voteOptionSet = GetMockDbSet(_voteOption.AsQueryable());
             _votingUsersSet = GetMockDbSet(_votingUsers.AsQueryable());
             _submittedVoteSet = GetMockDbSet(_submittedVotes.AsQueryable());
+            _appLogSet = GetMockDbSet(_appLogs.AsQueryable());
 
             _mockContext = new Mock<VotingAppDbContext>();
             _mockContext.Setup(ctx => ctx.VoteTypes).Returns(_voteTypesSet.Object);
@@ -87,6 +106,8 @@ namespace Tests_NUnit_Voting_App
             _mockContext.Setup(ctx => ctx.Set<VotingUser>()).Returns(_votingUsersSet.Object);
             _mockContext.Setup(ctx => ctx.SubmittedVotes).Returns(_submittedVoteSet.Object);
             _mockContext.Setup(ctx => ctx.Set<SubmittedVote>()).Returns(_submittedVoteSet.Object);
+            _mockContext.Setup(ctx => ctx.AppLogs).Returns(_appLogSet.Object);
+            _mockContext.Setup(ctx => ctx.Set<AppLog>()).Returns(_appLogSet.Object);
             _mockContext.Setup(x => x.Add(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) => _createdVotes.Add(s));
             _mockContext.Setup(x => x.Update(It.IsAny<CreatedVote>())).Callback<CreatedVote>((s) =>
             {
@@ -103,6 +124,122 @@ namespace Tests_NUnit_Voting_App
                 }
             });
 
+        }
+
+        [Test]
+        //VA-269 As an admin I would like more detail in the application's logs to help with troubleshooting and debugging of the application
+        public void VA269_Test_AppLogRepo_LogError_ShouldIncludeClassAndMethodInErrorLogEvent()
+        {
+            //arrange
+            MethodBase method = MethodBase.GetCurrentMethod();
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+
+            //act
+            var error = repo.LogError(method.ReflectedType.Name, method.Name, "Error message");
+
+            //assert that the class name and method names were passed to the error logging code
+            Assert.IsTrue(error.ClassName == "Tests_Vince");
+            Assert.IsTrue(error.MethodName == "VA269_Test_AppLogRepo_LogError_ShouldIncludeClassAndMethodInErrorLogEvent");
+        }
+
+        [Test]
+        //VA-269 As an admin I would like more detail in the application's logs to help with troubleshooting and debugging of the application
+        public void VA269_Test_AppLogRepo_LogInfo_ShouldIncludeClassAndMethodInInfoLogEvent()
+        {
+            //arrange
+            MethodBase method = MethodBase.GetCurrentMethod();
+            IAppLogRepository repo = new AppLogRepository(_mockContext.Object);
+
+            //act
+            var info = repo.LogInfo(method.ReflectedType.Name, method.Name, "Info message");
+
+            //assert that the class name and method names were passed to the info logging code
+            Assert.IsTrue(info.ClassName == "Tests_Vince");
+            Assert.IsTrue(info.MethodName == "VA269_Test_AppLogRepo_LogInfo_ShouldIncludeClassAndMethodInInfoLogEvent");
+        }
+
+        [Test]
+        //VA-59 As a user I want to be able to create multi-round votes, so voters can narrow down options
+        public void VA59_Test_CreatedVoteRepo_GetAllClosedMultiRoundVotes_ShouldReturnOneRowsWhenThereIsAMultiRoundVoteThatIsClosed()
+        {
+            //arrange
+            DateTime pastDate = DateTime.UtcNow.AddDays(-1);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository cvRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            CreatedVote testVote = cvRepo.AddOrUpdate(new CreatedVote
+            {
+                UserId = 1,
+                VoteTitle = "Closed Vote Test",
+                VoteDiscription = "Closed Vote Description",
+                VoteCloseDateTime = pastDate,
+                VoteTypeId = 3,
+                AnonymousVote = false,
+                NextRoundId = 0,
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
+            }); ;
+
+            //act
+            IList<CreatedVote> createdVotes = cvRepo.GetAllClosedMultiRoundVotes();
+
+            // assert that a one-day delayed vote created in the test database should not yet have a VoteAccessCode, since it is due to start in one day from now
+            Assert.IsTrue(createdVotes.Count == 1);
+        }
+
+        [Test]
+        //VA-59 As a user I want to be able to create multi-round votes, so voters can narrow down options
+        public void VA59_Test_CreatedVoteRepo_GetAllClosedMultiRoundVotes_ShouldReturnNoRowsWhenThereIsOnlyAMultiRoundVoteThatIsStillOpen()
+        {
+            //arrange
+            DateTime futureDate = DateTime.UtcNow.AddDays(+1);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository cvRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            CreatedVote testVote = cvRepo.AddOrUpdate(new CreatedVote
+            {
+                UserId = 1,
+                VoteTitle = "Closed Vote Test",
+                VoteDiscription = "Closed Vote Description",
+                VoteCloseDateTime = futureDate,
+                VoteTypeId = 3,
+                AnonymousVote = false,
+                NextRoundId = 0,
+                TimeZone = new VoteTimeZone { Id = 1, TimeName = "Alaskan Standard Time" }
+            }); ;
+
+            //act
+            IList<CreatedVote> createdVotes = cvRepo.GetAllClosedMultiRoundVotes();
+
+            // assert that a one-day delayed vote created in the test database should not yet have a VoteAccessCode, since it is due to start in one day from now
+            Assert.IsTrue(createdVotes.Count == 0);
+        }
+
+        [Test]
+        //VA-86 As a user, I want make a vote delayed, so that I can make it now and have it active for voting later
+        public void VA86_Test_Create_Vote_For_Delayed_Vote_GetVoteById_Should_Return_Vote_With_Null_VoteAccessCode()
+        {
+            // arrange
+            DateTime futureDate = DateTime.UtcNow.AddDays(1);
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository cvRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+            CreatedVote testVote = cvRepo.AddOrUpdate(new CreatedVote
+            {
+                UserId = 1,
+                VoteTitle = "Delayed Vote Test",
+                VoteDiscription = "Delayed Vote Description",
+                //DelayedVote = true,
+                //VoteStartDateTime = futureDate,
+                VoteCloseDateTime = futureDate.AddHours(1),
+                VoteTypeId = 1,
+                AnonymousVote = false
+            });
+
+            // act
+            string voteAccessCode = cvRepo.GetById(testVote.Id).VoteAccessCode; //test vote should not have a VoteAccessCode
+
+            // assert that a one-day delayed vote created in the test database should not yet have a VoteAccessCode, since it is due to start in one day from now
+            Assert.IsNull(voteAccessCode);
         }
 
         [Test]
@@ -185,7 +322,10 @@ namespace Tests_NUnit_Voting_App
             ICreatedVoteRepository createRepo = new CreatedVoteRepository(_mockContext.Object, emailSender);
             IVoteTypeRepository typeRepo = new VoteTypeRepository(_mockContext.Object);
             VoteCreationService voteServ = new VoteCreationService(_mockContext.Object);
-            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo);
+            IAppLogRepository appLogRepo = new AppLogRepository(_mockContext.Object);
+            ITimeZoneRepo timeZoneRepo = new TimeZoneRepo(_mockContext.Object);
+            CreationService createService = new CreationService(createRepo, typeRepo, voteServ, voRepo, appLogRepo, timeZoneRepo);
+
             //create a "Delayed Vote" - one that has a Vote Open date, but no Vote Access Code
             var newVote = new CreatedVote
             { Id = 4, VoteTypeId = 1, AnonymousVote = false, UserId = 1, VoteTitle = "Title", VoteDiscription = "Test", VoteOpenDateTime = DateTime.Now };
@@ -217,7 +357,6 @@ namespace Tests_NUnit_Voting_App
             Assert.IsNull(submittedVote);
         }
 
-
         [Test]
         //VA-79 As a vote creator, I want others to only be able to cast one vote per account, so that we get accurate vote results
         public void VA79_SubmittedVoteRepo_VoteForRegisteredUserWhoHasCastVote_ShouldReturnSubmittedVoteObject()
@@ -232,6 +371,44 @@ namespace Tests_NUnit_Voting_App
 
             // assert
             Assert.IsNotNull(submittedVote);
+        }
+
+        [Test]
+        //VA-241 As a logged-in user I want to be able to set the duration time when I create a multi-round vote, so I can control how long each round of voting will be open
+        public void VA241_CreatedVoteRepo_GetMultiRoundVoteDuration_ShouldReturnRoundDurationForValidMultiRoundVoteId()
+        {
+            // arrange
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+
+            repo.AddOrUpdate(new CreatedVote { Id = 4, VoteType = _voteTypes[2], AnonymousVote = true, UserId = 1, VoteTitle = "Multi-round Vote", VoteDiscription = "Multi-round description", RoundDays=2, RoundHours=5, RoundMinutes=30 });
+
+
+            // act
+            string testRoundDuration = repo.GetMultiRoundVoteDuration(4);
+
+
+            // assert
+            Assert.True(testRoundDuration == "2,5,30");
+        }
+
+        [Test]
+        //VA-241 As a logged-in user I want to be able to set the duration time when I create a multi-round vote, so I can control how long each round of voting will be open
+        public void VA241_CreatedVoteRepo_GetMultiRoundVoteDuration_ShouldReturnEmptyStringForInvalidVoteId()
+        {
+            // arrange
+            EmailConfiguration emailConfig = new EmailConfiguration();
+            IEmailSender emailSender = new EmailSender(emailConfig);
+            ICreatedVoteRepository repo = new CreatedVoteRepository(_mockContext.Object, emailSender);
+
+
+            // act
+            string testRoundDuration = repo.GetMultiRoundVoteDuration(8);
+
+
+            // assert
+            Assert.True(testRoundDuration == "");
         }
     }
 }

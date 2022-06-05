@@ -14,7 +14,7 @@
                                                          right: 50%;
                                                          width: 100vw;">
     <div class="text-center pt-5">
-        <h2 class="display-4 text-white">Access A Vote</h2>
+        <h2 class="display-4 text-white">Access A Poll</h2>
         <hr class="mb-2"/>
     </div>
 	<div class="col-sm-2 offset-sm-5  text-center">
@@ -27,22 +27,124 @@
 	</div>
 	<div class="row justify-content-center text-center">
 		<div class="col-lg-4">
-			<form asp-action="Access" method="get">
-				<h5 class="text-center text-white">Submit A Vote <span data-toggle="tooltip" data-placement="bottom" title="If the vote is private only authorized users will be able to submit a vote.">&#8505;</span></h5>
+			<form asp-action="Access" method="post"  onsubmit="return get_action1();">
+				<h5 class="text-center text-white">Cast A Vote <span data-toggle="tooltip" data-placement="bottom" title="If the poll is private only authorized users will be able to cast a vote.">&#8505;</span></h5>
+                @if (!(User != null && User.Identity.IsAuthenticated))
+				{
+				    <div  id="recap-el"
+					    data-theme="dark" 
+					    class="g-recaptcha p-3" >
+				    </div>
+				    <!-- Recaptcha Error -->
+				    <div id="recaptcha-form-error" style="display: none" class="py-1 px-2" >
+					    <div class="py-1 px-2" style="color: red">Please fill the reCaptcha checkbox</div>
+				    </div>
+				    <!-- Recaptcha Success -->
+				    <div id="recaptcha-form-success" style="display: none" class="py-1 px-2" >
+					    <div class="py-1 px-2" style="color: green">reCaptcha validated</div>
+					    <a href="/" class="px-2 text-slate-800">Retry</a>
+				    </div>
+                }
 				<input id="submit-input" placeholder="Enter access code here" class="form-control mb-3" type="text" name="code" required minlength="6" maxlength="6"/>
 					<span class="input-group-btn">
-						<button type="submit" id="vote-submit" class="btn btn-primary">Submit</button>
+						<button type="submit" id="vote-submit" class="btn btn-light bg-success btn-outline-primary mb-3">Submit</button>
 					</span>
 			</form>
 		</div>
 		<div class="col-lg-4">
-			<form asp-action="Results" method="get">
-				<h5 class="text-center text-white">Vote Results <span data-toggle="tooltip" data-placement="bottom" title="If the vote is private only authorized users will be able to access the vote results.">&#8505;</span></h5>
-				<input id="results-input" placeholder="Enter access code here" class="form-control mb-3" type="text" name="code" required minlength="6" maxlength="6"/>
+			<form asp-action="Results" method="post" onsubmit="return get_action2();">
+				<h5 class="text-center text-white">Poll Results <span data-toggle="tooltip" data-placement="bottom" title="If the poll is private only authorized users will be able to access the poll results.">&#8505;</span></h5>
+                @if (!(User != null && User.Identity.IsAuthenticated))
+                {
+                    <div  id="recap-el2"
+					data-theme="dark" 
+					class="g-recaptcha p-3" >
+                    </div>
+                    <!-- Recaptcha Error -->
+                    <div id="recaptcha-form2-error" style="display: none" class="py-1 px-2" >
+                        <div class="py-1 px-2" style="color: red">Please fill the reCaptcha checkbox</div>
+                    </div>
+                    <!-- Recaptcha Success -->
+                    <div id="recaptcha-form2-success" style="display: none" class="py-1 px-2" >
+                        <div class="py-1 px-2" style="color: green">reCaptcha validated</div>
+                        <a href="/" class="px-2 text-slate-800">Retry</a>
+                    </div>
+                }
+                <input id="results-input" placeholder="Enter access code here" class="form-control mb-3" type="text" name="code" required minlength="6" maxlength="6"/>
 				<span class="input-group-btn">
-					<button type="submit" id="results-submit" class="btn btn-primary">Submit</button>
+					<button type="submit" id="results-submit" class="btn btn-light bg-success btn-outline-primary mb-2">Submit</button>
 				</span>
 			</form>
 		</div>
 	</div>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+      var widget1;
+      var widget2;
+
+      var onloadCallback = function() {
+		var rc = document.getElementById('recap-el');
+		if (rc != null)
+        {
+            widget1 = grecaptcha.render('recap-el', {
+              'sitekey' : '6LcUR58fAAAAAE_MfSR4lud-iBNANz89Bvvmyi7J'
+            });
+            widget2 = grecaptcha.render('recap-el2', {
+              'sitekey' : '6LcUR58fAAAAAE_MfSR4lud-iBNANz89Bvvmyi7J'
+            });
+        }
+      };
+
+    function get_action1() 
+    {
+		$('#vote-submit').prop('disabled', true);
+    	var rc = document.getElementById('recap-el');
+		if (rc != null) 
+		{
+            document.getElementById('recaptcha-form-error').style.display = 'none';
+            var v = grecaptcha.getResponse(widget1);
+
+            if(v.length == 0)
+            {
+                document.getElementById('recaptcha-form-error').style.display = 'block';
+        		$('#vote-submit').prop('disabled', false);
+                return false;
+            }
+            else
+            {
+                document.getElementById('recaptcha-form-success').style.display = 'block';
+                return true; 
+            }
+        } else {
+            return true;
+        }
+    }
+
+    function get_action2() 
+    {
+		$('#results-submit').prop('disabled', true);
+    	var rc = document.getElementById('recap-el');
+		if (rc != null) 
+		{
+            document.getElementById('recaptcha-form2-error').style.display = 'none';
+            var v = grecaptcha.getResponse(widget2);
+
+            if(v.length == 0)
+            {
+        		$('#results-submit').prop('disabled', false);
+                document.getElementById('recaptcha-form2-error').style.display = 'block';
+                return false;
+            }
+            else
+            {
+                document.getElementById('recaptcha-form2-success').style.display = 'block';
+                return true; 
+            }
+        } else {
+            return true;
+        }
+    }
+    </script>
+}

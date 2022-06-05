@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 string vaApiKey = "";
+string vaRunInterval = "";
 
 using (var scope = app.Services.CreateScope())
 {
@@ -11,6 +12,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         vaApiKey = builder.Configuration["VotingAppApiKey"];
+        vaRunInterval = builder.Configuration["VotingAppServiceRunInterval"];
     }
     catch (Exception ex)
     {
@@ -18,6 +20,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 ApiKey.voteAppApiKey = vaApiKey; //set the API key in a static class so it can be seen from Worker.cs
+ApiKey.voteSvcRunInterval = vaRunInterval;
 
 IHost host = Host.CreateDefaultBuilder(args)
 .ConfigureServices(services =>

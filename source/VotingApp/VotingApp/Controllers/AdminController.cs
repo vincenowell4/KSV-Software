@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VotingApp.DAL.Abstract;
+using VotingApp.ViewModel;
 
 namespace VotingApp.Controllers
 {
@@ -10,14 +11,18 @@ namespace VotingApp.Controllers
     {
         // GET: AdminController
         private readonly ICreatedVoteRepository _createdVoteRepository;
-        public AdminController(ICreatedVoteRepository createdVoteRepo)
+        private readonly IAppLogRepository _appLogRepository;
+        public AdminController(ICreatedVoteRepository createdVoteRepo, IAppLogRepository appLogRepository)
         {
             _createdVoteRepository = createdVoteRepo;
-            
+            _appLogRepository = appLogRepository;
+
         }
         public ActionResult Index()
         {
-            return View();
+            var vm = new AdminVM();
+            vm.logs = _appLogRepository.GetAllAppLogs();
+            return View(vm);
         }
         public ActionResult ViewAll()
         {

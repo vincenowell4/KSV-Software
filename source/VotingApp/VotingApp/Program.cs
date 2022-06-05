@@ -28,7 +28,7 @@ var connectionStringIdentity = builder.Configuration.GetConnectionString("Voting
 //    connectionStringIdentity.Password = builder.Configuration["VotingApp:CSpwd"];
 //var connectionStringIdentity = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestIdentityVotingApp"));
 //if (connectionStringIdentity.Password.Length == 0)
-    //connectionStringIdentity.Password = builder.Configuration["SamAzureIdentityTestPW"];
+//connectionStringIdentity.Password = builder.Configuration["SamAzureIdentityTestPW"];
 //*******************************************************************************************************************************************
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
@@ -39,6 +39,7 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddDbContext<VotingAppIdentityContext>(options =>options.UseSqlServer(connectionStringIdentity.ToString()));
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<VotingAppIdentityContext>();
+
 
 var binDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().CodeBase);
 string fullPath = Path.Combine(binDirectory, "credentials.json").Replace("file:\\", "");
@@ -64,7 +65,7 @@ var connectionString = builder.Configuration.GetConnectionString("VotingAppConne
 //    connectionString.Password = builder.Configuration["VotingApp:CSpwd"];
 //var connectionString = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("SamsTestVotingApp"));
 //if (connectionString.Password.Length == 0)
-   // connectionString.Password = builder.Configuration["SamAzureTestPW"];
+// connectionString.Password = builder.Configuration["SamAzureTestPW"];
 //*******************************************************************************************************************************************
 
 builder.Services.AddDbContext<VotingAppDbContext>(options =>
@@ -84,19 +85,36 @@ builder.Services.AddScoped<CreationService, CreationService>();
 builder.Services.AddScoped<ISubmittedVoteRepository, SubmittedVoteRepository>();
 builder.Services.AddScoped<IVoteAuthorizedUsersRepo, VoteAuthorizedUsersRepo>();
 builder.Services.AddScoped<GoogleTtsService,GoogleTtsService>();
-
+builder.Services.AddScoped<IAppLogRepository, AppLogRepository>();
+builder.Services.AddScoped<ITimeZoneRepo, TimeZoneRepo>();
+builder.Services.AddScoped<QRCodeCreationService, QRCodeCreationService>();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
        o.TokenLifespan = TimeSpan.FromSeconds(06400)); //email confirmation token will expire after exactly 24 hours (86400 seconds)
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.Use(async (ctx, next) =>
+{
+    await next();
+
+    if (ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+    {
+        //Re-execute the request so the user gets the error page
+        string originalPath = ctx.Request.Path.Value;
+        ctx.Items["originalPath"] = originalPath;
+        ctx.Request.Path = "/error/404";
+        await next();
+    }
+});
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/error/500");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+       app.UseHsts();
 }
+
+
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -140,6 +158,6 @@ app.MapControllerRoute(
 app.MapControllerRoute(
         name: "Access Vote Share Link",
         pattern: "Access/{code?}",
-        defaults: new { controller = "Access", action = "Access" });
+        defaults: new { controller = "Access", action = "AccessGet" });
     
 app.Run();

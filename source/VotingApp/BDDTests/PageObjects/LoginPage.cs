@@ -13,7 +13,7 @@ namespace BDDTests.PageObjects
         // This one is fragile because it assumes this is the method to show the error.  UI tests are obviously tightly coupled to the UI though.
         // Probably could be improved by having the UI add an Id to a div that only exists if there are errors with the login
         private IEnumerable<IWebElement> ValidationErrors => _browserInteractions.WaitAndReturnElements(By.CssSelector("div.validation-summary-errors"));
-
+        private IWebElement Recaptcha => _browserInteractions.WaitAndReturnElement(By.Id("recap-el"));
 
         // Need to still have the constructor parameter here for dependency injection, just pass it up to the base class.  You can't
         // have constructor injection in a base class because it is invoked from the derived class instead of the DI container
@@ -37,6 +37,8 @@ namespace BDDTests.PageObjects
         {
             LoginButton.ClickWithRetry();
         }
+
+        public Boolean GetRecaptcha => Recaptcha.Displayed;
 
         public bool HasLoginError() => ValidationErrors.Count() > 0;
 

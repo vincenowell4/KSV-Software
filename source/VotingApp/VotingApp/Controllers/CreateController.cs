@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System.Net;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace VotingApp.Controllers
 {
@@ -26,6 +29,10 @@ namespace VotingApp.Controllers
         private readonly ISubmittedVoteRepository _submittedVoteRepository;
         private readonly IVoteAuthorizedUsersRepo _voteAuthorizedUsersRepo;
         private readonly GoogleTtsService _googleTtsService;
+        private readonly IAppLogRepository _appLogRepository;
+        private readonly ITimeZoneRepo _timeZoneRepo;
+        private readonly QRCodeCreationService _qrCodeCreationService;
+        private readonly IConfiguration _configuration;
 
         public CreateController(ILogger<HomeController> logger, 
             ICreatedVoteRepository createdVoteRepo, 
@@ -37,8 +44,13 @@ namespace VotingApp.Controllers
             CreationService creationService,
             ISubmittedVoteRepository submittedVoteRepository,
             IVoteAuthorizedUsersRepo voteAuthorizedUsersRepo, 
-            GoogleTtsService googleTtsService)
-        {
+            GoogleTtsService googleTtsService,
+            IAppLogRepository appLogRepository,
+            ITimeZoneRepo timeZoneRepo,
+            QRCodeCreationService qrCodeCreationService,
+        IConfiguration configuration)
+
+            {
             _logger = logger;
             _createdVoteRepository = createdVoteRepo;
             _voteTypeRepository = voteTypeRepository;
@@ -50,13 +62,41 @@ namespace VotingApp.Controllers
             _submittedVoteRepository = submittedVoteRepository;
             _voteAuthorizedUsersRepo = voteAuthorizedUsersRepo;
             _googleTtsService = googleTtsService;
+            _appLogRepository = appLogRepository;
+            _timeZoneRepo = timeZoneRepo;
+            _qrCodeCreationService = qrCodeCreationService;
+            _configuration = configuration;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            SelectList selectListVoteType = null; ;
+            string remoteIpAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
 
+            var cookieKey = Request.Cookies;
+            var key = Request.Cookies["ClientId"];
+            if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
+            {
+                var cookieOptions = new CookieOptions()
+                {
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Secure = false,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(14)
+                };
+                Response.Cookies.Append("ClientID", Guid.NewGuid().ToString(), cookieOptions);
+
+                key = Request.Cookies["ClientId"];
+            }
+            if (remoteIpAddress == "::1") remoteIpAddress = "(localhost)";
+            MethodBase method = MethodBase.GetCurrentMethod();
+            _appLogRepository.LogInfo(method.ReflectedType.Name, method.Name,
+                "Client IP: " + remoteIpAddress + ", for user " + User.Identity.Name + "CookieID: "+key);// + test.HostName);// + ","+test.AddressList[0] + "," + test.AddressList[1]);
+            
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList( _timeZoneRepo.GetAllTimeZones().Select(x => new {Text = $"{x.TimeName}", Value = x.Id}), "Value", "Text");
             if (User.Identity.IsAuthenticated != false)
             {
                 selectListVoteType = new SelectList(
@@ -66,23 +106,66 @@ namespace VotingApp.Controllers
             else
             { //if user is not logged in, then Multi-Round voting is not available
                 selectListVoteType = new SelectList(
-                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Vote"),
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
                     "Value", "Text");
             }
 
             ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             return View();
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote")]CreatedVote createdVote)
+        public IActionResult Index([Bind("VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOpenDateTime,VoteCloseDateTime, PrivateVote,RoundDays,RoundHours,RoundMinutes, TimeZoneId")]CreatedVote createdVote)
         {
-            
+            if (User.Identity.IsAuthenticated == false)
+            {
+                string secretKey = this._configuration["RecaptchaKey"];
+                string userResponse = Request.Form["g-Recaptcha-Response"];
+                var webClient = new System.Net.WebClient();
+                string ver = webClient.DownloadString(string.Format("https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}", secretKey, userResponse));
+
+                var verJson = Newtonsoft.Json.Linq.JObject.Parse(ver);
+                if (verJson["success"].Value<bool>())
+                {
+                    //Session["I_AM_NOT_A_ROBOT"] = "true";
+                    _logger.LogInformation("User passed reCaptcha");
+                }
+                else
+                {
+                    // try again:
+                    return View(createdVote);
+                }
+            }
+
+            MethodBase method = MethodBase.GetCurrentMethod();
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
+            ModelState.Remove("TimeZone");
+            ModelState.Remove("RoundDays");
+            ModelState.Remove("RoundHours");
+            ModelState.Remove("RoundMinutes");
+            ModelState.Remove("RoundNumber");
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
+                    "Value", "Text");
+            }
+            ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             if (User.Identity.IsAuthenticated != false)
             {
                 var vUser = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -98,6 +181,7 @@ namespace VotingApp.Controllers
                 var result = _creationService.Create(ref createdVote);
                 if (result != "")
                 {
+                    
                     ViewBag.Message = result;
                     return View(createdVote);
                 }
@@ -119,7 +203,11 @@ namespace VotingApp.Controllers
             }
             else
             {
+                var errors = ModelState.Select(x => x.Value.Errors)
+                    .Where(y => y.Count > 0)
+                    .ToList();
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "An unknown error occurred while trying to create this vote with id: " + createdVote.Id);
                 return View(createdVote);
             }
         }
@@ -130,11 +218,34 @@ namespace VotingApp.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteOpenDateTime,VoteCloseDateTime,VoteAccessCode, PrivateVote")] CreatedVote createdVote, int oldVoteTypeId)
+        public IActionResult edit([Bind("Id,VoteTypeId,VoteTitle,VoteDiscription,AnonymousVote,VoteOption,VoteOpenDateTime,VoteCloseDateTime,VoteAccessCode, PrivateVote,RoundDays,RoundHours,RoundMinutes, TimeZoneId")] CreatedVote createdVote, int oldVoteTypeId)
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
             ModelState.Remove("VoteType");
             ModelState.Remove("VoteAccessCode");
             ModelState.Remove("VoteAudioBytes");
+            ModelState.Remove("TimeZone");
+            ModelState.Remove("RoundDays");
+            ModelState.Remove("RoundHours");
+            ModelState.Remove("RoundMinutes");
+            ModelState.Remove("RoundNumber");
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
+                    "Value", "Text");
+            }
+            ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             if (User.Identity.IsAuthenticated != false)
             {
                 createdVote.User = _votingUserRepository.GetUserByAspId(_userManager.GetUserId(User));
@@ -174,6 +285,7 @@ namespace VotingApp.Controllers
             else
             {
                 ViewBag.Message = "An unknown database error occurred while trying to create the item. Please try again.";
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "An unknown error occurred while trying to edit created vote id: " + createdVote.Id);
                 return View("Index",createdVote);
             }
         }
@@ -188,12 +300,22 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult AddMultipleChoiceOption(int id, string option)
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
             var vote = _createdVoteRepository.GetById(id);
             VoteOption voteOption = new VoteOption();
             voteOption.VoteOptionString = option;
-            vote.VoteOptions.Add(voteOption);
-            _createdVoteRepository.AddOrUpdate(vote);
-            return RedirectToAction("MultipleChoice", vote);
+
+            if (option == null)
+            {
+                _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error adding null vote option to created vote id: " + vote.Id);
+                return RedirectToAction("MultipleChoice", vote);
+            }
+            else
+            {
+                vote.VoteOptions.Add(voteOption);
+                _createdVoteRepository.AddOrUpdate(vote);
+                return RedirectToAction("MultipleChoice", vote);
+            }
         }
         public ActionResult LoadAudio(int id)
         {
@@ -205,6 +327,19 @@ namespace VotingApp.Controllers
             }
             var audioBytes = vote.VoteAudioBytes;
             return base.File(audioBytes, "audio/wav");
+        }
+
+        public ActionResult LoadQR(int id)
+        {
+            var vote = _createdVoteRepository.GetById(id);
+            if (vote.QrcodeBytes == null)
+            {
+                vote.QrcodeBytes = _qrCodeCreationService.CreateQRCode($"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{vote.VoteAccessCode}").Result;
+                _createdVoteRepository.AddOrUpdate(vote);
+            }
+
+            var qrbytes = vote.QrcodeBytes;
+            return base.File(qrbytes, "image/png");
         }
 
         [HttpPost]
@@ -237,8 +372,10 @@ namespace VotingApp.Controllers
 
             createdVote = _createdVoteRepository.GetById(createdVote.Id);
 
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
             createdVote.VoteAudioBytes = _googleTtsService.CreateVoteAudio(createdVote);
+            var qrcode = _qrCodeCreationService.CreateQRCode(
+               $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}").Result;
+            createdVote.QrcodeBytes = qrcode;
             //_googleTtsService.CreateAudioFiles(createdVote);
             createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
             if (createdVote.PrivateVote)
@@ -258,7 +395,8 @@ namespace VotingApp.Controllers
             vm.VoteAccessCode = createdVote.VoteAccessCode;
             vm.ShareURL =
                 $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/Access/{createdVote.VoteAccessCode}";
-            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? DateTime.Now;
+            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime ?? TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, createdVote
+                .TimeZone.TimeName);
             if (createdVote.VoteOpenDateTime != null)
                 vm.VoteOpenDateTime = createdVote.VoteOpenDateTime;
             vm.VotingAuthorizedUsers = createdVote.VoteAuthorizedUsers.ToList();
@@ -285,12 +423,19 @@ namespace VotingApp.Controllers
 
                 CreatedVotesVM createdVotesVM = new CreatedVotesVM(userId, _createdVoteRepository);
                 createdVotesVM.GetCreatedVotesListForUserId(userId);
+
+                var votesForUser = _createdVoteRepository.GetAllForUserId(userId);
+                createdVotesVM.OpenVotes = _createdVoteRepository.GetOpenCreatedVotes(votesForUser);
+                createdVotesVM.ClosedVotes = _createdVoteRepository.GetClosedCreatedVotes(votesForUser);
+                //
+
                 return View(createdVotesVM);
             }
             return View();
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CreatedVotesReview(string voteData)
         {
             if (User.Identity.IsAuthenticated != false && voteData.Length > 0)
@@ -322,50 +467,78 @@ namespace VotingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult VoteAnalyticsButton(int id)
-        {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("Analytics", createdVote);
-        }
-
-        [HttpGet]
-        public IActionResult Analytics(CreatedVote createdVote)
-        {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
-            var vm = new AnalyticsVM();
-            vm.VoteTitle = createdVote.VoteTitle;
-            vm.VoteDescription = createdVote.VoteDiscription;
-            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
-            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
-            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
-
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult VoteResultsButton(int id)
         {
-            var createdVote = _createdVoteRepository.GetById(id);
-            return RedirectToAction("VoteResults", createdVote);
+            //var createdVote = _createdVoteRepository.GetById(id);
+            return RedirectToAction("VoteResults", new {id = id});
         }
 
         [HttpGet]
-        public IActionResult VoteResults(CreatedVote createdVote)
+        public IActionResult VoteResults(int id)
         {
-            createdVote = _createdVoteRepository.GetById(createdVote.Id);
-            var vm = new VoteResultsVM();
-            vm.VoteTitle = createdVote.VoteTitle;
-            vm.VoteDescription = createdVote.VoteDiscription;
-            vm.AnonymousVote = createdVote.AnonymousVote;
-            vm.VoteId = createdVote.Id;
-            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
-            vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
-            vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
-            vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
-            vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
-            vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
-            return View(vm);
+            var createdVote = _createdVoteRepository.GetById(id);
+            var vmMR = new VotesResultsVM();
+            vmMR.VotingResults = new List<VoteResultsVM>();
+            int nextRound = 0;
+            if (createdVote != null)
+            {
+                if (createdVote.VoteTypeId == 3 && createdVote.RoundNumber == 1)
+                {
+                    do
+                    {
+                        if (createdVote != null)
+                        {
+                            var vm = new VoteResultsVM();
+                            vm.VoteTitle = createdVote.VoteTitle;
+                            vm.VoteDescription = createdVote.VoteDiscription;
+                            vm.VoteAccessCode = createdVote.VoteAccessCode;
+                            vm.VoteCloseDateTime = createdVote.VoteCloseDateTime;
+                            vm.TimeZone = createdVote.TimeZone;
+                            vm.AnonymousVote = createdVote.AnonymousVote;
+                            vm.VoteId = createdVote.Id;
+                            vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+                            vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+                            vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
+                            vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
+                            vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
+                            vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+                            vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+                            vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
+                            vmMR.VotingResults.Add(vm);
+                            nextRound = createdVote.NextRoundId;
+                            if(nextRound > 0)
+                                createdVote = _createdVoteRepository.GetById(createdVote.NextRoundId);
+                        }
+                    } while (createdVote != null && nextRound > 0);
+
+                    return View(vmMR);
+                }
+                else
+                {
+                    var vm = new VoteResultsVM();
+                    vm.VoteTitle = createdVote.VoteTitle;
+                    vm.VoteDescription = createdVote.VoteDiscription;
+                    vm.VoteAccessCode = createdVote.VoteAccessCode;
+                    vm.VoteCloseDateTime = createdVote.VoteCloseDateTime;
+                    vm.TimeZone = createdVote.TimeZone;
+                    vm.AnonymousVote = createdVote.AnonymousVote;
+                    vm.VoteId = createdVote.Id;
+                    vm.VoteOptions = _voteOptionRepository.GetAllByVoteID(createdVote.Id);
+                    vm.TotalVotesForEachOption = _submittedVoteRepository.TotalVotesForEachOption(createdVote.Id, vm.VoteOptions);
+                    vm.VotesForLoggedInUsers = _submittedVoteRepository.GetAllSubmittedVotesWithLoggedInUsers(createdVote.Id, vm.VoteOptions);
+                    vm.VotesForUsersNotLoggedIn = _submittedVoteRepository.GetAllSubmittedVotesForUsersNotLoggedIn(createdVote.Id, vm.VoteOptions);
+                    vm.TotalVotesCount = _submittedVoteRepository.GetTotalSubmittedVotes(createdVote.Id);
+                    vm.Winners = _submittedVoteRepository.GetWinner(vm.TotalVotesForEachOption);
+                    vm.ChartVoteTotals = _submittedVoteRepository.TotalVotesPerOption(createdVote.Id, vm.VoteOptions);
+                    vm.ChartVoteOptions = _submittedVoteRepository.MatchingOrderOptionsList(createdVote.Id, vm.VoteOptions);
+                    vmMR.VotingResults.Add(vm);
+
+                    return View(vmMR);
+                }
+            } else
+            {
+                return View(vmMR);
+            }
         }
 
         [HttpPost]
@@ -379,10 +552,23 @@ namespace VotingApp.Controllers
         public IActionResult BackToIndexPage(int ID)
         {
             var result = _createdVoteRepository.GetById(ID);
-            var selectListVoteType = new SelectList(
-                _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
-                "Value", "Text");
+            SelectList selectListVoteType = null;
+            SelectList timeZoneList = null;
+            timeZoneList = new SelectList(_timeZoneRepo.GetAllTimeZones().Select(x => new { Text = $"{x.TimeName}", Value = x.Id }), "Value", "Text");
+            if (User.Identity.IsAuthenticated != false)
+            {
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }),
+                    "Value", "Text");
+            }
+            else
+            { //if user is not logged in, then Multi-Round voting is not available
+                selectListVoteType = new SelectList(
+                    _voteTypeRepository.VoteTypes().Select(a => new { Text = $"{a.VotingType}", Value = a.Id }).Where(o => o.Text != "Multiple Choice Multi-Round Poll"),
+                    "Value", "Text");
+            }
             ViewData["VoteTypeId"] = selectListVoteType;
+            ViewData["TimeZoneId"] = timeZoneList;
             return View("Index",result);
         }
         public IActionResult GetUsers(int id, string userListString)
@@ -412,6 +598,8 @@ namespace VotingApp.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            MethodBase method = MethodBase.GetCurrentMethod();
+            _appLogRepository.LogError(method.ReflectedType.Name, method.Name, "Error - RequestId = " + Activity.Current?.Id);
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }

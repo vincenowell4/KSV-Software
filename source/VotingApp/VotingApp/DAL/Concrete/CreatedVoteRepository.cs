@@ -105,15 +105,69 @@ namespace VotingApp.DAL.Concrete
                 var email = user.UserName;
 
                 var message = new Message(new string[] { email }, "New Vote Authorization from Opiniony",
-                    "You have been authorized to submit your vote for: " + $"<br/><br/>Title: '{voteTitle}'<br/>Description: '{voteDescription}'<br/><br/>Click <a href='{accessCode}'>here</a> to go to submit a vote.");
+                    "You have been authorized to submit your vote for: " + $"<br/><br/>Title: '{voteTitle}'<br/>Description: '{voteDescription}'<br/><br/>Click <a href='{accessCode}'>here</a> to go to cast a vote.");
 
                 _emailSender.SendEmail(message);
             }
         }
 
+        public IList<CreatedVote> GetOpenCreatedVotes(IList<CreatedVote> createdVotes)
+        {
+            IList<CreatedVote> createdVote = createdVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote2 = new List<CreatedVote>();
+            if (createdVote != null)
+            {
+                foreach (CreatedVote cv in createdVote)
+                {
+                    if (DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, cv.TimeZone.TimeName), cv.VoteCloseDateTime.Value) < 0)
+                    {
+                        createdVote2.Add(cv);
+                    }
+                }
+            }
+            return createdVote2;
+        }
+
+        public IList<CreatedVote> GetClosedCreatedVotes(IList<CreatedVote> createdVotes)
+        {
+            IList<CreatedVote> createdVote = createdVotes.Where(v => v.VoteTypeId != 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote2 = new List<CreatedVote>();
+            if (createdVote != null)
+            {
+                foreach (CreatedVote cv in createdVote)
+                {
+                    if (DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, cv.TimeZone.TimeName), cv.VoteCloseDateTime.Value) > 0)
+                    {
+                        createdVote2.Add(cv);
+                    }
+                }
+            }
+            return createdVote2;
+        }
+
         public IList<CreatedVote> GetAllClosedMultiRoundVotes()
         {
-            return _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null && DateTime.Compare(DateTime.Now, v.VoteCloseDateTime.Value) > 0).ToList();
+            IList<CreatedVote> createdVote = _context.CreatedVotes.Where(v => v.NextRoundId == 0 && v.VoteTypeId == 3 && v.VoteCloseDateTime != null).ToList();
+            IList<CreatedVote> createdVote2= new List<CreatedVote>();
+            if (createdVote != null) {
+                foreach (CreatedVote cv in createdVote)
+                {
+                    if (DateTime.Compare(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, cv.TimeZone.TimeName), cv.VoteCloseDateTime.Value) > 0) 
+                {
+                        createdVote2.Add(cv);
+                    }
+                }
+            }
+            return createdVote2;
+        }
+
+        public string GetMultiRoundVoteDuration(int id)
+        {
+            CreatedVote vote = _context.CreatedVotes.Where(v => v.Id == id).FirstOrDefault();
+            if (vote != null)
+                return vote.RoundDays.ToString() + "," + vote.RoundHours.ToString() + "," + vote.RoundMinutes.ToString();
+            else
+                return "";
         }
     }
 }

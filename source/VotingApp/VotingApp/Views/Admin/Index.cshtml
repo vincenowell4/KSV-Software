@@ -1,19 +1,48 @@
-﻿@{
+﻿@model VotingApp.ViewModel.AdminVM
+@{
     ViewData["Title"] = "VotingApp - Admin Page";
 }
 <div class="jumbotron jumbotron-fluid full-width" style="margin-bottom: 0px; height: 90vh; background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1)), url(/Images/bannerImage5.jpg); background-size: cover; left: 50%; margin-left: -50vw; margin-right: -50vw; max-width: 100vw; position: relative; right: 50%; width: 100vw;">
 <div class="container">
     <h1 class=" text-white pt-4">Admin Page</h1>
-    <h3 class="text-white">Welcome to the admin page. Only admin can see this page</h3>
-    <div class="row">
-        <div class="col justify-content-center text-center mt-5">
-            <h4 class="text-white">View Created Votes in System</h4>
-            <form asp-area="" asp-controller="Admin" asp-action="ViewAll">
-                <button class="btn btn-primary" type="submit">View Votes</button>
-            </form>
-
-        </div>
-    </div>
+    <h5 class="text-white">Welcome to the Admin page. Only users with a role of administrator can see this page</h5>
+	<div class="row">
+		<div class="col justify-content-center text-center mt-5">
+			<h4 class="text-white">View Created Polls in System</h4>
+			<form asp-area="" asp-controller="Admin" asp-action="ViewAll">
+				<button class="btn btn-primary" type="submit">View Polls</button>
+			</form>
+		</div>
+	</div>
+	@if(Model != null){
+		<div class="row text-center text-white p-2">
+			<button type="button" id="LogCollapsible" class="btn btn-light bg-success btn-outline-primary" data-toggle="collapse" data-target="#appLogs">Click here for logging information</button>
+			<div id="appLogs" class="collapse">
+				<br/>
+				<div class="table-responsive">
+					<h3>Admin Logging</h3>
+					<table class="table table-borderless rounded bg-dark text-white table-striped" id="logTable">
+						<tr class="bg-secondary">
+							<th>Date</th>
+							<th>Log Level</th>
+							<th>Class</th>
+							<th>Method</th>
+							<th>Description</th>
+						</tr>
+						@foreach (var log in Model.logs)
+						{
+							<tr class="text-white-50">
+								<td>@log.Date</td>
+								<td>@log.LogLevel</td>
+								<td>@log.ClassName</td>
+								<td>@log.MethodName</td>
+								<td>@log.LogMessage</td>
+							</tr>
+						}
+					</table>
+				</div>
+			</div>
+		</div>
+	}
 </div>
-
 </div>

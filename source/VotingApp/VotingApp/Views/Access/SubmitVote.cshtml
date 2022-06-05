@@ -14,7 +14,7 @@
     </div>
     @{string formValue = (Model.submittedVote == null ? "CastVote" : "EditCastVote" );}
   
-    <form asp-action=@formValue method="get" class="col-lg-6 offset-lg-3 ">
+    <form asp-action=@formValue method="get" class="col-lg-6 offset-lg-3" onsubmit="return get_action();">
    
         @if(Model.submittedVote != null)
         {
@@ -25,13 +25,13 @@
             @if (ViewBag.ErrorMessage != null)
             {
                 <div class="alert alert-danger">
-                    <p>@ViewBag.ErrorMessage</p>
+                    <p id="errorMessage">@ViewBag.ErrorMessage</p>
                 </div>
             }
             @if (Model.submittedVote != null)
             {
                 <div class="alert alert-warning">
-                    <p>You have already submitted your vote. Resubmitting a vote will overwrite your previous vote</p>
+                    <p id="updateMessage">You have already submitted your vote. Resubmitting a vote will overwrite your previous vote</p>
                 </div>
             }
             
@@ -59,16 +59,28 @@
                     </div>
                 </div>
             }
-            <audio class="mt-3 mb-3" style="max-width: 500px;" controls src="@Url.Action("LoadAudio","Create", new { id = Model.vote.Id })"></audio>
+            <audio id="VoteAudio" class="mt-3 mb-3" style="max-width: 500px;" controls src="@Url.Action("LoadAudio","Create", new { id = Model.vote.Id })"></audio>
             <span class="input-group-btn">
                 @if (Model.submittedVote != null)
                 {
-                    <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+                    <button type="submit" id="edit-vote" class="mt-2 mb-2 btn btn-light bg-success btn-outline-primary">Submit</button>
                 } else
                 {
-                    <button type="submit" class="mt-2 btn btn-primary">Submit</button>
+                    <button type="submit" id="cast-vote" class="mt-2 mb-2 btn btn-light bg-success btn-outline-primary">Submit</button>
                 }
             </span>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+    function get_action() 
+    {
+		$('#cast-vote').prop('disabled', true);
+		$('#edit-vote').prop('disabled', true);
+        return true;
+    }
+    </script>
+}

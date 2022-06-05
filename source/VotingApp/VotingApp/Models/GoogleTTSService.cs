@@ -7,17 +7,15 @@ namespace VotingApp.Models
 {
     public class GoogleTtsService
     {
-        private readonly ICreatedVoteRepository _createdVoteRepository;
 
-        public GoogleTtsService(ICreatedVoteRepository createdVoteRepository)
+        public GoogleTtsService()
         {
-            _createdVoteRepository = createdVoteRepository;
         }
         public byte[] CreateVoteAudio(CreatedVote vote)
         {
             
             string voteAsString = "";
-            voteAsString += $"Vote Title, {vote.VoteTitle}. Vote Description, {vote.VoteDiscription}. Vote Options, ";
+            voteAsString += $"Poll Title, {vote.VoteTitle}. Poll Description, {vote.VoteDiscription}. Vote Options, ";
             foreach (var option in vote.VoteOptions)
             {
                 voteAsString += $"{option.VoteOptionString},";
@@ -51,20 +49,5 @@ namespace VotingApp.Models
 
         }
 
-        public void CreateAudioFiles(CreatedVote vote)
-        {
-            Directory.SetCurrentDirectory(@"wwwroot/TempAudio");
-            if (Directory.Exists($"{vote.Id}"))
-            {
-                Directory.Delete($"{vote.Id}");
-            }
-
-            Directory.CreateDirectory($"{vote.Id}");
-            Directory.SetCurrentDirectory(@$"{vote.Id}");
-            if (vote.VoteAudioBytes != null)
-            {
-                File.WriteAllBytes($"{vote.Id}.mp3", vote.VoteAudioBytes);
-            }
-        }
     }
 }
