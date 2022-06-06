@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace VotingApp.Controllers
 {
@@ -583,8 +584,19 @@ namespace VotingApp.Controllers
             }
             if(userListString != null)
             {
-                createdVote.VoteAuthorizedUsers = _creationService.ParseUserList(id, userListString).ToList();
-                createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+                string regex = @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$";
+                var userList = _creationService.ParseUserList(id, userListString).ToList();
+                if (userList.All(a => Regex.IsMatch(a.UserName, regex, RegexOptions.IgnoreCase)))
+                {
+                    createdVote.VoteAuthorizedUsers = userList;
+                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+                }//check if email for each item;
+                else
+                {
+                    createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                    AuthorizedUserPageVM vm = new AuthorizedUserPageVM { id = createdVote.Id };
+                    return RedirectToAction("AddVoteUsers", vm);
+                }
             }
 
             if (createdVote.VoteTypeId == 1)
