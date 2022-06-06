@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace VotingApp.Controllers
 {
@@ -297,7 +298,8 @@ namespace VotingApp.Controllers
             return View(vote);
         }
 
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddMultipleChoiceOption(int id, string option)
         {
             MethodBase method = MethodBase.GetCurrentMethod();
@@ -571,6 +573,8 @@ namespace VotingApp.Controllers
             ViewData["TimeZoneId"] = timeZoneList;
             return View("Index",result);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult GetUsers(int id, string userListString)
         {
             var createdVote = _createdVoteRepository.GetById(id);
@@ -580,8 +584,19 @@ namespace VotingApp.Controllers
             }
             if(userListString != null)
             {
-                createdVote.VoteAuthorizedUsers = _creationService.ParseUserList(id, userListString).ToList();
-                createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+                string regex = @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)$";
+                var userList = _creationService.ParseUserList(id, userListString).ToList();
+                if (userList.All(a => Regex.IsMatch(a.UserName, regex, RegexOptions.IgnoreCase)))
+                {
+                    createdVote.VoteAuthorizedUsers = userList;
+                    createdVote = _createdVoteRepository.AddOrUpdate(createdVote);
+                }//check if email for each item;
+                else
+                {
+                    createdVote = _createdVoteRepository.GetById(createdVote.Id);
+                    AuthorizedUserPageVM vm = new AuthorizedUserPageVM { id = createdVote.Id };
+                    return RedirectToAction("AddVoteUsers", vm);
+                }
             }
 
             if (createdVote.VoteTypeId == 1)
