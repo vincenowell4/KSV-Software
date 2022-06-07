@@ -9,7 +9,7 @@ on:
 
 env:
   DOTNET_VERSION: '6.0.x'           # set this to the dot net version to use
-  PROJECT_PATH: './VotingApp'
+  PROJECT_PATH: './source/VotingApp/VotingApp'
   PROJECT_NAME: 'VotingApp'
   TEST_FILENAME: 'TestResults.md'
   DEPLOYMENT_RESOURCE_GROUP_NAME: 'AutoTest'
