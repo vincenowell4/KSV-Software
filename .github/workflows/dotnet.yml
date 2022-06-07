@@ -11,6 +11,8 @@ env:
   DOTNET_VERSION: '6.0.x'           # set this to the dot net version to use
   PROJECT_PATH: './source/VotingApp/VotingApp'
   PROJECT_NAME: 'VotingApp'
+  TEST_PROJECT_PATH: './source/VotingApp/Tests_NUnit_Voting_App'
+  TEST_PROJECT_NAME: 'Tests_NUnit_Voting_App'
   TEST_FILENAME: 'NUnitTestResults.md'
   DEPLOYMENT_RESOURCE_GROUP_NAME: 'AutoTest'
 
@@ -45,5 +47,5 @@ jobs:
           dotnet build
       # Test the selected project
       - name: Run unit tests on the main project
-        working-directory: ${{ env.PROJECT_PATH }}
-        run: dotnet test --no-restore --no-build ${{ env.PROJECT_NAME }} --logger:"trx;LogFileName=${{github.workspace}}/${{env.TEST_FILENAME}};"
+        working-directory: ${{ env.TEST_PROJECT_PATH }}
+        run: dotnet test --no-restore --no-build ${{ env.TEST_PROJECT_NAME }} --logger:"trx;LogFileName=${{github.workspace}}/${{env.TEST_FILENAME}};"
