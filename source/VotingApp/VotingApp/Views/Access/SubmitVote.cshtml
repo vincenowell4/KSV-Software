@@ -14,7 +14,7 @@
     </div>
     @{string formValue = (Model.submittedVote == null ? "CastVote" : "EditCastVote" );}
   
-    <form asp-action=@formValue method="get" class="col-lg-6 offset-lg-3" onsubmit="return get_action();">
+    <form asp-action=@formValue method="post" class="col-lg-6 offset-lg-3" onsubmit="return get_action();">
    
         @if(Model.submittedVote != null)
         {
