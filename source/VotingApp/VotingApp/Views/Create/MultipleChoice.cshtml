@@ -34,7 +34,7 @@
 									@foreach (var option in Model.VoteOptions)
 									{
 										<li class="list-group-item">
-											<form asp-action="RemoveOption">
+											<form method="post" asp-action="RemoveOption">
 												@option.VoteOptionString
 												<button type="submit" name="optionId" class="btn btn-danger btn-sm" name="optionId" value="@option.Id">Delete</button>
 												<input name="voteId" value="@Model.Id" hidden></input>
@@ -51,7 +51,7 @@
 		<div class="container">
 			<div class="row mb-2">
 				<div class="col-md-8 mx-auto justify-content-center"> 
-					<form asp-action="AddMultipleChoiceOption" method="get">
+					<form asp-action="AddMultipleChoiceOption" method="post">
 						<input name="id" type="number" value="@Model.Id" hidden></input>
 						<label class="text-center text-white mt-2">Please enter your vote option in the box below:<span data-toggle="tooltip" data-placement="bottom" title="Enter your voting options here one at a time. You must have at least 2 voting options for a multiple choice poll and 3 options for a multi-round poll. To add more hit the add button.">&#8505;</span></label>
 						<div class="input-group">

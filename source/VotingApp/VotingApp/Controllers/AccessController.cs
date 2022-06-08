@@ -53,8 +53,14 @@ namespace VotingApp.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Results(string code)
         {
+            if (code.Length != 6 || !code.All(char.IsLetterOrDigit))
+            {
+                ViewBag.ErrorMessage = "Invalid Access Code";
+                return View("Index");
+            }
             if (User.Identity.IsAuthenticated == false)
             {
                 string secretKey = this._configuration["RecaptchaKey"];
@@ -185,6 +191,9 @@ namespace VotingApp.Controllers
             }
             return View("SubmitVote", new SubmitVoteVM { vote = vote, options = vote.VoteOptions.ToList(), submittedVote = subvote });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult EditCastVote(int Id, int choice)
         {
             var item = _subVoteRepository.EditCastVote(Id, choice);
@@ -196,6 +205,11 @@ namespace VotingApp.Controllers
         [HttpGet]
         public IActionResult AccessGet(string code)
         {
+            if (code.Length != 6 || !code.All(char.IsLetterOrDigit))
+            {
+                ViewBag.ErrorMessage = "Invalid Access Code";
+                return View("Index");
+            }
             var key = Request.Cookies["ClientId"];
             if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
             {
@@ -294,6 +308,11 @@ namespace VotingApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Access(string code)
         {
+            if (code.Length != 6 || !code.All(char.IsLetterOrDigit))
+            {
+                ViewBag.ErrorMessage = "Invalid Access Code";
+                return View("Index");
+            }
             var key = Request.Cookies["ClientId"];
             if (Request.Cookies["ClientId"] == null || Request.Cookies["ClientId"] == "00000000-0000-0000-0000-000000000000")
             {
@@ -415,7 +434,8 @@ namespace VotingApp.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult CastVote(int voteID, int choice)
         {
             var key = Request.Cookies["ClientId"];

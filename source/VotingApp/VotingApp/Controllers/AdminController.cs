@@ -31,10 +31,12 @@ namespace VotingApp.Controllers
         }
         public ActionResult Delete(int id)
         {
+            //does not actually doing anything at the moment
             return RedirectToAction("ViewAll");
         }
         public ActionResult Edit(int id)
         {
+            //does not actually doing anything at the moment
             var vote = _createdVoteRepository.GetById(id);
             return View("ViewAll");
             //return RedirectToAction("Edit", vote);
